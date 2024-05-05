@@ -79,6 +79,16 @@
                                 <!-- Use custom components or divs for messages -->
                             </div>
                         </el-main>
+                        <el-dropdown placement="" top>
+                                <span class="el-dropdown-link">
+                                    配置<i class="el-icon-arrow-down el-icon--right"></i>
+                                </span>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item>生成摘要</el-dropdown-item>
+                                    <el-dropdown-item>标签提取</el-dropdown-item>
+                                    <el-dropdown-item>内容检查</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
                         <el-footer style="align-items: flex-start; display: flex">
                             <!-- Input area -->
                             <el-input v-model="newMessage" placeholder="Type your message" />

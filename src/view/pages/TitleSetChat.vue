@@ -56,23 +56,115 @@
     <el-container>
 
       <el-main>
-        <el-table ref="table" :data="tableData" @filter-change="_filterChange" border>
+        <el-table ref="table" :data="currentPageData" @filter-change="_filterChange" border>
           <template v-for="(item, index) in dataList">
             <el-table-column sortable :show-overflow-tooltip="true" :key="index" :label="item.label" align="center"
               :prop="item.value" :filter-multiple="true" :filters="filterData(item)" :filter-method="filterTag">
             </el-table-column>
           </template>
         </el-table>
-
+        <el-row type="flex" justify="flex-end" style="float: right;">
+          <el-col>
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+              :current-page="currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper" :total="tableData.length"></el-pagination>
+          </el-col>
+          <el-col>
+            <el-button type="primary" @click="exportToDocx">导出</el-button>
+          </el-col>
+        </el-row>
       </el-main>
+
     </el-container>
   </el-container>
 </template>
 
 <script>
+import { saveAs } from 'file-saver';
+import Docxtemplater from 'docxtemplater';
+import JSZip from 'jszip';
+import JSZipUtils from 'jszip-utils'
+import 'docxtemplater/build/docxtemplater.js'
+import 'pizzip/dist/pizzip.js'
+import 'file-saver'
+const ImageModule = require('docxtemplater-image-module-free')
+
+function exportWord(template, exportRow, outputFilename) {
+  JSZipUtils.getBinaryContent(template, (error, content) => {
+    if (error) {
+      console.error(error, 'error')
+      return
+    }
+    var opts = {}
+    opts.centered = false
+    opts.getImage = (tagValue, tagName) => {
+      return new Promise((resolve, reject) => {
+        JSZipUtils.getBinaryContent(tagValue, (error, content) => {
+          if (error) {
+            return reject(error)
+          }
+          return resolve(content)
+        })
+      })
+    }
+    //图片有关代码，没有图片的可以删除
+    opts.getSize = (img, tagValue, tagName) => {
+      // FOR FIXED SIZE IMAGE :
+      return [470, 210] //图片大小 （这个可以写成动态的，开发文档上有）
+      return new Promise((resolve, reject) => {
+        var image = new Image()
+        image.src = url
+        image.onload = () => {
+          resolve([image.width, image.height])
+        }
+        image.onerror = (e) => {
+          console.log('img, tagValue, tagName : ', img, tagValue, tagName)
+          reject(e)
+        }
+      })
+    }
+    var imageModule = new ImageModule(opts)
+
+    var zip = new PizZip(content)
+    var doc = new docxtemplater()
+      .loadZip(zip)
+      .attachModule(imageModule)
+      .compile()
+    doc
+      .resolveData(exportRow)
+      .then((res) => {
+        doc.render()
+        var out = doc.getZip().generate({
+          type: 'blob',
+          mimeType:
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        })
+        saveAs(out, outputFilename + '.docx')
+      })
+      .catch((error) => {
+        let e = {
+          message: error.message,
+          name: error.name,
+          stack: error.stack,
+          properties: error.properties,
+        }
+        console.log(
+          JSON.stringify({
+            error: e,
+          })
+        )
+        throw error // 抛出异常
+      })
+  })
+}
+
 export default {
+
   data() {
     return {
+      tableData: [], // 原始数据
+      currentPage: 1, // 当前页码
+      pageSize: 10, // 每页显示条目数
       isCollapse: false,
       cards: [
         {
@@ -107,6 +199,24 @@ export default {
         { section: "非热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
 
         { section: "非热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
+
+        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
+        { section: "热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
+        { section: "热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
+        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
+        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
+
+        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
+        { section: "热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
+        { section: "热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
+        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
+        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
+
+        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
+        { section: "热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
+        { section: "热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
+        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
+        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
 
         { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
         { section: "热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
@@ -155,9 +265,45 @@ export default {
         return this.deWeight(obj);
       };
     },
+    currentPageData() {
+      const startIndex = (this.currentPage - 1) * this.pageSize;
+      const endIndex = startIndex + this.pageSize;
+      return this.tableData.slice(startIndex, endIndex);
+    }
   },
 
   methods: {
+    // 导出数据到 docx 文件
+    exportToDocx() {
+      exportWord('./template.docx', this.currentPageData,"hh")
+
+      // const doc = new Docxtemplater();
+      // const template = `<h1>数据导出</h1><table><tr></tr></table>`;
+      // const data = {
+      //   dataList: this.dataList,
+      //   currentPageData: this.currentPageData
+      // };
+      // // 使用 JSZip 加载模板内容
+      // new JSZip().loadAsync(template).then(function (zip) {
+      //   // 将模板加载到 Docxtemplater
+      //   doc.loadZip(zip);
+      //   // 设置数据并渲染文档
+      //   doc.setData(data);
+      //   doc.render();
+      //   // 生成并下载 DOCX 文件
+      //   const output = doc.getZip().generate({ type: 'blob' });
+      //   saveAs(output, 'exported_data.docx');
+      // });
+    },
+
+    // 每页显示条目数改变时触发
+    handleSizeChange(val) {
+      this.pageSize = val;
+    },
+    // 当前页码改变时触发
+    handleCurrentChange(val) {
+      this.currentPage = val;
+    },
     toggleCollapse() {
       this.isCollapse = !this.isCollapse; // 切换状态
     },

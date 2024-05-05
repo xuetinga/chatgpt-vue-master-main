@@ -66,9 +66,9 @@
 
                 </el-header>
                 <el-container>
-                    新增配置
-                    <el-button size="small" type="primary" icon="el-icon-plus" circle
-                        @click="dialogFormVisible = true"></el-button>
+                    
+                    <el-button size="small" type="primary" icon="el-icon-plus" style="margin-bottom: 20px;"
+                        @click="dialogFormVisible = true">新增配置</el-button>
                     <el-dialog title="Prompt" :visible.sync="dialogFormVisible">
                         <el-form :model="form">
                             <el-form-item label="NAME" :label-width="formLabelWidth">

@@ -60,51 +60,92 @@
 
                 <el-header>
 
-                    新增
-                    <el-button size="small" type="primary" icon="el-icon-plus" circle
-                        @click="dialogFormVisible = true"></el-button>
 
+                    <el-button size="small" type="primary" icon="el-icon-plus"
+                        @click="dialogFormVisible = true">新增知识</el-button>
 
                 </el-header>
-                <el-container>
-                    <el-dialog title="Model" :visible.sync="dialogFormVisible">
-                        <el-steps :active=active>
-                            <el-step title="步骤 1" icon="el-icon-edit">
-                            </el-step>
-                            <el-step title="步骤 2" icon="el-icon-upload"></el-step>
-                            <el-step title="步骤 3" icon="el-icon-picture"></el-step>
-                        </el-steps>
-                        <div v-if="active == 1" style="padding: 20px;">
-                            <el-form ref="form" :model="form" label-width="80px">
-                                <el-form-item label="NAME">
-                                    <el-input v-model="form.name"></el-input>
-                                </el-form-item>
-                                <el-form-item label="DESCRIPTION">
-                                    <el-input type="textarea" v-model="form.desc"></el-input>
-                                </el-form-item>
-                            </el-form>
+                <el-container style="">
+                    <!-- <div> -->
+                    <el-row type="flex" style=" width: 100%;flex-wrap: wrap;">
+                        <el-col :span="8" v-for="(knowledge, index) in configs" :key="index">
+                            <el-card height="80px" shadow="hover">
+                                <div slot="header">
+                                    <i class="el-icon-picture-outline-round" @click="showGraph(index)">头像</i>
+
+                                    <span>{{ knowledge.name }}</span>
+                                </div>
+                                <div class="text item">
+                                    {{ knowledge.content }}
+                                </div>
+
+                                <el-row style="margin-top: 20px;">
+                                    <el-col :span="8">
+                                        <i class="el-icon-edit" @click="showConfigDialog(index)">配置</i>
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <i class="el-icon-picture-outline-round" @click="showGraph(index)">图谱</i>
+
+                                    </el-col>
+                                    <el-col :span="8">
+                                        <i class="el-icon-delete" @click="deleteKnowledge(index)">删除</i>
+
+                                    </el-col>
+
+                                </el-row>
+
+                            </el-card>
+                        </el-col>
+                    </el-row>
+                    <!-- </div> -->
 
 
-                        </div>
-                        <div v-if="active == 2" style="padding: 20px;">
 
-                            <el-upload class="upload-demo" drag action="https://jsonplaceholder.typicode.com/posts/"
-                                multiple>
-                                <i class="el-icon-upload"></i>
-                                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                            </el-upload>
-                        </div>
-
-                        <el-button style="margin-top: 12px;" @click="next">下一步</el-button>
-
-                        <div slot="footer" class="dialog-footer">
-                            <el-button @click="dialogFormVisible = false">取 消</el-button>
-                            <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
-                        </div>
-                    </el-dialog>
                 </el-container>
             </el-main>
 
+
+            <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
+
+            <el-dialog title="新增知识" :visible.sync="dialogFormVisible">
+                <el-form :model="form">
+                    <el-form-item label="知识名称" >
+                        <el-select v-model="form.name" placeholder="请选择知识">
+                            <el-option label="知识一" value="shanghai"></el-option>
+                            <el-option label="知识二" value="beijing"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="知识内容" >
+                        <el-input v-model="form.content" autocomplete="off"></el-input>
+                    </el-form-item>
+
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="dialogFormVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="addNew">确 定</el-button>
+                </div>
+            </el-dialog>
+
+            <el-dialog title="配置" :visible.sync="settingdialogFormVisible">
+                <el-form :model="settingform">
+                    <el-row>
+                        <el-col :span="8" v-for="(config, index) in configArray" :key="index">
+                            <el-form-item :label="config.label">
+                                <el-select v-model="settingform[config.key]" :placeholder="'请选择' + config.label">
+                                    <el-option v-for="(option, optionIndex) in config.options" :key="optionIndex"
+                                        :label="option.label" :value="option.value"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+
+
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="settingdialogFormVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="savesetting">确 定</el-button>
+                </div>
+            </el-dialog>
         </el-container>
     </el-container>
 </template>
@@ -113,12 +154,81 @@
 export default {
     data() {
         return {
+            configArray: [
+                {
+                    label: '配置项1',
+                    key: 'config1',
+                    options: [
+                        { label: '选项1-1', value: 'option1-1' },
+                        { label: '选项1-2', value: 'option1-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: '配置项2',
+                    key: 'config2',
+                    options: [
+                        { label: '选项2-1', value: 'option2-1' },
+                        { label: '选项2-2', value: 'option2-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: '配置项3',
+                    key: 'config3',
+                    options: [
+                        { label: '选项3-1', value: 'option3-1' },
+                        { label: '选项3-2', value: 'option3-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: '配置项4',
+                    key: 'config4',
+                    options: [
+                        { label: '选项4-1', value: 'option4-1' },
+                        { label: '选项4-2', value: 'option4-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: '配置项5',
+                    key: 'config5',
+                    options: [
+                        { label: '选项5-1', value: 'option5-1' },
+                        { label: '选项5-2', value: 'option5-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: '配置项6',
+                    key: 'config6',
+                    options: [
+                        { label: '选项6-1', value: 'option6-1' },
+                        { label: '选项6-2', value: 'option6-2' },
+                        // 其他选项...
+                    ]
+                },
+            ],
+            settingform: {
+                name: '',
+                content: '',
+                region: '',
+                date1: '',
+                date2: '',
+                delivery: false,
+                type: [],
+                resource: '',
+                desc: ''
+            },
+            settingdialogFormVisible: false,
             currentDate: new Date(),
             isCollapse: false,
 
             dialogFormVisible: false,
             form: {
                 name: '',
+                content: '',
                 region: '',
                 date1: '',
                 date2: '',
@@ -127,7 +237,26 @@ export default {
                 resource: '',
                 desc: ''
             }
-            , active: 1
+            ,
+            active: 1,
+            configs: [
+                {
+                    name: "知识1",
+                    content: "知识的内容"
+
+                },
+                {
+                    name: "知识2",
+                    content: "知识的内容2222"
+
+                },
+                {
+                    name: "知识3",
+                    content: "知识的内容333"
+
+                }
+
+            ], // 存储配置的数组
 
         };
     },
@@ -150,6 +279,23 @@ export default {
     },
 
     methods: {
+        savesetting(){
+            this.settingdialogFormVisible = false;
+            console.log("settingdialogFormVisible",this.settingform)
+        },
+        showConfigDialog(index) {
+            this.settingdialogFormVisible = true
+        },
+        addNew() {
+            this.configs.push({
+                name: this.form.name,
+                content: this.form.content
+            });
+            this.dialogFormVisible = false;
+            this.form.name = '';
+            this.form.content = '';
+            console.log("this.configs", this.configs)
+        },
         toggleCollapse() {
             this.isCollapse = !this.isCollapse; // 切换状态
         },
@@ -228,5 +374,11 @@ export default {
     z-index: -1;
     transition: background-color 0.3s ease;
     /* 添加过渡效果 */
+}
+
+.response-options {
+    text-align: center;
+    padding-left: 20;
+    margin-bottom: 20px;
 }
 </style>

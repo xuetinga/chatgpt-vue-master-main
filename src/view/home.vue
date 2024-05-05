@@ -58,7 +58,7 @@
       <el-header style="text-align: center; line-height: 40px">
         Yoca copilot
       </el-header>
-      <el-main style=" justify-content: center; width: 100%; ">
+      <el-main style=" justify-content: center; width: 100%; margin-top: 50px; ">
         <el-row :gutter="20" style="margin-top: 40px; " justify="center">
           <el-col :span="12">
             <el-card @click.native="goToKnowledgeQA">

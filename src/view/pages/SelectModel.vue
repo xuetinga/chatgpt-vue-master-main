@@ -59,9 +59,9 @@
             <el-main>
                 <el-header>
 
-                    新增model
-                    <el-button size="small" type="primary" icon="el-icon-plus" circle
-                        @click="dialogFormVisible = true"></el-button>
+                    
+                    <el-button size="small" type="primary" icon="el-icon-plus" 
+                        @click="dialogFormVisible = true">新增model</el-button>
 
 
                 </el-header>

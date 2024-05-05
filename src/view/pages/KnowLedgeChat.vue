@@ -128,16 +128,7 @@
 
                         <el-footer style="align-items: flex-start; display: flex">
                             <!-- Input area -->
-                            <el-dropdown placement="" top>
-                                <span class="el-dropdown-link">
-                                    配置<i class="el-icon-arrow-down el-icon--right"></i>
-                                </span>
-                                <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item>生成摘要</el-dropdown-item>
-                                    <el-dropdown-item>标签提取</el-dropdown-item>
-                                    <el-dropdown-item>内容检查</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </el-dropdown>
+                           
                             <el-upload auto-upload class="upload-demo" action="https://jsonplaceholder.typicode.com/posts/"
                                 :on-preview="handlePreview" :on-remove="handleRemove" :before-remove="beforeRemove" multiple
                                 :limit="3" :on-exceed="handleExceed" :file-list="fileList">
@@ -469,5 +460,8 @@ export default {
 
 .el-menu .el-menu-item {
     width: 100%;
+}
+.answer-message{
+    margin-right: 0;
 }
 </style>
