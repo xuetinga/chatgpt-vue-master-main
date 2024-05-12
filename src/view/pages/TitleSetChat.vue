@@ -80,7 +80,7 @@
               layout="total, sizes, prev, pager, next, jumper" :total="tableData.length"></el-pagination>
           </el-col>
           <el-col>
-            <el-button type="primary" @click="exportToDocx">导出</el-button>
+            <el-button type="primary" @click="exportExcel">导出</el-button>
           </el-col>
         </el-row>
       </el-main>
@@ -97,8 +97,9 @@ import JSZip from 'jszip';
 import JSZipUtils from 'jszip-utils'
 import 'docxtemplater/build/docxtemplater.js'
 import 'pizzip/dist/pizzip.js'
-import 'file-saver'
-// import XLSX from 'xlsx';
+import * as XLSX from "xlsx"
+import FileSaver from 'file-saver'
+
 const ImageModule = require('docxtemplater-image-module-free')
 
 function exportWord(template, exportRow, outputFilename) {
@@ -242,32 +243,32 @@ export default {
   },
 
   methods: {
-    // exportExcel() {
-    //   // 1. 将表格数据转换为 Excel 文件的格式
-    //   const worksheet = XLSX.utils.json_to_sheet(this.currentPageData);
-    //   const workbook = XLSX.utils.book_new();
-    //   XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    exportExcel() {
+      // 1. 将表格数据转换为 Excel 文件的格式
+      const worksheet = XLSX.utils.json_to_sheet(this.currentPageData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
-    //   // 2. 将 Excel 文件存储为二进制对象
-    //   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      // 2. 将 Excel 文件存储为二进制对象
+      const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
 
-    //   // 3. 创建一个 Blob 对象
-    //   const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+      // 3. 创建一个 Blob 对象
+      const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
 
-    //   // 4. 创建一个下载链接
-    //   const url = window.URL.createObjectURL(blob);
-    //   const link = document.createElement('a');
-    //   link.href = url;
-    //   link.setAttribute('download', 'export.xlsx');
+      // 4. 创建一个下载链接
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'export.xlsx');
 
-    //   // 5. 模拟点击下载链接
-    //   document.body.appendChild(link);
-    //   link.click();
+      // 5. 模拟点击下载链接
+      document.body.appendChild(link);
+      link.click();
 
-    //   // 6. 释放资源
-    //   document.body.removeChild(link);
-    //   window.URL.revokeObjectURL(url);
-    // },
+      // 6. 释放资源
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    },
     getexam() {
 
     },
