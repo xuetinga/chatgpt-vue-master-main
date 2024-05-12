@@ -1,15 +1,21 @@
 <template>
   <el-container style="height: 100vh;">
     <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-      <div class="fixed-button" style=" position: fixed;  top:15px; border:0px;text-align: center;
-  z-index: 1000;">
+      <div v-if="isCollapse"
+        style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
+        <el-button @click="toggleCollapse">
+          <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
+        </el-button>
+      </div>
+      <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
         <el-button @click="toggleCollapse">
           <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
         </el-button>
       </div>
       <el-menu default-active="4" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
         <el-menu-item index="0" @click.native="goToMain">
-          <span slot="title">主页</span>
+          <img src="../../imgs/logo.png" style="width: 25px; height: 25px;" />
+          <span slot="title">Yoka</span>
         </el-menu-item>
         <el-menu-item index="1" @click.native="goToKnowledgeQA">
           <i class="el-icon-menu"></i>
@@ -58,8 +64,12 @@
       <el-main>
         <el-table ref="table" :data="currentPageData" @filter-change="_filterChange" border>
           <template v-for="(item, index) in dataList">
-            <el-table-column sortable :show-overflow-tooltip="true" :key="index" :label="item.label" align="center"
-              :prop="item.value" :filter-multiple="true" :filters="filterData(item)" :filter-method="filterTag">
+            <el-table-column v-if="item.sort" sortable :show-overflow-tooltip="true" :key="index" :label="item.label"
+              align="center" :prop="item.value" :filter-multiple="true" :filters="filterData(item)"
+              :filter-method="filterTag">
+            </el-table-column>
+            <el-table-column v-else :show-overflow-tooltip="true" :key="index" :label="item.label" align="center"
+              :prop="item.value">
             </el-table-column>
           </template>
         </el-table>
@@ -80,6 +90,7 @@
 </template>
 
 <script>
+import { getChatMsg, gethistory, getexam } from "@/api/getData";
 import { saveAs } from 'file-saver';
 import Docxtemplater from 'docxtemplater';
 import JSZip from 'jszip';
@@ -87,6 +98,7 @@ import JSZipUtils from 'jszip-utils'
 import 'docxtemplater/build/docxtemplater.js'
 import 'pizzip/dist/pizzip.js'
 import 'file-saver'
+// import XLSX from 'xlsx';
 const ImageModule = require('docxtemplater-image-module-free')
 
 function exportWord(template, exportRow, outputFilename) {
@@ -166,81 +178,29 @@ export default {
       currentPage: 1, // 当前页码
       pageSize: 10, // 每页显示条目数
       isCollapse: false,
-      cards: [
-        {
-          icon: 'el-icon-info',
-          title: '标题一',
-          subtitle: '副标题一'
-        },
-        {
-          icon: 'el-icon-warning',
-          title: '标题二',
-          subtitle: '副标题二'
-        },
-        {
-          icon: 'el-icon-error',
-          title: '标题三',
-          subtitle: '副标题三'
-        },
-        {
-          icon: 'el-icon-success',
-          title: '标题四',
-          subtitle: '副标题四'
-        }
-      ],
-      tableData: [
-        { section: "热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
-        { section: "热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
-
-        { section: "非热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
-
-        { section: "非热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
-        { section: "非热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
-        { section: "非热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
-
-        { section: "非热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
-
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
-        { section: "热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
-        { section: "热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
-
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
-        { section: "热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
-        { section: "热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
-
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
-        { section: "热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
-        { section: "热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
-
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
-        { section: "热带水果", name: "苹果英文", age: "苹果英文是什么", sex: "2024.4.14" },
-        { section: "热带水果", name: "苹果英文222", age: "苹果英文是什么", sex: "2024.4.13" },
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.12" },
-        { section: "热带水果", name: "苹果英文11", age: "苹果英文是什么", sex: "2024.4.15" },
-
-      ],
       dataList: [
         {
           label: "题目分类",
-          value: "section",
+          value: "parent",
+          sort: true
+
         },
         {
           label: "题目标题",
-          value: "name",
+          value: "title",
+          sort: true
+
         },
         {
           label: "题目内容",
-          value: "age",
+          value: "content",
+          sort: false
         },
         {
           label: "时间",
-          value: "sex",
+          value: "time",
+          sort: true
+
         },
 
       ],
@@ -248,6 +208,15 @@ export default {
 
 
     };
+  },
+  created() {
+    console.log("created")
+    getexam().then((res) => {
+      this.tableData = res.data
+      console.log("getexamres", res)
+    }).catch((err) => {
+      console.log("errr", err)
+    })
   },
   computed: {
     // 筛选项
@@ -273,9 +242,38 @@ export default {
   },
 
   methods: {
+    // exportExcel() {
+    //   // 1. 将表格数据转换为 Excel 文件的格式
+    //   const worksheet = XLSX.utils.json_to_sheet(this.currentPageData);
+    //   const workbook = XLSX.utils.book_new();
+    //   XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+    //   // 2. 将 Excel 文件存储为二进制对象
+    //   const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    //   // 3. 创建一个 Blob 对象
+    //   const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+
+    //   // 4. 创建一个下载链接
+    //   const url = window.URL.createObjectURL(blob);
+    //   const link = document.createElement('a');
+    //   link.href = url;
+    //   link.setAttribute('download', 'export.xlsx');
+
+    //   // 5. 模拟点击下载链接
+    //   document.body.appendChild(link);
+    //   link.click();
+
+    //   // 6. 释放资源
+    //   document.body.removeChild(link);
+    //   window.URL.revokeObjectURL(url);
+    // },
+    getexam() {
+
+    },
     // 导出数据到 docx 文件
     exportToDocx() {
-      exportWord('./template.docx', this.currentPageData,"hh")
+      exportWord('./template.docx', this.currentPageData, "hh")
 
       // const doc = new Docxtemplater();
       // const template = `<h1>数据导出</h1><table><tr></tr></table>`;

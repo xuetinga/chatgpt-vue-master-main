@@ -9,7 +9,8 @@
       <el-menu default-active="1"  @open="handleOpen" @close="handleClose"
         :collapse="isCollapse" style=" width: 150px;">
         <el-menu-item index="0" @click.native="goToMain">
-          <span slot="title">主页</span>
+          <img src="../../imgs/logo.png" style="width: 25px; height: 25px;" />
+                    <span slot="title">Yoka</span>
         </el-menu-item>
         <el-menu-item index="1" @click.native="goToKnowledgeQA">
           <i class="el-icon-menu"></i>

@@ -4,14 +4,14 @@ let baseUrl = base.baseUrl
 
 // 获取好友
 export const getFriend = params => {
-    return axios({
-      method: 'post',
-      baseURL: `${baseUrl}/friend/friendList`,
-      data: params
-    }).then(res => res.data)
-  }
+  return axios({
+    method: 'post',
+    baseURL: `${baseUrl}/friend/friendList`,
+    data: params
+  }).then(res => res.data)
+}
 
-  // 获取聊天信息
+// 获取聊天信息
 export const getChatMsg = params => {
   return axios({
     method: 'post',
@@ -20,27 +20,83 @@ export const getChatMsg = params => {
   }).then(res => res.data)
 }
 
-  // 获取聊天信息
-  export const chatgpt = params => {
-    return axios({
-      method: 'post',
-      url: `http://172.20.10.2:8000/kb_chat/${params.chat_id}`,
-      data: params,
- 
-    }).then(res =>{
-      return res
-    } )
-  }
-  // 获取聊天信息
-  export const chatupload = params => {
-    return axios({
-      method: 'post',
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      },
-      url: `http://172.20.10.2:8000/upload`,
-      data: params,
-    }).then(res =>{
-      return res
-    } )
-  }
+// 获取聊天信息
+export const chatgpt = params => {
+  return axios({
+    method: 'post',
+    // url: `http://43.140.220.187:8001/chat/knowledge_base_chat`,
+
+    url: `http://43.140.220.187:8001/chat/${params.dialogue_id}/knowledge_base_chat?query=${params.query}&config=${params.config}`,
+    data: params,
+
+  }).then(res => {
+    return res
+  })
+}
+// 获取聊天信息
+export const chatupload = params => {
+  return axios({
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://43.140.220.187:8001/upload`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+
+// 获取history
+export const gethistory = params => {
+  return axios({
+    method: 'get',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://43.140.220.187:8001/history/chat_history`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+// 获取exam
+export const getexam = params => {
+  return axios({
+    method: 'get',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://43.140.220.187:8001/exam`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+// 获取static
+export const getstatic = params => {
+  return axios({
+    method: 'get',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://43.140.220.187:8001/static`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+// 条款检查
+export const setclause_check = params => {
+  return axios({
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://43.140.220.187:8001/chat/${params.dialogue_id}/clause_check?query=${params.query}&config=${params.config}`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+

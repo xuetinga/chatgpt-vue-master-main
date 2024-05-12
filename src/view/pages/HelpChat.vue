@@ -1,15 +1,21 @@
 <template>
     <el-container style="height: 100vh;">
         <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-            <div class="fixed-button" style=" position: fixed;  top:15px; border:0px;text-align: center;
-  z-index: 1000;">
+            <div v-if="isCollapse"
+                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
+                <el-button @click="toggleCollapse">
+                    <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
+                </el-button>
+            </div>
+            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
             <el-menu @open="handleOpen" @close="handleClose" :collapse="isCollapse">
                 <el-menu-item index="0" @click.native="goToMain">
-                    <span slot="title">主页</span>
+                    <img src="../../imgs/logo.png" style="width: 25px; height: 25px;" />
+                    <span slot="title">Yoka</span>
                 </el-menu-item>
                 <el-menu-item index="1" @click.native="goToKnowledgeQA">
                     <i class="el-icon-menu"></i>

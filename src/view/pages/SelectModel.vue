@@ -1,15 +1,21 @@
 <template>
     <el-container style="height: 100vh;">
         <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-            <div class="fixed-button" style=" position: fixed;  top:15px; border:0px;text-align: center;
-  z-index: 1000;">
+            <div v-if="isCollapse"
+                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
+                <el-button @click="toggleCollapse">
+                    <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
+                </el-button>
+            </div>
+            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
             <el-menu @open="handleOpen" @close="handleClose" :collapse="isCollapse">
                 <el-menu-item index="0" @click.native="goToMain">
-                    <span slot="title">主页</span>
+                    <img src="../../imgs/logo.png" style="width: 25px; height: 25px;" />
+                    <span slot="title">Yoka</span>
                 </el-menu-item>
                 <el-menu-item index="1" @click.native="goToKnowledgeQA">
                     <i class="el-icon-menu"></i>
@@ -84,12 +90,11 @@
 
                 </el-container>
                 <el-row>
-                    <el-col :span="8" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 2 : 0">
+                    <el-col :span="8" v-for="(o, index) in modellist" :key="index" :offset="index > 0 ? 2 : 0">
                         <el-card :body-style="{ padding: '0px', }">
                             <i class="el-icon-notebook-1"></i>
                             <div style="padding: 14px;">
-
-                                <span>MODEL1</span>
+                                <span>o</span>
                                 <div class="bottom clearfix">
                                     <!-- <time class="time">{{ currentDate }}</time> -->
                                     MODEL1MODEL1MODEL1MODEL1
@@ -105,59 +110,13 @@
 </template>
 
 <script>
+import { getChatMsg, gethistory,getstatic } from "@/api/getData";
+
 export default {
     data() {
         return {
             currentDate: new Date(),
             isCollapse: false,
-            cards: [
-                {
-                    icon: 'el-icon-info',
-                    title: '标题一',
-                    subtitle: '副标题一'
-                },
-                {
-                    icon: 'el-icon-warning',
-                    title: '标题二',
-                    subtitle: '副标题二'
-                },
-                {
-                    icon: 'el-icon-error',
-                    title: '标题三',
-                    subtitle: '副标题三'
-                },
-                {
-                    icon: 'el-icon-success',
-                    title: '标题四',
-                    subtitle: '副标题四'
-                }
-            ],
-            tableData: [
-                { section: "prompt1", name: "prompt1prompt1prompt1", age: "prompt1prompt1", sex: "prompt1prompt1" },
-                { section: "prompt2", name: "prompt2prompt2prompt2", age: "prompt2prompt2", sex: "prompt2prompt2" },
-
-
-
-            ],
-            dataList: [
-                {
-                    label: "name",
-                    value: "section",
-                },
-                {
-                    label: "scene",
-                    value: "name",
-                },
-                {
-                    label: "sub scene",
-                    value: "age",
-                },
-                {
-                    label: "content",
-                    value: "sex",
-                },
-
-            ],
             dialogTableVisible: false,
             dialogFormVisible: false,
             form: {
@@ -170,11 +129,21 @@ export default {
                 resource: '',
                 desc: ''
             },
-            formLabelWidth: '120px'
+            formLabelWidth: '120px',
+            modellist:[]
 
 
 
         };
+    },
+    created(){
+        getstatic().then((res)=>{
+            console.log("getstaticres",res)
+            this.modellist = res.data.models
+        }).catch((err)=>{
+            console.log("err",err)
+        })
+
     },
     computed: {
         // 筛选项

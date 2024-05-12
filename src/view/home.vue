@@ -2,18 +2,21 @@
   <el-container style="height: 100vh;">
 
     <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-      <div class="fixed-button" style=" position: fixed;  top:15px; border:0px;text-align: center;
-  z-index: 1000;">
+      <!-- <div class="fixed-button" style=" position: fixed; top:15px; border:0px;text-align: center;
+  z-index: 1000; background-color:pink;">
         <el-button @click="toggleCollapse">
           <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
         </el-button>
-      </div>
-      <el-menu default-active="1" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+      </div> -->
+
+      <el-menu default-active="0" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
         <el-menu-item index="0" @click.native="goToMain">
-          <i class="el-icon-menu"></i>
+          <img src="../imgs/logo.png" style="width: 25px; height: 25px;" />
+                    <span slot="title">Yoka</span>
+
         </el-menu-item>
         <el-menu-item index="1" @click.native="goToKnowledgeQA">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-question"></i>
           <span slot="title">知识库问答</span>
         </el-menu-item>
         <el-menu-item index="2" @click.native="goToFreeChat">
@@ -35,19 +38,19 @@
       <div class="fixed-bottom-menu">
         <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
           <el-menu-item index="5" @click.native="goToKnowSetting">
-            <i class="el-icon-setting"></i>
+            <i class="el-icon-coordinate"></i>
             <span slot="title">知识管理</span>
           </el-menu-item>
           <el-menu-item index="6" @click.native="goToPrompt">
-            <i class="el-icon-question"></i>
+            <i class="el-icon-setting"></i>
             <span slot="title">prompt设置</span>
           </el-menu-item>
           <el-menu-item index="7" @click.native="goToSelectModel">
-            <i class="el-icon-question"></i>
+            <i class="el-icon-chat-dot-round"></i>
             <span slot="title">模型选择</span>
           </el-menu-item>
           <el-menu-item index="7" @click.native="goToHelp">
-            <i class="el-icon-question"></i>
+            <i class="el-icon-magic-stick"></i>
             <span slot="title">帮助</span>
           </el-menu-item>
         </el-menu>
@@ -55,10 +58,10 @@
     </el-aside>
 
     <el-container style=" justify-content: center;align-items: center;">
-      <el-header style="text-align: center; line-height: 40px">
-        Yoca copilot
+      <el-header style="text-align: center; line-height: 40px;margin-top:120px ; font-family: 'Courier New', Courier, monospace; font-size: 100px; font-weight: 700;">
+        Yoka copilot
       </el-header>
-      <el-main style=" justify-content: center; width: 100%; margin-top: 50px; ">
+      <el-main style=" justify-content: center; width: 100%; margin-top: 70px; ">
         <el-row :gutter="20" style="margin-top: 40px; " justify="center">
           <el-col :span="12">
             <el-card @click.native="goToKnowledgeQA">

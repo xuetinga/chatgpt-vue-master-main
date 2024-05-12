@@ -1,15 +1,21 @@
 <template>
     <el-container style="height: 100vh;">
         <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-            <div class="fixed-button" style=" position: fixed;  top:15px; border:0px;text-align: center;
-  z-index: 1000;">
+            <div v-if="isCollapse"
+                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
+                <el-button @click="toggleCollapse">
+                    <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
+                </el-button>
+            </div>
+            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
             <el-menu default-active="2" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
                 <el-menu-item index="0" @click.native="goToMain">
-                    <span slot="title">主页</span>
+                    <img src="../../imgs/logo.png" style="width: 25px; height: 25px;" />
+                    <span slot="title">Yoka</span>
                 </el-menu-item>
                 <el-menu-item index="1" @click.native="goToKnowledgeQA">
                     <i class="el-icon-menu"></i>
@@ -54,57 +60,141 @@
         </el-aside>
 
         <el-container>
-            <el-header style="text-align: center; line-height: 40px">
-                Yoca copilot 自由对话
-            </el-header>
             <el-main>
-                <el-container style="background-color: antiquewhite;height: 80vh;border-radius: 5px;">
-                    <el-aside width="200px">
-                        <el-header style="text-align: center; line-height: 40px ">
-                            聊天
-                            <el-button size="small" type="primary" icon="el-icon-plus" circle></el-button>
-                        </el-header>
-                        <!-- Sidebar content here -->
-                        <el-menu style="background-color: antiquewhite; border-radius: 5px; height: 200px; ">
-                            <el-menu-item index="1">Contact 1</el-menu-item>
-                            <el-menu-item index="2">Contact 2</el-menu-item>
-                            <!-- More contacts -->
-                        </el-menu>
-                    </el-aside>
 
-                    <el-container style="background-color: bisque; border-radius: 5px;">
-                        <el-main>
-                            <!-- Chat messages go here -->
-                            <div class="chat-message" v-for="message in messages" :key="message.id">
-                                <!-- Use custom components or divs for messages -->
+<el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
+    <el-aside width="200px">
+        <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
+            <el-button type="primary" icon="el-icon-plus" @click="newChat">新对话</el-button>
+        </el-header>
+        <!-- Sidebar content here -->
+        <el-menu
+            style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
+            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="200px"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 200px;"
+                @click="historyChat(question)">
+                <span slot="title" @mouseover="showDeleteButton(index)"
+                    @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
+                    {{ question.history[0].content }}
+                    <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
+                        @click.stop="deleteItem(index)"
+                        style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);"></el-button>
+                    <!-- 删除重命名 -->
+                </span>
+            </el-menu-item>
+        </el-menu>
+    </el-aside>
+
+    <el-container style="background-color: bisque; border-radius: 5px;">
+
+        <el-main style="justify-content: center;">
+            <!-- 聊天页面 -->
+            <div v-if="chatStarted">
+                <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
+                    <div v-if="message.role === 'user'" class="answer-message">
+                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.2); float: right;">
+                            <i class="el-icon-user"></i>
+
+                            <div class="card-content">
+                                {{ message.content }}
                             </div>
-                        </el-main>
-                        <el-dropdown placement="" top>
-                                <span class="el-dropdown-link">
-                                    配置<i class="el-icon-arrow-down el-icon--right"></i>
-                                </span>
-                                <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item>生成摘要</el-dropdown-item>
-                                    <el-dropdown-item>标签提取</el-dropdown-item>
-                                    <el-dropdown-item>内容检查</el-dropdown-item>
-                                </el-dropdown-menu>
-                            </el-dropdown>
-                        <el-footer style="align-items: flex-start; display: flex">
-                            <!-- Input area -->
-                            <el-input v-model="newMessage" placeholder="Type your message" />
-                            <el-button type="primary" @click="sendMessage">Send</el-button>
-                        </el-footer>
-                    </el-container>
-                </el-container>
-            </el-main>
+                        </div>
+                    </div>
+                    <div v-else-if="message.role === 'assistant'" class="answer-message">
+                        <div class="card" style="width: 800px;">
+                            <i class="el-icon-sunny"></i>
+                            <div class="card-content">
+                                {{ message.content }}
+                            </div>
+                            <el-divider></el-divider>
+                            <i class="el-icon-paperclip" style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
+                            
+                            <div v-for="(item, index) in message.reference" :key="index"
+                                class="reference-item">
+                                <a :href="item.link" target="_blank">{{ item[0] }}</a>
+                                <div class="reference-content">{{ item[1] }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-else>
+                <el-row type="flex" class="main-message">
+                    <el-col :span="20">
+                        <div class="message-content">
+                            Yoka: 助力安全生产的强大知识管家
+                        </div>
+                    </el-col>
+                </el-row>
+                <el-row type="flex" class="response-options">
+                    <el-col :span="8" v-for="(card, index) in cards1" :key="index" >
+                        <el-card @click.native="sendMessage(card.message)" style="height: 300px;">
+                            <div slot="header" class="clearfix">
+                                <span>{{ card.header }}</span>
+                            </div>
+                            <div class="text item">
+                                {{ card.content }}
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </div>
+
+        </el-main>
+
+
+        <el-footer style="align-items: flex-start; display: flex">
+            <!-- Input area -->
+
+            <el-select v-model="promptdefaultvalue" placeholder="Prompt" style="width: 130px;">
+                <el-option v-for="item in promptall" :key="item.value" :label="item.label"
+                    :value="item.value" style="text-align: center;">
+                    <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
+                </el-option>
+            </el-select>
+            <el-select v-model="promptdefaultvalue" placeholder="Model" style="width: 130px;">
+                <el-option v-for="item in promptall" :key="item.value" :label="item.label"
+                    :value="item.value" style="text-align: center;">
+                    <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
+                </el-option>
+            </el-select>
+            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
+                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
+                :before-upload="beforeUpload" :show-file-list="true" :headers="headers" limit="1"
+                :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
+                <!-- action="/api/file/fileUpload" -->
+                <el-button class="btn"><i class="el-icon-paperclip"></i>附件</el-button>
+            </el-upload>
+            <!-- 上传文件限制doc  上传文件请求接口 给的形式是啥  -->
+
+            <!-- 配置 提示帮我生成摘要 内容是啥；模板2；模板2 这里点击页面要变化 请求接口 对话id 响应内容 -->
+
+            <el-input v-model="newMessage" placeholder="请输入内容" @input="sendMessage" />
+            <el-button type="primary" @click="startChat">提交</el-button>
+            <!-- 两个接口  一个文件上传一个对话 -->
+        </el-footer>
+    </el-container>
+</el-container>
+</el-main>
         </el-container>
     </el-container>
 </template>
 
 <script>
+import { getChatMsg, gethistory } from "@/api/getData";
+
 export default {
     data() {
         return {
+            promptall: [{
+                value:"生成摘要",
+            }, {
+                value: '标签提取',
+            }, {
+                value: '内容检查',
+            }],
+            promptdefaultvalue: '',
             isCollapse: false,
             cards: [
                 {
@@ -127,7 +217,69 @@ export default {
                     title: '标题四',
                     subtitle: '副标题四'
                 }
-            ]
+            ],
+            chat_id: "",
+            newhistory: {},
+            historyArrlist: [],
+            configs: [],
+            promptall: [],
+            promptdefaultvalue: '',
+            dynamicMarginLeft: '50px',
+            isCollapse: false,
+            newMessage: '',
+            cards: [
+                {
+                    icon: 'el-icon-info',
+                    title: '标题一',
+                    subtitle: '副标题一'
+                },
+                {
+                    icon: 'el-icon-warning',
+                    title: '标题二',
+                    subtitle: '副标题二'
+                },
+                {
+                    icon: 'el-icon-error',
+                    title: '标题三',
+                    subtitle: '副标题三'
+                },
+                {
+                    icon: 'el-icon-success',
+                    title: '标题四',
+                    subtitle: '副标题四'
+                }
+            ],
+            cards1: [
+                {
+                    header: '翻译',
+                    content: 'The quick brown fox jumps over a lazy dog.',
+                    message: 'The quick brown fox jumps over a lazy dog.'
+                },
+                {
+                    header: '摘要',
+                    content: '生成如下内容的摘要：从前有一个小男孩,他住在一个偏远的小村庄里。虽然家境贫寒,但他很勇敢,也很喜欢探险。有一天,他在村边的树林里游荡,无意中迷了路。walks走来走去,终于看到一片小湖。湖面波光粼粼,清澈见底,景色宜人。就在这时,他发现湖中有一件闪闪发亮的东西。小男孩费了好大劲,终于将它捞了上来,原来是一个会说话的老鸭子!',
+                    message: '帮我分析这个摘要'
+                },
+                {
+                    header: '试题生成',
+                    content: '出题：生产、储存区域应设置安全警示标志。搬运时要轻装轻卸，防止包装及容器损坏。配备相应品种和数量的消防器材及泄漏应急处理设备。倒空的容器可能存在残留有害物时应及时处理。',
+                    message: '帮我生成一个试题'
+                }
+            ],
+            chatMessages: [],
+            chatStarted: false,
+            chatMessagesList: [],
+            //上传后的文件列表
+            fileList: [],
+            // 允许的文件类型
+            fileType: ["pdf", "doc", "docx", "xls", "xlsx", "txt", "png", "jpg", "bmp", "jpeg"],
+            // 运行上传文件大小，单位 M
+            fileSize: 50,
+            // 附件数量限制
+            fileLimit: 5,
+            //请求头
+            headers: { "Content-Type": "multipart/form-data" },
+
 
         };
     },
@@ -171,6 +323,15 @@ export default {
         submitForm() {
             console.log('Submitting form data along with the fileList:',);
 
+        },
+        sendMessage(text) {
+            this.newMessage = text;
+
+            // gethistory().then((res) => {
+            //     console.log("res", res)
+            // }).catch((err) => {
+            //     console.log('err', err)
+            // })
         }
     }
 }

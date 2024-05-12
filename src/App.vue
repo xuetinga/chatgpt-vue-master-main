@@ -6,12 +6,32 @@
 
 <script>
 import Home from './view/home.vue'
+import { getChatMsg, gethistory,getstatic } from "@/api/getData";
 
 export default {
   name: 'App',
   components: {
     Home
+  },
+  data:{
+    configs:[],
+    kbs:[],
+    models:[],
+    prompts:[],
+  },
+  created(){
+    getstatic().then((res)=>{
+      console.log("全局",res.data)
+      this.configs = res.data.configs
+      this.kbs = res.data.kbs
+      this.models = res.data.models
+      this.prompts = res.data.prompts
+
+    }).catch((err)=>{
+      console.log("err",err)
+    })
   }
+
 }
 </script>
 

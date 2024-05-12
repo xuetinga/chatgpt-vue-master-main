@@ -1,15 +1,21 @@
 <template>
     <el-container style="height: 100vh;">
         <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-            <div class="fixed-button" style=" position: fixed;  top:15px; border:0px;text-align: center;
-  z-index: 1000;">
+            <div v-if="isCollapse"
+                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
+                <el-button @click="toggleCollapse">
+                    <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
+                </el-button>
+            </div>
+            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
             <el-menu @open="handleOpen" @close="handleClose" :collapse="isCollapse">
                 <el-menu-item index="0" @click.native="goToMain">
-                    <span slot="title">主页</span>
+                    <img src="../../imgs/logo.png" style="width: 25px; height: 25px;" />
+                    <span slot="title">Yoka</span>
                 </el-menu-item>
                 <el-menu-item index="1" @click.native="goToKnowledgeQA">
                     <i class="el-icon-menu"></i>
@@ -57,18 +63,32 @@
         <el-container>
 
             <el-main>
-                <el-header style="text-align: center; line-height: 40px ">
-                    <el-tabs v-model="activeName" @tab-click="handleClick">
-                        <el-tab-pane label="Public prompt" name="first">Public prompt</el-tab-pane>
-                        <el-tab-pane label="Private prompt" name="second">Private prompt</el-tab-pane>
-                    </el-tabs>
+                <el-header style="display: flex; justify-content: space-between; align-items: center;">
 
-
-                </el-header>
-                <el-container>
-                    
                     <el-button size="small" type="primary" icon="el-icon-plus" style="margin-bottom: 20px;"
                         @click="dialogFormVisible = true">新增配置</el-button>
+                </el-header>
+
+                <el-container>
+                    <el-tabs v-model="activeName" style="width: 100%;">
+                        <el-tab-pane label="Public prompt" name="first">
+                            <el-table ref="table" :data="publicTableData" border>
+                                <template v-for="(item, index) in dataList">
+                                    <el-table-column :label="item.label" align="center" :prop="item.value">
+                                    </el-table-column>
+                                </template>
+                            </el-table>
+                        </el-tab-pane>
+                        <el-tab-pane label="Private prompt" name="second">
+                            <el-table ref="table" :data="privateTableData" border>
+                                <template v-for="(item, index) in dataList">
+                                    <el-table-column :label="item.label" align="center" :prop="item.value">
+                                    </el-table-column>
+                                </template>
+                            </el-table>
+                        </el-tab-pane>
+                    </el-tabs>
+
                     <el-dialog title="Prompt" :visible.sync="dialogFormVisible">
                         <el-form :model="form">
                             <el-form-item label="NAME" :label-width="formLabelWidth">
@@ -88,12 +108,6 @@
                     </el-dialog>
 
                 </el-container>
-                <el-table ref="table" :data="tableData" border>
-                    <template v-for="(item, index) in dataList">
-                        <el-table-column :label="item.label" align="center" :prop="item.value">
-                        </el-table-column>
-                    </template>
-                </el-table>
 
             </el-main>
         </el-container>
@@ -101,55 +115,37 @@
 </template>
 
 <script>
+import { getChatMsg, gethistory, getstatic } from "@/api/getData";
+
 export default {
     data() {
         return {
+            activeName:"first",
             isCollapse: false,
-            cards: [
-                {
-                    icon: 'el-icon-info',
-                    title: '标题一',
-                    subtitle: '副标题一'
-                },
-                {
-                    icon: 'el-icon-warning',
-                    title: '标题二',
-                    subtitle: '副标题二'
-                },
-                {
-                    icon: 'el-icon-error',
-                    title: '标题三',
-                    subtitle: '副标题三'
-                },
-                {
-                    icon: 'el-icon-success',
-                    title: '标题四',
-                    subtitle: '副标题四'
-                }
-            ],
-            tableData: [
-                { section: "prompt1", name: "prompt1prompt1prompt1", age: "prompt1prompt1", sex: "prompt1prompt1" },
-                { section: "prompt2", name: "prompt2prompt2prompt2", age: "prompt2prompt2", sex: "prompt2prompt2" },
+            tableData: [],
+            publicTableData: [],
+            privateTableData: [],
 
-
-
-            ],
+            // tableData: [
+            //     { section: "prompt1", name: "prompt1prompt1prompt1", age: "prompt1prompt1", sex: "prompt1prompt1" },
+            //     { section: "prompt2", name: "prompt2prompt2prompt2", age: "prompt2prompt2", sex: "prompt2prompt2" },
+            // ],
             dataList: [
                 {
                     label: "name",
-                    value: "section",
+                    value: "scene",
                 },
                 {
                     label: "scene",
-                    value: "name",
+                    value: "type",
                 },
                 {
                     label: "sub scene",
-                    value: "age",
+                    value: "",
                 },
                 {
                     label: "content",
-                    value: "sex",
+                    value: "content",
                 },
 
             ],
@@ -188,7 +184,17 @@ export default {
             };
         },
     },
+    created() {
+        getstatic().then((res) => {
+            console.log("getstaticres", res)
+            this.publicTableData = res.data.prompts.filter(item => item.type === "public");
+            this.privateTableData = res.data.prompts.filter(item => item.type === "private");
 
+        }).catch((err) => {
+            console.log("err", err)
+        })
+
+    },
     methods: {
         toggleCollapse() {
             this.isCollapse = !this.isCollapse; // 切换状态
@@ -254,6 +260,9 @@ export default {
             this.totalSize = this.$refs.table.tableData.length;
             console.log(this.totalSize);
         },
+        handleTabClick(tab) {
+            this.activeName = tab.name;
+        }
 
     }
 }
