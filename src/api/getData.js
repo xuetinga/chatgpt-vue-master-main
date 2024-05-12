@@ -10,15 +10,24 @@ export const getFriend = params => {
     data: params
   }).then(res => res.data)
 }
-
-// 获取聊天信息
-export const getChatMsg = params => {
+// 获取最初聊天信息
+export const getChat = params => {
   return axios({
     method: 'post',
-    baseURL: `${baseUrl}/friend/chatMsg`,
+    url: `http://43.140.220.187:8001/chat`,
     data: params
   }).then(res => res.data)
 }
+// 获取单个聊天信息
+export const getChatchat = params => {
+  return axios({
+    method: 'post',
+    url: `http://43.140.220.187:8001/chat/${params.dialogue_id}/chat`,
+    data: params
+  }).then(res => res.data)
+}
+
+
 
 // 获取聊天信息
 export const chatgpt = params => {

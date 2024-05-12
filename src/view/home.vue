@@ -16,11 +16,11 @@
 
         </el-menu-item>
         <el-menu-item index="1" @click.native="goToKnowledgeQA">
-          <i class="el-icon-question"></i>
+          <i class="el-icon-s-opportunity"></i>
           <span slot="title">知识库问答</span>
         </el-menu-item>
         <el-menu-item index="2" @click.native="goToFreeChat">
-          <i class="el-icon-menu"></i>
+          <i class="el-icon-chat-dot-square"></i>
           <span slot="title">自由对话</span>
         </el-menu-item>
         <el-menu-item index="3" @click.native="goToCheckChat">
@@ -28,7 +28,7 @@
           <span slot="title">条款检查</span>
         </el-menu-item>
         <el-menu-item index="4" @click.native="goToTitleSetChat">
-          <i class="el-icon-setting"></i>
+          <i class="el-icon-s-promotion"></i>
           <span slot="title">题目生成</span>
         </el-menu-item>
       </el-menu>

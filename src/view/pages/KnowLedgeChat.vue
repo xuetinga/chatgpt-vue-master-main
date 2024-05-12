@@ -18,11 +18,11 @@
                     <span slot="title">Yoka</span>
                 </el-menu-item>
                 <el-menu-item index="1" @click.native="goToKnowledgeQA">
-                    <i class="el-icon-menu"></i>
+                    <i class="el-icon-s-opportunity"></i>
                     <span slot="title">知识库问答</span>
                 </el-menu-item>
                 <el-menu-item index="2" @click.native="goToFreeChat">
-                    <i class="el-icon-menu"></i>
+                    <i class="el-icon-chat-dot-square"></i>
                     <span slot="title">自由对话</span>
                 </el-menu-item>
                 <el-menu-item index="3" @click.native="goToCheckChat">
@@ -30,7 +30,7 @@
                     <span slot="title">条款检查</span>
                 </el-menu-item>
                 <el-menu-item index="4" @click.native="goToTitleSetChat">
-                    <i class="el-icon-setting"></i>
+                    <i class="el-icon-s-promotion"></i>
                     <span slot="title">题目生成</span>
                 </el-menu-item>
             </el-menu>
@@ -40,19 +40,19 @@
             <div class="fixed-bottom-menu">
                 <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
                     <el-menu-item index="5" @click.native="goToKnowSetting">
-                        <i class="el-icon-setting"></i>
+                        <i class="el-icon-coordinate"></i>
                         <span slot="title">知识管理</span>
                     </el-menu-item>
                     <el-menu-item index="6" @click.native="goToPrompt">
-                        <i class="el-icon-question"></i>
+                        <i class="el-icon-setting"></i>
                         <span slot="title">prompt设置</span>
                     </el-menu-item>
                     <el-menu-item index="7" @click.native="goToSelectModel">
-                        <i class="el-icon-question"></i>
+                        <i class="el-icon-chat-dot-round"></i>
                         <span slot="title">模型选择</span>
                     </el-menu-item>
-                    <el-menu-item index="8" @click.native="goToHelp">
-                        <i class="el-icon-question"></i>
+                    <el-menu-item index="7" @click.native="goToHelp">
+                        <i class="el-icon-magic-stick"></i>
                         <span slot="title">帮助</span>
                     </el-menu-item>
                 </el-menu>
@@ -107,9 +107,10 @@
                                                 {{ message.content }}
                                             </div>
                                             <el-divider></el-divider>
-                                            <i  class="el-icon-paperclip" style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
+                                            <i class="el-icon-paperclip"
+                                                style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
 
-                                            
+
                                             <div v-for="(item, index) in message.reference" :key="index"
                                                 class="reference-item">
                                                 <a :href="item.link" target="_blank">{{ item[0] }}</a>
@@ -119,11 +120,11 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div v-else>
                                 <el-row type="flex" class="main-message">
                                     <el-col :span="20">
-                                        <div class="message-content">
+                                        <div class="message-content" >
                                             Yoka: 助力安全生产的强大知识管家
                                         </div>
                                     </el-col>
@@ -178,7 +179,7 @@
 </template>
 
 <script>
-import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic } from "@/api/getData";
+import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic ,getChat,getChatchat} from "@/api/getData";
 export default {
     data() {
         return {
@@ -361,6 +362,7 @@ export default {
 
         },
         newChat() {
+
             if (this.newhistory !== "") {
                 this.historyArrlist.unshift(this.newhistory)
 
@@ -518,6 +520,7 @@ export default {
 
 .message-content {
     font-size: 20px;
+    
 }
 
 .user-message {
@@ -571,26 +574,27 @@ export default {
     margin-left: 10px;
     /* 调整回答消息内容与图标之间的距离 */
 }
+
 .reference-item {
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  margin-top: 10px;
-  color: blue;
-  font-size: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    color: blue;
+    font-size: 10px;
 }
 
 .reference-item a {
-  display: block;
-  margin-bottom: 5px;
+    display: block;
+    margin-bottom: 5px;
 }
 
 .reference-content {
-  display: none;
+    display: none;
 }
 
 .reference-item:hover .reference-content {
-  display: block;
+    display: block;
 }
 </style>

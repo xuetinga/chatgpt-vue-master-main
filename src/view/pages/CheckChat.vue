@@ -18,11 +18,11 @@
                     <span slot="title">Yoka</span>
                 </el-menu-item>
                 <el-menu-item index="1" @click.native="goToKnowledgeQA">
-                    <i class="el-icon-menu"></i>
+                    <i class="el-icon-s-opportunity"></i>
                     <span slot="title">知识库问答</span>
                 </el-menu-item>
                 <el-menu-item index="2" @click.native="goToFreeChat">
-                    <i class="el-icon-menu"></i>
+                    <i class="el-icon-chat-dot-square"></i>
                     <span slot="title">自由对话</span>
                 </el-menu-item>
                 <el-menu-item index="3" @click.native="goToCheckChat">
@@ -30,7 +30,7 @@
                     <span slot="title">条款检查</span>
                 </el-menu-item>
                 <el-menu-item index="4" @click.native="goToTitleSetChat">
-                    <i class="el-icon-setting"></i>
+                    <i class="el-icon-s-promotion"></i>
                     <span slot="title">题目生成</span>
                 </el-menu-item>
             </el-menu>
@@ -40,19 +40,19 @@
             <div class="fixed-bottom-menu">
                 <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
                     <el-menu-item index="5" @click.native="goToKnowSetting">
-                        <i class="el-icon-setting"></i>
+                        <i class="el-icon-coordinate"></i>
                         <span slot="title">知识管理</span>
                     </el-menu-item>
                     <el-menu-item index="6" @click.native="goToPrompt">
-                        <i class="el-icon-question"></i>
+                        <i class="el-icon-setting"></i>
                         <span slot="title">prompt设置</span>
                     </el-menu-item>
                     <el-menu-item index="7" @click.native="goToSelectModel">
-                        <i class="el-icon-question"></i>
+                        <i class="el-icon-chat-dot-round"></i>
                         <span slot="title">模型选择</span>
                     </el-menu-item>
-                    <el-menu-item index="8" @click.native="goToHelp">
-                        <i class="el-icon-question"></i>
+                    <el-menu-item index="7" @click.native="goToHelp">
+                        <i class="el-icon-magic-stick"></i>
                         <span slot="title">帮助</span>
                     </el-menu-item>
                 </el-menu>
@@ -62,116 +62,117 @@
         <el-container>
             <el-main>
 
-<el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
-    <el-aside width="200px">
-        <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
-            <el-button type="primary" icon="el-icon-plus" @click="newChat">新条款</el-button>
-        </el-header>
-        <!-- Sidebar content here -->
-        <el-menu
-            style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="200px"
-                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 200px;"
-                @click="historyChat(question)">
-                <span slot="title" @mouseover="showDeleteButton(index)"
-                    @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
-                    {{ question.history[0].content }}
-                    <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
-                        @click.stop="deleteItem(index)"
-                        style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);"></el-button>
-                    <!-- 删除重命名 -->
-                </span>
-            </el-menu-item>
-        </el-menu>
-    </el-aside>
+                <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
+                    <el-aside width="200px">
+                        <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
+                            <el-button type="primary" icon="el-icon-plus" @click="newChat">新条款</el-button>
+                        </el-header>
+                        <!-- Sidebar content here -->
+                        <el-menu
+                            style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="200px"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 200px;"
+                                @click="historyChat(question)">
+                                <span slot="title" @mouseover="showDeleteButton(index)"
+                                    @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
+                                    {{ question.history[0].content }}
+                                    <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
+                                        @click.stop="deleteItem(index)"
+                                        style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);"></el-button>
+                                    <!-- 删除重命名 -->
+                                </span>
+                            </el-menu-item>
+                        </el-menu>
+                    </el-aside>
 
-    <el-container style="background-color: bisque; border-radius: 5px;">
+                    <el-container style="background-color: bisque; border-radius: 5px;">
 
-        <el-main style="justify-content: center;">
-            <!-- 聊天页面 -->
-            <div v-if="chatStarted">
-                <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
-                    <div v-if="message.role === 'user'" class="answer-message">
-                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.2); float: right;">
-                            <i class="el-icon-user"></i>
+                        <el-main style="justify-content: center;">
+                            <!-- 聊天页面 -->
+                            <div v-if="chatStarted">
+                                <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
+                                    <div v-if="message.role === 'user'" class="answer-message">
+                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.2); float: right;">
+                                            <i class="el-icon-user"></i>
 
-                            <div class="card-content">
-                                {{ message.content }}
+                                            <div class="card-content">
+                                                {{ message.content }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-else-if="message.role === 'assistant'" class="answer-message">
+                                        <div class="card" style="width: 800px;">
+                                            <i class="el-icon-sunny"></i>
+                                            <div class="card-content">
+                                                {{ message.content }}
+                                            </div>
+                                            <el-divider></el-divider>
+                                            <i class="el-icon-paperclip"
+                                                style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
+
+                                            <div v-for="(item, index) in message.reference" :key="index"
+                                                class="reference-item">
+                                                <a :href="item.link" target="_blank">{{ item[0] }}</a>
+                                                <div class="reference-content">{{ item[1] }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div v-else-if="message.role === 'assistant'" class="answer-message">
-                        <div class="card" style="width: 800px;">
-                            <i class="el-icon-sunny"></i>
-                            <div class="card-content">
-                                {{ message.content }}
+
+                            <div v-else>
+                                <el-row type="flex" class="main-message">
+                                    <el-col :span="20">
+                                        <div class="message-content">
+                                            Yoka: 助力安全生产的强大知识管家
+                                        </div>
+                                    </el-col>
+                                </el-row>
+                                <el-row type="flex" class="response-options">
+                                    <el-col :span="8" v-for="(card, index) in cards1" :key="index">
+                                        <el-card @click.native="sendMessage(card.message)">
+                                            <div slot="header" class="clearfix">
+                                                <span>{{ card.header }}</span>
+                                            </div>
+                                            <div class="text item">
+                                                {{ card.content }}
+                                            </div>
+                                        </el-card>
+                                    </el-col>
+                                </el-row>
                             </div>
-                            <el-divider></el-divider>
-                            <i class="el-icon-paperclip" style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
-                            
-                            <div v-for="(item, index) in message.reference" :key="index"
-                                class="reference-item">
-                                <a :href="item.link" target="_blank">{{ item[0] }}</a>
-                                <div class="reference-content">{{ item[1] }}</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div v-else>
-                <el-row type="flex" class="main-message">
-                    <el-col :span="20">
-                        <div class="message-content">
-                            Yoka: 助力安全生产的强大知识管家
-                        </div>
-                    </el-col>
-                </el-row>
-                <el-row type="flex" class="response-options">
-                    <el-col :span="8" v-for="(card, index) in cards1" :key="index">
-                        <el-card @click.native="sendMessage(card.message)">
-                            <div slot="header" class="clearfix">
-                                <span>{{ card.header }}</span>
-                            </div>
-                            <div class="text item">
-                                {{ card.content }}
-                            </div>
-                        </el-card>
-                    </el-col>
-                </el-row>
-            </div>
-
-        </el-main>
+                        </el-main>
 
 
-        <el-footer style="align-items: flex-start; display: flex">
-            <!-- Input area -->
+                        <el-footer style="align-items: flex-start; display: flex">
+                            <!-- Input area -->
 
-            <!-- <el-select v-model="promptdefaultvalue" placeholder="请选择配置">
+                            <!-- <el-select v-model="promptdefaultvalue" placeholder="请选择配置">
                 <el-option v-for="item in promptall" :key="item.value" :label="item.label"
                     :value="item.value" style="text-align: center;">
                     <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
                 </el-option>
             </el-select> -->
 
-            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
-                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
-                :before-upload="beforeUpload" :show-file-list="true" :headers="headers" limit="1"
-                :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
-                <!-- action="/api/file/fileUpload" -->
-                <el-button class="btn"><i class="el-icon-paperclip"></i>上传条款</el-button>
-            </el-upload>
-            <!-- 上传文件限制doc  上传文件请求接口 给的形式是啥  -->
+                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
+                                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
+                                :before-upload="beforeUpload" :show-file-list="true" :headers="headers" limit="1"
+                                :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
+                                <!-- action="/api/file/fileUpload" -->
+                                <el-button class="btn"><i class="el-icon-paperclip"></i>上传条款</el-button>
+                            </el-upload>
+                            <!-- 上传文件限制doc  上传文件请求接口 给的形式是啥  -->
 
-            <!-- 配置 提示帮我生成摘要 内容是啥；模板2；模板2 这里点击页面要变化 请求接口 对话id 响应内容 -->
+                            <!-- 配置 提示帮我生成摘要 内容是啥；模板2；模板2 这里点击页面要变化 请求接口 对话id 响应内容 -->
 
-            <el-input v-model="newMessage" placeholder="请输入内容" @input="sendMessage" />
-            <el-button type="primary" @click="startChat">提交</el-button>
-            <!-- 两个接口  一个文件上传一个对话 -->
-        </el-footer>
-    </el-container>
-</el-container>
-</el-main>
+                            <el-input v-model="newMessage" placeholder="请输入内容" @input="sendMessage" />
+                            <el-button type="primary" @click="startChat">提交</el-button>
+                            <!-- 两个接口  一个文件上传一个对话 -->
+                        </el-footer>
+                    </el-container>
+                </el-container>
+            </el-main>
         </el-container>
     </el-container>
 </template>
@@ -181,9 +182,9 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            newMessage:"",
+            newMessage: "",
             promptall: [{
-                value:"生成摘要",
+                value: "生成摘要",
             }, {
                 value: '标签提取',
             }, {
@@ -278,19 +279,19 @@ export default {
         };
     },
     methods: {
-        startchat(){
+        startchat() {
             if (this.newMessage.trim() !== '') {
                 console.log(" this.newMessage", this.newMessage)
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
             }
-            if(this.chat_id == ""){
+            if (this.chat_id == "") {
                 this.chat_id = this.guid()
             }
-            console.log("chat_id", this.chat_id )
+            console.log("chat_id", this.chat_id)
             let params = {
                 dialogue_id: this.chat_id,
                 query: this.newMessage,
-                config:"default"
+                config: "default"
                 // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                 // {role:"hh",content:"xx"}
                 // ,
@@ -298,9 +299,9 @@ export default {
             console.log("params", params)
             chatgpt(params).then((res) => {
                 console.log("resresres", res.data)
-                this.chatMessages.push({ content: res.data.response, role: 'assistant',reference:res.data.reference });
+                this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
                 this.newhistory = {
-                    dialogue_id:this.chat_id,history:this.chatMessages
+                    dialogue_id: this.chat_id, history: this.chatMessages
                 }
 
                 this.newMessage = ''; // Clear the input after sending.

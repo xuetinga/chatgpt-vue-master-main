@@ -18,11 +18,11 @@
                     <span slot="title">Yoka</span>
                 </el-menu-item>
                 <el-menu-item index="1" @click.native="goToKnowledgeQA">
-                    <i class="el-icon-menu"></i>
+                    <i class="el-icon-s-opportunity"></i>
                     <span slot="title">知识库问答</span>
                 </el-menu-item>
                 <el-menu-item index="2" @click.native="goToFreeChat">
-                    <i class="el-icon-menu"></i>
+                    <i class="el-icon-chat-dot-square"></i>
                     <span slot="title">自由对话</span>
                 </el-menu-item>
                 <el-menu-item index="3" @click.native="goToCheckChat">
@@ -30,7 +30,7 @@
                     <span slot="title">条款检查</span>
                 </el-menu-item>
                 <el-menu-item index="4" @click.native="goToTitleSetChat">
-                    <i class="el-icon-setting"></i>
+                    <i class="el-icon-s-promotion"></i>
                     <span slot="title">题目生成</span>
                 </el-menu-item>
             </el-menu>
@@ -41,19 +41,19 @@
                 <el-menu default-active="5" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
                     :collapse="isCollapse">
                     <el-menu-item index="5" @click.native="goToKnowSetting">
-                        <i class="el-icon-setting"></i>
+                        <i class="el-icon-coordinate"></i>
                         <span slot="title">知识管理</span>
                     </el-menu-item>
                     <el-menu-item index="6" @click.native="goToPrompt">
-                        <i class="el-icon-question"></i>
+                        <i class="el-icon-setting"></i>
                         <span slot="title">prompt设置</span>
                     </el-menu-item>
                     <el-menu-item index="7" @click.native="goToSelectModel">
-                        <i class="el-icon-question"></i>
+                        <i class="el-icon-chat-dot-round"></i>
                         <span slot="title">模型选择</span>
                     </el-menu-item>
-                    <el-menu-item index="8" @click.native="goToHelp">
-                        <i class="el-icon-question"></i>
+                    <el-menu-item index="7" @click.native="goToHelp">
+                        <i class="el-icon-magic-stick"></i>
                         <span slot="title">帮助</span>
                     </el-menu-item>
                 </el-menu>
@@ -115,13 +115,13 @@
 
             <el-dialog title="新增知识" :visible.sync="dialogFormVisible">
                 <el-form :model="form">
-                    <el-form-item label="知识名称" >
+                    <el-form-item label="知识名称">
                         <el-select v-model="form.name" placeholder="请选择知识">
                             <el-option label="知识一" value="shanghai"></el-option>
                             <el-option label="知识二" value="beijing"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="知识内容" >
+                    <el-form-item label="知识内容">
                         <el-input v-model="form.content" autocomplete="off"></el-input>
                     </el-form-item>
 
@@ -157,7 +157,7 @@
 </template>
 
 <script>
-import { getChatMsg, gethistory,getstatic } from "@/api/getData";
+import { getChatMsg, gethistory, getstatic } from "@/api/getData";
 
 export default {
     data() {
@@ -268,11 +268,11 @@ export default {
 
         };
     },
-    created(){
-        getstatic().then((res)=>{
-            console.log("getstaticres",res)
-        }).catch((err)=>{
-            console.log("err",err)
+    created() {
+        getstatic().then((res) => {
+            console.log("getstaticres", res)
+        }).catch((err) => {
+            console.log("err", err)
         })
 
     },
@@ -296,9 +296,9 @@ export default {
     },
 
     methods: {
-        savesetting(){
+        savesetting() {
             this.settingdialogFormVisible = false;
-            console.log("settingdialogFormVisible",this.settingform)
+            console.log("settingdialogFormVisible", this.settingform)
         },
         showConfigDialog(index) {
             this.settingdialogFormVisible = true

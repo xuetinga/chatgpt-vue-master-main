@@ -5,6 +5,7 @@
 </template>
 
 <script>
+
 import Home from './view/home.vue'
 import { getChatMsg, gethistory,getstatic } from "@/api/getData";
 
@@ -34,8 +35,10 @@ export default {
 
 }
 </script>
+<!-- <script src="http://at.alicdn.com/t/c/font_4543431_6b3jbyyzxqg.js"></script> -->
 
 <style scoped lang="scss">
+
 @import url(./assets/font/iconfont.css);
 .iconfont {
   font-family: "iconfont" !important;
@@ -77,4 +80,10 @@ html body a:-webkit-any-link {
   text-decoration: none !important;
   color:transparent
 }
+.icon {
+    width: 1em; height: 1em;
+    vertical-align: -0.15em;
+    overflow: hidden;
+}
+
 </style>
