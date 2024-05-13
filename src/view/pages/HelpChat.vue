@@ -168,6 +168,33 @@ export default {
     };
   },
   methods: {
+    historyChat(question) {
+            console.log("this.question", question)
+
+            this.chatStarted = true;
+            question.showDeleteButton = true
+            this.newhistory = question
+            this.chatMessages = question.history
+            this.chat_id = question.dialogue_id
+        },
+        showDeleteButton(index) {
+            console.log("indexindex", this.historyArrlist[index])
+            this.historyArrlist[index].showDeleteButton = true;
+        },
+        hideDeleteButton(index) {
+            this.historyArrlist[index].showDeleteButton = false
+        },
+        deleteItem(index) {
+            this.historyArrlist.splice(index, 1);
+        },
+    guid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+        ,
     toggleCollapse() {
       this.isCollapse = !this.isCollapse; // 切换状态
     },

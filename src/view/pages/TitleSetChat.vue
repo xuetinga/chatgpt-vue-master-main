@@ -59,7 +59,7 @@
       </div>
     </el-aside>
 
-    <el-container>
+    <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }" >
 
       <el-main>
         <el-table ref="table" :data="currentPageData" @filter-change="_filterChange" border>

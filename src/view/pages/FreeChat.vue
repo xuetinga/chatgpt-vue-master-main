@@ -60,7 +60,7 @@
             </div>
         </el-aside>
 
-        <el-container>
+        <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }" >
             <el-main>
 
                 <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
@@ -310,6 +310,111 @@ export default {
         })
     },
     methods: {
+                //上传文件之前
+                beforeUpload(file) {
+            if (file.type != "" || file.type != null || file.type != undefined) {
+                //截取文件的后缀，判断文件类型
+                const FileExt = file.name.replace(/.+\./, "").toLowerCase();
+                //计算文件的大小
+                const isLt5M = file.size / 1024 / 1024 < 50; //这里做文件大小限制
+                //如果大于50M
+                if (!isLt5M) {
+                    this.$showMessage('上传文件大小不能超过 50MB!');
+                    return false;
+                }
+                //如果文件类型不在允许上传的范围内
+                if (this.fileType.includes(FileExt)) {
+                    return true;
+                }
+                else {
+                    this.$message.error("上传文件格式不正确!");
+                    return false;
+                }
+            }
+        },
+        //上传了的文件给移除的事件，由于我没有用到默认的展示，所以没有用到
+        handleRemove() {
+        },
+        //这是我自定义的移除事件
+        handleClose(i) {
+            this.fileList.splice(i, 1);//删除上传的文件
+            if (this.fileList.length == 0) {//如果删完了
+                this.fileflag = true;//显示url必填的标识
+                this.$set(this.rules.url, 0, { required: true, validator: this.validatorUrl, trigger: 'blur' })//然后动态的添加本地方法的校验规则
+            }
+        },
+        //超出文件个数的回调
+        handleExceed() {
+            this.$message({
+                type: 'warning',
+                message: '超出最大上传文件数量的限制！'
+            }); return
+        },
+        //上传文件的事件
+        uploadFile(item) {
+            // this.$showMessage('文件上传中........')
+            //上传文件的需要formdata类型;所以要转
+            console.log("FormDatas", item)
+
+            var FormDatas = new FormData()
+            FormDatas.append('file', item.file);
+            console.log("FormDatas", FormDatas.get("file"))
+            let params = {
+                file: FormDatas.get("file"),
+            }
+            this.fileList.push(item.file);
+
+            chatupload(params).then(res => {
+                console.log("res", res.data.content)
+                // if (res.data.id != '' || res.data.id != null) {
+                //     this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
+                //     let i = this.fileList.indexOf(item.file)
+                //     this.fileList[i].id = res.data.id;//id也添加进去，最后整个大表单提交的时候需要的
+                //     if (this.fileList.length > 0) {//如果上传了附件就把校验规则给干掉
+                //         this.fileflag = false;
+                //         this.$set(this.rules.url, 0, '')
+                //     }
+                //     //this.handleSuccess();
+                // }
+            })
+        },
+        //上传成功后的回调
+        handleSuccess() {
+
+        },
+        beforeRemove() {
+
+        },
+        handlePreview() {
+
+        },
+        historyChat(question) {
+            console.log("this.question", question)
+
+            this.chatStarted = true;
+            question.showDeleteButton = true
+            this.newhistory = question
+            this.chatMessages = question.history
+            this.chat_id = question.dialogue_id
+        },
+        showDeleteButton(index) {
+            console.log("indexindex", this.historyArrlist[index])
+            this.historyArrlist[index].showDeleteButton = true;
+        },
+        hideDeleteButton(index) {
+            this.historyArrlist[index].showDeleteButton = false
+        },
+        deleteItem(index) {
+            this.historyArrlist.splice(index, 1);
+        },
+        guid() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                var r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+        ,
         startChat(){
             if (this.newMessage.trim() !== '') {
                 console.log(" this.newMessage", this.newMessage)

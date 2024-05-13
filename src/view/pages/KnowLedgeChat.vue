@@ -59,7 +59,7 @@
                 </el-menu>
             </div>
         </el-aside>
-        <el-container>
+        <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
 
             <el-main>
 
@@ -159,14 +159,20 @@
                                 </el-option>
                             </el-select>
 
-                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
-                                :limit="fileLimit" :on-remove="handleRemove" :file-list="fileList"
-                                :on-exceed="handleExceed" :before-upload="beforeUpload" :show-file-list="true"
-                                :headers="headers" limit="1"
-                                :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
-                                <!-- action="/api/file/fileUpload" -->
-                                <el-button class="btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
-                            </el-upload>
+                            <div class="upload-container">
+                                <div class="file-list-container">
+                                    <el-upload-list :list="fileList" :disabled="true"></el-upload-list>
+                                </div>
+                                <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
+                                    :limit="fileLimit" :on-remove="handleRemove" :file-list="fileList"
+                                    :on-exceed="handleExceed" :before-upload="beforeUpload" :show-file-list="false"
+                                    :headers="headers" limit="1">
+                                    <!-- action="/api/file/fileUpload" -->
+                                    <el-button class="btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
+                                </el-upload>
+                                
+                            </div>
+
                             <!-- 上传文件限制doc  上传文件请求接口 给的形式是啥  -->
 
                             <!-- 配置 提示帮我生成摘要 内容是啥；模板2；模板2 这里点击页面要变化 请求接口 对话id 响应内容 -->
@@ -549,7 +555,7 @@ export default {
     border-radius: 5px;
     background-color: rgb(255, 255, 255);
     justify-content: center;
-   background-image: url(../../imgs/bg1.png);
+    background-image: url(../../imgs/bg1.png);
 
 
 }
@@ -567,7 +573,7 @@ export default {
 
 .message-content {
     font-size: 20px;
-    font-family: 'Courier New', Courier, monospace; 
+    font-family: 'Courier New', Courier, monospace;
     font-size: 25px;
     font-weight: 700;
 
@@ -647,4 +653,15 @@ export default {
 .reference-item:hover .reference-content {
     display: block;
 }
+.upload-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-list-container {
+    margin-top: 0px; /* 如果需要将文件列表紧贴着按钮，可以调整此处的负值 */
+    /* background-color: #ccc;
+    width: 100px; */
+}
+
 </style>
