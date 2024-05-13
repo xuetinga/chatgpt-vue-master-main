@@ -74,7 +74,7 @@
                 <el-container style="">
                     <!-- <div> -->
                     <el-row type="flex" style=" width: 100%;flex-wrap: wrap;">
-                        <el-col :span="8" v-for="(knowledge, index) in configs" :key="index">
+                        <el-col :span="8" v-for="(knowledge, index) in kbs" :key="index">
                             <el-card height="80px" shadow="hover">
                                 <div slot="header">
                                     <i class="el-icon-picture-outline-round" @click="showGraph(index)">头像</i>
@@ -82,7 +82,7 @@
                                     <span>{{ knowledge.name }}</span>
                                 </div>
                                 <div class="text item">
-                                    {{ knowledge.content }}
+                                    {{ knowledge.description }}
                                 </div>
 
                                 <el-row style="margin-top: 20px;">
@@ -265,12 +265,14 @@ export default {
                 }
 
             ], // 存储配置的数组
+            kbs:[]
 
         };
     },
     created() {
         getstatic().then((res) => {
             console.log("getstaticres", res)
+            this.kbs = res.data.kbs
         }).catch((err) => {
             console.log("err", err)
         })
@@ -296,6 +298,9 @@ export default {
     },
 
     methods: {
+        deleteKnowledge (){
+
+        },
         savesetting() {
             this.settingdialogFormVisible = false;
             console.log("settingdialogFormVisible", this.settingform)
