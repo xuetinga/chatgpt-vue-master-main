@@ -179,6 +179,8 @@
 
 <script>
 import axios from 'axios';
+import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat } from "@/api/getData";
+
 export default {
     data() {
         return {
@@ -223,7 +225,6 @@ export default {
             promptdefaultvalue: '',
             dynamicMarginLeft: '50px',
             isCollapse: false,
-            newMessage: '',
             cards: [
                 {
                     icon: 'el-icon-info',
@@ -279,7 +280,7 @@ export default {
         };
     },
     methods: {
-        startchat() {
+        startChat(){
             if (this.newMessage.trim() !== '') {
                 console.log(" this.newMessage", this.newMessage)
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
@@ -291,23 +292,93 @@ export default {
             let params = {
                 dialogue_id: this.chat_id,
                 query: this.newMessage,
-                config: "default"
+                config: "Qwen"
                 // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                 // {role:"hh",content:"xx"}
                 // ,
             }
             console.log("params", params)
-            chatgpt(params).then((res) => {
-                console.log("resresres", res.data)
+
+            setclause_check(params).then((res) => {
+                console.log("resresresgetChatchat", res)
+
                 this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
                 this.newhistory = {
                     dialogue_id: this.chat_id, history: this.chatMessages
                 }
-
                 this.newMessage = ''; // Clear the input after sending.
                 this.chatStarted = true; // Switch to chat view.
+
             });
         },
+        newChat() {
+            if (this.chatMessages.length == 0) {
+                //说明没有新建
+                getChat().then((res) => {
+                    //
+                    console.log("getChat", res)
+
+                    this.chat_id = res.dialogue_id
+                    this.chatStarted = true;
+                    this.chatMessages = res.history
+                }).catch((err) => {
+                    console.log("err")
+                })
+            }
+            else {
+                //保存在历史
+                this.newhistory.showDeleteButton = false
+                let newhistory = this.newhistory
+                var isDuplicate = this.historyArrlist.some(function (item) {
+                    return item.dialogue_id === newhistory.dialogue_id;
+                });
+
+                // 如果不存在相同 dialogue_id 的记录，则将新记录添加到历史记录数组中
+                if (!isDuplicate) {
+                    this.historyArrlist.unshift(newhistory);
+                }
+                else {
+                    getChat().then((res) => {
+                        console.log("getChat", res)
+                        this.chat_id = res.dialogue_id
+                        this.chatStarted = true;
+                        this.chatMessages = res.history
+                    }).catch((err) => {
+                        console.log("err")
+                    })
+                }
+                console.log(this.historyArrlist, "this.historyArrlist")
+            }
+        },
+        // startchat() {
+        //     if (this.newMessage.trim() !== '') {
+        //         console.log(" this.newMessage", this.newMessage)
+        //         this.chatMessages.push({ content: this.newMessage, role: 'user' });
+        //     }
+        //     if (this.chat_id == "") {
+        //         this.chat_id = this.guid()
+        //     }
+        //     console.log("chat_id", this.chat_id)
+        //     let params = {
+        //         dialogue_id: this.chat_id,
+        //         query: this.newMessage,
+        //         config: "default"
+        //         // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
+        //         // {role:"hh",content:"xx"}
+        //         // ,
+        //     }
+        //     console.log("params", params)
+        //     chatgpt(params).then((res) => {
+        //         console.log("resresres", res.data)
+        //         this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
+        //         this.newhistory = {
+        //             dialogue_id: this.chat_id, history: this.chatMessages
+        //         }
+
+        //         this.newMessage = ''; // Clear the input after sending.
+        //         this.chatStarted = true; // Switch to chat view.
+        //     });
+        // },
         sendMessage(text) {
             this.newMessage = text;
         },

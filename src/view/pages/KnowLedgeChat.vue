@@ -7,7 +7,8 @@
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
-            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
+            <div v-else
+                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
@@ -92,7 +93,8 @@
                             <div v-if="chatStarted">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.2); float: right;">
+                                        <div class="card"
+                                            style=" background-color: rgba(244, 152, 24, 0.2); float: right;">
                                             <i class="el-icon-user"></i>
 
                                             <div class="card-content">
@@ -106,16 +108,17 @@
                                             <div class="card-content">
                                                 {{ message.content }}
                                             </div>
-                                            <el-divider></el-divider>
-                                            <i class="el-icon-paperclip"
-                                                style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
-
-
-                                            <div v-for="(item, index) in message.reference" :key="index"
-                                                class="reference-item">
-                                                <a :href="item.link" target="_blank">{{ item[0] }}</a>
-                                                <div class="reference-content">{{ item[1] }}</div>
+                                            <div v-if="message.reference !== null">
+                                                <el-divider></el-divider>
+                                                <i class="el-icon-paperclip"
+                                                    style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
+                                                <div v-for="(item, index) in message.reference" :key="index"
+                                                    class="reference-item">
+                                                    <a :href="item.link" target="_blank">{{ item[0] }}</a>
+                                                    <div class="reference-content">{{ item[1] }}</div>
+                                                </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -124,7 +127,7 @@
                             <div v-else>
                                 <el-row type="flex" class="main-message">
                                     <el-col :span="20">
-                                        <div class="message-content" >
+                                        <div class="message-content">
                                             Yoka: 助力安全生产的强大知识管家
                                         </div>
                                     </el-col>
@@ -156,9 +159,10 @@
                                 </el-option>
                             </el-select>
 
-                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
-                                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
-                                :before-upload="beforeUpload" :show-file-list="true" :headers="headers" limit="1"
+                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
+                                :limit="fileLimit" :on-remove="handleRemove" :file-list="fileList"
+                                :on-exceed="handleExceed" :before-upload="beforeUpload" :show-file-list="true"
+                                :headers="headers" limit="1"
                                 :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
                                 <!-- action="/api/file/fileUpload" -->
                                 <el-button class="btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
@@ -179,7 +183,8 @@
 </template>
 
 <script>
-import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic ,getChat,getChatchat} from "@/api/getData";
+import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat } from "@/api/getData";
+import Index from "./chatHome/index.vue";
 export default {
     data() {
         return {
@@ -330,7 +335,6 @@ export default {
         ,
 
         startChat() {
-            console.log("this.$refs.upload.", this.$refs.upload)
             if (this.newMessage.trim() !== '') {
                 console.log(" this.newMessage", this.newMessage)
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
@@ -350,18 +354,59 @@ export default {
             console.log("params", params)
 
             chatgpt(params).then((res) => {
-                console.log("resresres", res.data)
                 this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
                 this.newhistory = {
                     dialogue_id: this.chat_id, history: this.chatMessages
                 }
-
                 this.newMessage = ''; // Clear the input after sending.
                 this.chatStarted = true; // Switch to chat view.
+                console.log("resresres", this.chatMessages)
+
             });
 
         },
         newChat() {
+            if (this.chatMessages.length == 0) {
+                //说明没有新建
+                getChat().then((res) => {
+                    //
+                    console.log("getChat", res)
+
+                    this.chat_id = res.dialogue_id
+                    this.chatStarted = true;
+                    this.chatMessages = res.history
+                }).catch((err) => {
+                    console.log("err")
+                })
+            }
+            else {
+                //保存在历史
+                this.newhistory.showDeleteButton = false
+                let newhistory = this.newhistory
+                var isDuplicate = this.historyArrlist.some(function (item) {
+                    return item.dialogue_id === newhistory.dialogue_id;
+                });
+
+                // 如果不存在相同 dialogue_id 的记录，则将新记录添加到历史记录数组中
+                if (!isDuplicate) {
+                    this.historyArrlist.unshift(newhistory);
+                }
+                else {
+                    getChat().then((res) => {
+                        console.log("getChat", res)
+                        this.chat_id = res.dialogue_id
+                        this.chatStarted = true;
+                        this.chatMessages = res.history
+                    }).catch((err) => {
+                        console.log("err")
+                    })
+                }
+                console.log(this.historyArrlist, "this.historyArrlist")
+            }
+
+        },
+
+        newChat1() {
 
             if (this.newhistory !== "") {
                 this.historyArrlist.unshift(this.newhistory)
@@ -372,8 +417,7 @@ export default {
             }
             this.chat_id = ""
             this.chatStarted = false;
-            console.log("this.chatMessages1111", this.historyArrlist)
-            console.log("this.chatMessages", this.historyArrlist)
+
             // if (this.chatMessages.length > 0) {
             //     this.historyArrlist.push({ time: new Date(), content: this.chatMessages, title: this.chatMessages[0].content, showDeleteButton: false })
             // }
@@ -384,6 +428,8 @@ export default {
             console.log("this.question", question)
 
             this.chatStarted = true;
+            question.showDeleteButton = true
+            this.newhistory = question
             this.chatMessages = question.history
             this.chat_id = question.dialogue_id
         },
@@ -503,6 +549,7 @@ export default {
     border-radius: 5px;
     background-color: rgb(255, 255, 255);
     justify-content: center;
+   background-image: url(../../imgs/bg1.png);
 
 
 }
@@ -520,7 +567,10 @@ export default {
 
 .message-content {
     font-size: 20px;
-    
+    font-family: 'Courier New', Courier, monospace; 
+    font-size: 25px;
+    font-weight: 700;
+
 }
 
 .user-message {

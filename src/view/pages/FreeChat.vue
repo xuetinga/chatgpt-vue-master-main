@@ -7,7 +7,8 @@
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
-            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
+            <div v-else
+                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
@@ -92,7 +93,8 @@
                             <div v-if="chatStarted">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.2); float: right;">
+                                        <div class="card"
+                                            style=" background-color: rgba(244, 152, 24, 0.2); float: right;">
                                             <i class="el-icon-user"></i>
 
                                             <div class="card-content">
@@ -154,15 +156,16 @@
                                     <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
                                 </el-option>
                             </el-select>
-                            <el-select v-model="promptdefaultvalue" placeholder="Model" style="width: 130px;">
-                                <el-option v-for="item in promptall" :key="item.value" :label="item.label"
+                            <el-select v-model="modeldefaultvalue" placeholder="Model" style="width: 130px;">
+                                <el-option v-for="item in models" :key="item.value" :label="item.label"
                                     :value="item.value" style="text-align: center;">
                                     <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
                                 </el-option>
                             </el-select>
-                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
-                                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
-                                :before-upload="beforeUpload" :show-file-list="true" :headers="headers" limit="1"
+                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
+                                :limit="fileLimit" :on-remove="handleRemove" :file-list="fileList"
+                                :on-exceed="handleExceed" :before-upload="beforeUpload" :show-file-list="true"
+                                :headers="headers" limit="1"
                                 :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
                                 <!-- action="/api/file/fileUpload" -->
                                 <el-button class="btn"><i class="el-icon-paperclip"></i>附件</el-button>
@@ -183,7 +186,7 @@
 </template>
 
 <script>
-import { getChatMsg, gethistory } from "@/api/getData";
+import { getChatMsg, gethistory, getChat, getstatic,chatgpt,getChatchat } from "@/api/getData";
 
 export default {
     data() {
@@ -196,6 +199,7 @@ export default {
                 value: '内容检查',
             }],
             promptdefaultvalue: '',
+            modeldefaultvalue:"",
             isCollapse: false,
             cards: [
                 {
@@ -280,11 +284,102 @@ export default {
             fileLimit: 5,
             //请求头
             headers: { "Content-Type": "multipart/form-data" },
-
+            kbs: [],
+            models: [],
+            prompts: []
 
         };
     },
+    created() {
+        getstatic().then((res) => {
+            console.log("全局11111", res.data)
+
+
+            this.promptall = res.data.prompts.map(prompt => {
+                return {
+                    value: prompt.scene
+                };
+            });
+            this.models = res.data.models.map(prompt => {
+                return {
+                    value: prompt
+                };
+            });
+        }).catch((err) => {
+            console.log("err", err)
+        })
+    },
     methods: {
+        startChat(){
+            if (this.newMessage.trim() !== '') {
+                console.log(" this.newMessage", this.newMessage)
+                this.chatMessages.push({ content: this.newMessage, role: 'user' });
+            }
+            if (this.chat_id == "") {
+                this.chat_id = this.guid()
+            }
+            console.log("chat_id", this.chat_id)
+            let params = {
+                dialogue_id: this.chat_id,
+                query: this.newMessage,
+                config: this.promptdefaultvalue+","+this.modeldefaultvalue
+                // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
+                // {role:"hh",content:"xx"}
+                // ,
+            }
+            console.log("params", params)
+
+            getChatchat(params).then((res) => {
+                console.log("resresresgetChatchat", res)
+
+                this.chatMessages.push({ content: res.response, role: 'assistant', reference: res.reference });
+                this.newhistory = {
+                    dialogue_id: this.chat_id, history: this.chatMessages
+                }
+                this.newMessage = ''; // Clear the input after sending.
+                this.chatStarted = true; // Switch to chat view.
+
+            });
+        },
+        newChat() {
+            if (this.chatMessages.length == 0) {
+                //说明没有新建
+                getChat().then((res) => {
+                    //
+                    console.log("getChat", res)
+
+                    this.chat_id = res.dialogue_id
+                    this.chatStarted = true;
+                    this.chatMessages = res.history
+                }).catch((err) => {
+                    console.log("err")
+                })
+            }
+            else {
+                //保存在历史
+                this.newhistory.showDeleteButton = false
+                let newhistory = this.newhistory
+                var isDuplicate = this.historyArrlist.some(function (item) {
+                    return item.dialogue_id === newhistory.dialogue_id;
+                });
+
+                // 如果不存在相同 dialogue_id 的记录，则将新记录添加到历史记录数组中
+                if (!isDuplicate) {
+                    this.historyArrlist.unshift(newhistory);
+                }
+                else {
+                    getChat().then((res) => {
+                        console.log("getChat", res)
+                        this.chat_id = res.dialogue_id
+                        this.chatStarted = true;
+                        this.chatMessages = res.history
+                    }).catch((err) => {
+                        console.log("err")
+                    })
+                }
+                console.log(this.historyArrlist, "this.historyArrlist")
+            }
+        },
         toggleCollapse() {
             this.isCollapse = !this.isCollapse; // 切换状态
         },

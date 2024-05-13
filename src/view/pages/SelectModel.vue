@@ -7,7 +7,8 @@
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
-            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
+            <div v-else
+                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
@@ -90,19 +91,20 @@
 
                 </el-container>
                 <el-row>
-                    <el-col :span="8" v-for="(o, index) in modellist" :key="index" :offset="index > 0 ? 2 : 0">
-                        <el-card :body-style="{ padding: '0px', }">
+                    <el-col :span="8" v-for="(o, index) in modellist" :key="index">
+                        <el-card :body-style="{ padding: '0px' }">
                             <i class="el-icon-notebook-1"></i>
                             <div style="padding: 14px;">
-                                <span>o</span>
+                                <span>{{ o }}</span>
                                 <div class="bottom clearfix">
                                     <!-- <time class="time">{{ currentDate }}</time> -->
-                                    MODEL1MODEL1MODEL1MODEL1
+                                    {{ o }}{{ o }}{{ o }}{{ o }}{{ o }}
                                 </div>
                             </div>
                         </el-card>
                     </el-col>
                 </el-row>
+
 
             </el-main>
         </el-container>
