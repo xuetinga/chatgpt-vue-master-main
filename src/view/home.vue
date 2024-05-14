@@ -71,7 +71,7 @@
                   <span class="main-title">知识库问答</span>
                 </el-col>
                 <el-col :span="22">
-                  <span class="sub-title">知识库问答知识库问答知识库问答知识库问答</span>
+                  <span class="sub-title">助力安全生产法律条款问答</span>
                 </el-col>
               </el-row>
             </el-card>
@@ -85,7 +85,7 @@
                   <span class="main-title">自由对话</span>
                 </el-col>
                 <el-col :span="22">
-                  <span class="sub-title">自由对话自由对话自由对话自由对话自由对话</span>
+                  <span class="sub-title">LLM原生对话</span>
                 </el-col>
               </el-row>
             </el-card>
@@ -100,7 +100,7 @@
                   <span class="main-title">条款检查</span>
                 </el-col>
                 <el-col :span="22">
-                  <span class="sub-title">条款检查条款检查条款检查条款检查条款检查</span>
+                  <span class="sub-title">新旧条款校对与分析</span>
                 </el-col>
               </el-row>
             </el-card>
@@ -113,7 +113,7 @@
                   <span class="main-title">题目生成</span>
                 </el-col>
                 <el-col :span="22">
-                  <span class="sub-title">题目生成题目生成题目生成题目生成题目生成</span>
+                  <span class="sub-title">基于法规条款的单选题生成</span>
                 </el-col>
               </el-row>
             </el-card>

@@ -199,7 +199,7 @@ export default {
             historyArrlist: [],
             configs: [],
             promptall: [],
-            promptdefaultvalue: '',
+            promptdefaultvalue: 'default',
             dynamicMarginLeft: '50px',
             isCollapse: false,
             newMessage: '',

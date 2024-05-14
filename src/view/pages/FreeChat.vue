@@ -198,8 +198,8 @@ export default {
             }, {
                 value: '内容检查',
             }],
-            promptdefaultvalue: '',
-            modeldefaultvalue:"",
+            promptdefaultvalue: 'default',
+            modeldefaultvalue:"default",
             isCollapse: false,
             cards: [
                 {
