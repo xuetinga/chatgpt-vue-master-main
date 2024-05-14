@@ -245,7 +245,7 @@ export default {
   methods: {
     exportExcel() {
       // 1. 将表格数据转换为 Excel 文件的格式
-      const worksheet = XLSX.utils.json_to_sheet(this.currentPageData);
+      const worksheet = XLSX.utils.json_to_sheet(this.$refs.table.tableData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
@@ -274,7 +274,7 @@ export default {
     },
     // 导出数据到 docx 文件
     exportToDocx() {
-      exportWord('./template.docx', this.currentPageData, "hh")
+      exportWord('./template.docx', this.$refs.table.tableData, "hh")
 
       // const doc = new Docxtemplater();
       // const template = `<h1>数据导出</h1><table><tr></tr></table>`;
@@ -365,7 +365,7 @@ export default {
     },
     _filterChange() {
       this.totalSize = this.$refs.table.tableData.length;
-      console.log(this.totalSize);
+      console.log(this.totalSize,this.$refs.table.tableData);
     },
 
   }

@@ -170,7 +170,7 @@
                                     <!-- action="/api/file/fileUpload" -->
                                     <el-button class="btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
                                 </el-upload>
-                                
+
                             </div>
 
                             <!-- 上传文件限制doc  上传文件请求接口 给的形式是啥  -->
@@ -349,10 +349,16 @@ export default {
                 this.chat_id = this.guid()
             }
             console.log("chat_id", this.chat_id)
+            let config = {
+                "model": "default",
+                "prompt": this.promptdefaultvalue,
+                "knowledge": "default",
+                "LLM_config": "default"
+            }
             let params = {
                 dialogue_id: this.chat_id,
                 query: this.newMessage,
-                config: this.promptdefaultvalue
+                config: config
                 // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                 // {role:"hh",content:"xx"}
                 // ,
@@ -653,15 +659,16 @@ export default {
 .reference-item:hover .reference-content {
     display: block;
 }
+
 .upload-container {
     display: flex;
     flex-direction: column;
 }
 
 .file-list-container {
-    margin-top: 0px; /* 如果需要将文件列表紧贴着按钮，可以调整此处的负值 */
+    margin-top: 0px;
+    /* 如果需要将文件列表紧贴着按钮，可以调整此处的负值 */
     /* background-color: #ccc;
     width: 100px; */
 }
-
 </style>
