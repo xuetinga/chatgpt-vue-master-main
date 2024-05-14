@@ -433,7 +433,7 @@ export default {
             let params = {
                 dialogue_id: this.chat_id,
                 query: this.newMessage,
-                config: config
+                config: JSON.stringify(config)
                 // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                 // {role:"hh",content:"xx"}
                 // ,

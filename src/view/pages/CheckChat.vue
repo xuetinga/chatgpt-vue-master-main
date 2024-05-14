@@ -375,10 +375,16 @@ export default {
                 this.chat_id = this.guid()
             }
             console.log("chat_id", this.chat_id)
+            let config = {
+                "model": "default",
+                "prompt": "default",
+                "knowledge": "default",
+                "LLM_config": "default"
+            }
             let params = {
                 dialogue_id: this.chat_id,
                 query: this.newMessage,
-                config: "Qwen"
+                config: config.toString()
                 // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                 // {role:"hh",content:"xx"}
                 // ,
