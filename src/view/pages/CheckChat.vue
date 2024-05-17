@@ -85,27 +85,21 @@
                         </el-menu>
                     </el-aside>
 
-                    <el-container style="background-color: bisque; border-radius: 5px;">
+                    <el-container style="background-color: whitesmoke; border-radius: 5px;">
 
                         <el-main style="justify-content: center;">
                             <!-- 聊天页面 -->
                             <div v-if="chatStarted">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.2); float: right;">
-                                            <i class="el-icon-user"></i>
-
-                                            <div class="card-content">
-                                                {{ message.content }}
-                                            </div>
+                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                            <i class="el-icon-user">  {{ message.content }}</i>
                                         </div>
                                     </div>
                                     <div v-else-if="message.role === 'assistant'" class="answer-message">
                                         <div class="card" style="width: 800px;">
-                                            <i class="el-icon-sunny"></i>
-                                            <div class="card-content">
-                                                {{ message.content }}
-                                            </div>
+                                            <i class="el-icon-sunny">  {{ message.content }}</i>
+                                            
                                             <el-divider></el-divider>
                                             <i class="el-icon-paperclip"
                                                 style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
@@ -281,7 +275,7 @@ export default {
     },
     methods: {
                 //上传文件之前
-                beforeUpload(file) {
+        beforeUpload(file) {
             if (file.type != "" || file.type != null || file.type != undefined) {
                 //截取文件的后缀，判断文件类型
                 const FileExt = file.name.replace(/.+\./, "").toLowerCase();
@@ -384,7 +378,7 @@ export default {
             let params = {
                 dialogue_id: this.chat_id,
                 query: this.newMessage,
-                config: config.toString()
+                config:JSON.stringify(config)
                 // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                 // {role:"hh",content:"xx"}
                 // ,

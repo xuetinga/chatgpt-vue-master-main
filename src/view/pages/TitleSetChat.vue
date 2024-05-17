@@ -59,9 +59,20 @@
       </div>
     </el-aside>
 
-    <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }" >
+    <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
 
       <el-main>
+        <el-header>
+
+
+          <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
+                                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
+                                :before-upload="beforeUpload" :show-file-list="true" :headers="headers" limit="1"
+                                :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
+                                <!-- action="/api/file/fileUpload" -->
+                                <el-button size="small" type="primary" icon="el-icon-plus" >上传条款</el-button>
+                            </el-upload>
+        </el-header>
         <el-table ref="table" :data="currentPageData" @filter-change="_filterChange" border>
           <template v-for="(item, index) in dataList">
             <el-table-column v-if="item.sort" sortable :show-overflow-tooltip="true" :key="index" :label="item.label"
@@ -205,6 +216,7 @@ export default {
         },
 
       ],
+      fileList:[]
 
 
 
@@ -243,6 +255,44 @@ export default {
   },
 
   methods: {
+    //上传文件的事件
+    uploadFile(item) {
+      // this.$showMessage('文件上传中........')
+      //上传文件的需要formdata类型;所以要转
+      console.log("FormDatas", item)
+
+      var FormDatas = new FormData()
+      FormDatas.append('file', item.file);
+      console.log("FormDatas", FormDatas.get("file"))
+      let params = {
+        file: FormDatas.get("file"),
+      }
+      this.fileList.push(item.file);
+
+      chatupload(params).then(res => {
+        console.log("res", res.data.content)
+        // if (res.data.id != '' || res.data.id != null) {
+        //     this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
+        //     let i = this.fileList.indexOf(item.file)
+        //     this.fileList[i].id = res.data.id;//id也添加进去，最后整个大表单提交的时候需要的
+        //     if (this.fileList.length > 0) {//如果上传了附件就把校验规则给干掉
+        //         this.fileflag = false;
+        //         this.$set(this.rules.url, 0, '')
+        //     }
+        //     //this.handleSuccess();
+        // }
+      })
+    },
+    //上传成功后的回调
+    handleSuccess() {
+
+    },
+    beforeRemove() {
+
+    },
+    handlePreview() {
+
+    },
     exportExcel() {
       // 1. 将表格数据转换为 Excel 文件的格式
       const worksheet = XLSX.utils.json_to_sheet(this.$refs.table.tableData);
@@ -365,7 +415,7 @@ export default {
     },
     _filterChange() {
       this.totalSize = this.$refs.table.tableData.length;
-      console.log(this.totalSize,this.$refs.table.tableData);
+      console.log(this.totalSize, this.$refs.table.tableData);
     },
 
   }

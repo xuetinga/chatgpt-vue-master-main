@@ -136,12 +136,8 @@ export default {
                     value: "scene",
                 },
                 {
-                    label: "scene",
+                    label: "type",
                     value: "type",
-                },
-                {
-                    label: "sub scene",
-                    value: "",
                 },
                 {
                     label: "content",
