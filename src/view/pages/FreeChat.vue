@@ -150,7 +150,7 @@
                                     <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
                                 </el-option>
                             </el-select>
-                            <el-select v-model="modeldefaultvalue" placeholder="Model" style="width: 130px;">
+                            <el-select v-model="modeldefaultvalue" placeholder="默认" style="width: 130px;">
                                 <el-option v-for="item in models" :key="item.value" :label="item.label"
                                     :value="item.value" style="text-align: center;">
                                     <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
@@ -441,6 +441,7 @@ export default {
                 this.newhistory = {
                     dialogue_id: this.chat_id, history: this.chatMessages
                 }
+                this.historyArrlist.unshift(this.newhistory)
                 this.newMessage = ''; // Clear the input after sending.
                 this.chatStarted = true; // Switch to chat view.
 

@@ -392,6 +392,7 @@ export default {
                 this.newhistory = {
                     dialogue_id: this.chat_id, history: this.chatMessages
                 }
+                this.historyArrlist.unshift(this.newhistory)
                 this.newMessage = ''; // Clear the input after sending.
                 this.chatStarted = true; // Switch to chat view.
 

@@ -146,7 +146,7 @@
                         <el-footer style="align-items: flex-start; display: flex">
                             <!-- Input area -->
 
-                            <el-select v-model="promptdefaultvalue" placeholder="请选择配置">
+                            <el-select v-model="promptdefaultvalue" placeholder="默认">
                                 <el-option v-for="item in promptall" :key="item.value" :label="item.label"
                                     :value="item.value" style="text-align: center;">
                                     <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
@@ -364,6 +364,7 @@ export default {
                 this.newhistory = {
                     dialogue_id: this.chat_id, history: this.chatMessages
                 }
+                this.historyArrlist.unshift(this.newhistory)
                 this.newMessage = ''; // Clear the input after sending.
                 this.chatStarted = true; // Switch to chat view.
                 console.log("resresres", this.chatMessages)

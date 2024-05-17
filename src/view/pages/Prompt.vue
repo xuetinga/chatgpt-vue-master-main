@@ -71,7 +71,7 @@
 
                 <el-container>
                     <el-tabs v-model="activeName" style="width: 100%;">
-                        <el-tab-pane label="Public prompt" name="first">
+                        <el-tab-pane label="公共提示词" name="first">
                             <el-table ref="table" :data="publicTableData" border>
                                 <template v-for="(item, index) in dataList">
                                     <el-table-column :label="item.label" align="center" :prop="item.value">
@@ -79,7 +79,7 @@
                                 </template>
                             </el-table>
                         </el-tab-pane>
-                        <el-tab-pane label="Private prompt" name="second">
+                        <el-tab-pane label="私有提示词" name="second">
                             <el-table ref="table" :data="privateTableData" border>
                                 <template v-for="(item, index) in dataList">
                                     <el-table-column :label="item.label" align="center" :prop="item.value">
