@@ -1,64 +1,7 @@
 <template>
     <el-container style="height: 100vh;">
-        <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-            <div v-if="isCollapse"
-                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
-                <el-button @click="toggleCollapse">
-                    <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
-                </el-button>
-            </div>
-            <div v-else
-                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
-                <el-button @click="toggleCollapse">
-                    <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
-                </el-button>
-            </div>
-            <el-menu default-active="1" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-                <el-menu-item index="0" @click.native="goToMain">
-                    <img src="../../imgs/logo.png" style="width: 25px; height: 25px;" />
-                    <span slot="title">Yoka</span>
-                </el-menu-item>
-                <el-menu-item index="1" @click.native="goToKnowledgeQA">
-                    <i class="el-icon-s-opportunity"></i>
-                    <span slot="title">知识库问答</span>
-                </el-menu-item>
-                <el-menu-item index="2" @click.native="goToFreeChat">
-                    <i class="el-icon-chat-dot-square"></i>
-                    <span slot="title">自由对话</span>
-                </el-menu-item>
-                <el-menu-item index="3" @click.native="goToCheckChat">
-                    <i class="el-icon-document"></i>
-                    <span slot="title">条款检查</span>
-                </el-menu-item>
-                <el-menu-item index="4" @click.native="goToTitleSetChat">
-                    <i class="el-icon-s-promotion"></i>
-                    <span slot="title">题目生成</span>
-                </el-menu-item>
-            </el-menu>
 
-
-
-            <div class="fixed-bottom-menu">
-                <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-                    <el-menu-item index="5" @click.native="goToKnowSetting">
-                        <i class="el-icon-coordinate"></i>
-                        <span slot="title">知识管理</span>
-                    </el-menu-item>
-                    <el-menu-item index="6" @click.native="goToPrompt">
-                        <i class="el-icon-setting"></i>
-                        <span slot="title">prompt设置</span>
-                    </el-menu-item>
-                    <el-menu-item index="7" @click.native="goToSelectModel">
-                        <i class="el-icon-chat-dot-round"></i>
-                        <span slot="title">模型选择</span>
-                    </el-menu-item>
-                    <el-menu-item index="7" @click.native="goToHelp">
-                        <i class="el-icon-magic-stick"></i>
-                        <span slot="title">帮助</span>
-                    </el-menu-item>
-                </el-menu>
-            </div>
-        </el-aside>
+        <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
         <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
 
             <el-main>
@@ -71,8 +14,8 @@
                         <!-- Sidebar content here -->
                         <el-menu
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="200px"
-                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 200px;"
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="190px"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; "
                                 @click="historyChat(question)">
                                 <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
@@ -95,13 +38,13 @@
                                     <div v-if="message.role === 'user'" class="answer-message">
                                         <div class="card"
                                             style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
-                                            <i class="el-icon-user">    {{ message.content }}</i>
+                                            <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
                                     <div v-else-if="message.role === 'assistant'" class="answer-message">
                                         <div class="card" style="width: 800px;">
-                                            <i class="el-icon-sunny">   {{ message.content }}</i>
-                                           
+                                            <i class="el-icon-sunny"> {{ message.content }}</i>
+
                                             <div v-if="message.reference !== null">
                                                 <el-divider></el-divider>
                                                 <i class="el-icon-paperclip"
@@ -147,12 +90,12 @@
                             <!-- Input area -->
 
                             <el-select v-model="promptdefaultvalue" placeholder="默认">
-                                <el-option v-for="item in promptall" :key="item.value" :label="item.label"
+                                <el-option v-for="item in models" :key="item.value" :label="item.label"
                                     :value="item.value" style="text-align: center;">
                                     <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
                                 </el-option>
                             </el-select>
-
+                            <!--    
                             <div class="upload-container">
                                 <div class="file-list-container">
                                     <el-upload-list :list="fileList" :disabled="true"></el-upload-list>
@@ -161,11 +104,10 @@
                                     :limit="fileLimit" :on-remove="handleRemove" :file-list="fileList"
                                     :on-exceed="handleExceed" :before-upload="beforeUpload" :show-file-list="false"
                                     :headers="headers" limit="1">
-                                    <!-- action="/api/file/fileUpload" -->
                                     <el-button class="btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
                                 </el-upload>
 
-                            </div>
+                            </div>  -->
 
                             <!-- 上传文件限制doc  上传文件请求接口 给的形式是啥  -->
 
@@ -185,14 +127,24 @@
 <script>
 import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat } from "@/api/getData";
 import Index from "./chatHome/index.vue";
+import Emoji from "@/components/Emoji.vue";
+import Nav from "@/components/Nav.vue";
+import commonMethodsMixin from '../../util/publicfun.js';
 export default {
+    mixins: [commonMethodsMixin],
+    components: {
+        Emoji,
+        Nav
+    },
     data() {
         return {
+            selected: '1',
             chat_id: "",
             newhistory: {},
             historyArrlist: [],
             configs: [],
             promptall: [],
+            models: [],
             promptdefaultvalue: 'default',
             dynamicMarginLeft: '50px',
             isCollapse: false,
@@ -270,15 +222,22 @@ export default {
                     value: prompt.scene
                 };
             });
+            this.models = res.data.models.map(prompt => {
+                return {
+                    value: prompt
+                };
+            });
         }).catch((err) => {
             console.log("err", err)
         })
     },
     methods: {
-
         updateNewMessage() {
-
             this.newMessage = this.fileList.map(file => file.name).join(', '); // 示例中将文件名用逗号分隔
+        },
+        updateIsCollapse(value) {
+            this.isCollapse = value;
+            // this.updateIsCollapse(value);
         },
         toggleCollapse() {
             this.isCollapse = !this.isCollapse; // 切换状态
@@ -589,7 +548,7 @@ export default {
 }
 
 .el-menu .el-menu-item {
-    width: 100%;
+    width: 90%;
 }
 
 

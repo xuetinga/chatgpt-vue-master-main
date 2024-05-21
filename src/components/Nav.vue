@@ -1,125 +1,127 @@
 <template>
-  <div class="nav">
-    <div class="nav-menu-wrapper">
-      <ul class="menu-list">
-        <li
-          v-for="(item, index) in menuList"
-          :key="index"
-          :class="{ activeNav: index == current }"
-          @click="changeMenu(index)"
-        >
-          <div class="block"></div>
-          <span class="iconfont" :class="item"></span>
-        </li>
-      </ul>
+
+  <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
+    <div v-if="isCollapse"
+      style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
+      <el-button @click="toggleCollapse">
+        <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
+      </el-button>
     </div>
-    <div class="own-pic">
-        <HeadPortrait :imgUrl="imgUrl"></HeadPortrait>
+    <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
+      <el-button @click="toggleCollapse">
+        <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
+      </el-button>
     </div>
-  </div>
+    <el-menu :default-active="isSelect" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+      <el-menu-item index="0" @click.native="goToMain">
+        <img src="../imgs/logo.png" style="width: 25px; height: 25px;" />
+        <span slot="title">Yoka</span>
+      </el-menu-item>
+      <el-menu-item index="1" @click.native="goToKnowledgeQA">
+        <i class="el-icon-s-opportunity"></i>
+        <span slot="title">知识库问答</span>
+      </el-menu-item>
+      <el-menu-item index="2" @click.native="goToFreeChat">
+        <i class="el-icon-chat-dot-square"></i>
+        <span slot="title">自由对话</span>
+      </el-menu-item>
+      <el-menu-item index="3" @click.native="goToCheckChat">
+        <i class="el-icon-document"></i>
+        <span slot="title">条款检查</span>
+      </el-menu-item>
+      <el-menu-item index="4" @click.native="goToTitleSetChat">
+        <i class="el-icon-s-promotion"></i>
+        <span slot="title">题目生成</span>
+      </el-menu-item>
+    </el-menu>
+
+
+
+    <div class="fixed-bottom-menu">
+      <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+        <el-menu-item index="5" @click.native="goToKnowSetting">
+          <i class="el-icon-coordinate"></i>
+          <span slot="title">知识管理</span>
+        </el-menu-item>
+        <el-menu-item index="6" @click.native="goToPrompt">
+          <i class="el-icon-setting"></i>
+          <span slot="title">prompt设置</span>
+        </el-menu-item>
+        <el-menu-item index="7" @click.native="goToSelectModel">
+          <i class="el-icon-chat-dot-round"></i>
+          <span slot="title">模型选择</span>
+        </el-menu-item>
+        <el-menu-item index="7" @click.native="goToHelp">
+          <i class="el-icon-magic-stick"></i>
+          <span slot="title">帮助</span>
+        </el-menu-item>
+      </el-menu>
+    </div>
+  </el-aside>
 </template>
 
 <script>
-import HeadPortrait from "./HeadPortrait.vue";
+
 
 export default {
-  components: {
-    HeadPortrait,
+  props: {
+    isCollapse: {
+      type: Boolean,
+      required: true
+    },
+    isSelect:{
+      type: String,
+      required: true
+    }
   },
   data() {
     return {
-      menuList: [
-        "icon-xinxi",
-       
-      ],
-      current: 0,
-      imgUrl: require('@/assets/img/head_portrait.jpg')
-    };
+      chat_id: "",
+      newhistory: {},
+      historyArrlist: [],
+      configs: [],
+      promptall: [],
+      models: [],
+      promptdefaultvalue: 'default',
+      dynamicMarginLeft: '50px',
+    }
   },
   methods: {
-    changeMenu(index) {
-      switch (index) {
-        case 0:
-          this.$router.push({
-            name: "ChatHome",
-          }, () => {});
-          break;
-        case 1:
-          this.$message("该功能还没有开发哦，敬请期待一下吧~🥳");
-          break;
-        case 2:
-          this.$message("该功能还没有开发哦，敬请期待一下吧~🥳");
-          break;
-        case 3:
-          this.$message("该功能还没有开发哦，敬请期待一下吧~🥳");
-          break;
-        case 4:
-          this.$message("该功能还没有开发哦，敬请期待一下吧~🥳");
-          break;
-        default:
-          this.$router.push({
-            name: "ChatGGG",
-          });
-      }
-
-      this.current = index;
+    goToMain() {
+      console.log("dddd")
+      window.location.href = '#/ChatHome';
     },
-  },
+    goToKnowledgeQA() {
+      window.location.href = '#/KnowLedgeChat';
+    },
+    goToFreeChat() {
+      window.location.href = '#/FreeChat';
+    },
+    goToCheckChat() {
+      window.location.href = '#/CheckChat';
+    },
+    goToTitleSetChat() {
+      window.location.href = '#/TitleSetChat';
+    },
+    goToKnowSetting() {
+      window.location.href = '#/KnowSetting';
+    },
+    goToPrompt() {
+      window.location.href = '#/Prompt';
+    },
+    goToSelectModel() {
+      window.location.href = '#/SelectModel';
+    },
+    goToHelp() {
+      window.location.href = '#/HelpChat';
+    },
+    toggleCollapse() {
+      this.$emit('update:isCollapse', !this.isCollapse);
+      this.dynamicMarginLeft = "150px"
+    },
+
+  }
 };
 </script>
 
-<style lang="scss" scoped>
-.nav {
-  width: 100%;
-  height: 90vh;
-  position: relative;
-  border-radius: 20px 0 0 20px;
-  .nav-menu-wrapper {
-    position: absolute;
-    top: 40%;
-    transform: translate(0, -50%);
-    .menu-list {
-      margin-left: 10px;
-
-      li {
-        margin: 40px 0 0 30px;
-        list-style: none;
-        cursor: pointer;
-        position: relative;
-        .block {
-          background-color: rgb(29, 144, 245);
-          position: absolute;
-          left: -40px;
-          width: 6px;
-          height: 25px;
-          transition: 0.5s;
-          border-top-right-radius: 4px;
-          border-bottom-right-radius: 4px;
-          opacity: 0;
-        }
-        &:hover {
-          span {
-            color: rgb(29, 144, 245);
-          }
-          .block {
-            opacity: 1;
-          }
-        }
-      }
-    }
-  }
-  .own-pic {
-    position: absolute;
-    bottom: 10%;
-    margin-left: 25px;
-  }
-}
-.activeNav {
-  span {
-    color: rgb(29, 144, 245);
-  }
-  .block {
-    opacity: 1 !important;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

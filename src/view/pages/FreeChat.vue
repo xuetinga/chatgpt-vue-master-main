@@ -71,8 +71,8 @@
                         <!-- Sidebar content here -->
                         <el-menu
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="200px"
-                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 200px;"
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="190px"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; "
                                 @click="historyChat(question)">
                                 <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">

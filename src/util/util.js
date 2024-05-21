@@ -1,5 +1,5 @@
 //防抖
-export  function debounce(fn) {
+export function debounce(fn) {
     console.log(1)
     let t = null //只会执行一次
     debugger
