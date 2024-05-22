@@ -7,8 +7,7 @@
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
-            <div v-else
-                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
+            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
@@ -60,7 +59,7 @@
             </div>
         </el-aside>
 
-        <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }" >
+        <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
             <el-main>
 
                 <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
@@ -93,26 +92,44 @@
                             <div v-if="chatStarted">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card"
-                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
-                                            <i class="el-icon-user">  {{ message.content }}</i>
+                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                            <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
-                                    <div v-else-if="message.role === 'assistant'" class="answer-message">
-                                        <div class="card" style="width: 800px;">
-                                            <i class="el-icon-sunny">  {{ message.content }}</i>
-                                          
-                                            <!-- <el-divider></el-divider> -->
-                                            <!-- <i class="el-icon-paperclip"
-                                                style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
+                                    <div v-else-if="message.role === 'assistant'" class="answer-message"
+                                        @mouseenter="showActionButtons(index)" @mouseleave="hideActionButtons(index)">
+                                        <div style="width: 800px;">
+                                            <i class="el-icon-sunny"> {{ message.content }}</i>
+                                        </div>
+                                        <div class="floating-actions" v-show="floatactiveIndex === index">
+                                     
+                                            <el-tooltip class="item" effect="dark" content="朗读"
+                                                placement="bottom-start">
+                                                <i class="el-icon-video-play" @click="readAloud"></i>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="复制"
+                                                placement="bottom">
+                                                <i class="el-icon-copy-document" @click="copyContent"></i>
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="点赞"
+                                                placement="bottom-end">
+                                                <i class="el-icon-thumb" @click="likeMessage"></i>
 
-                                            <div v-for="(item, index) in message.reference" :key="index"
-                                                class="reference-item">
-                                                <a :href="item.link" target="_blank">{{ item[0] }}</a>
-                                                <div class="reference-content">{{ item[1] }}</div>
-                                            </div> -->
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="点踩"
+                                                placement="bottom-end">
+                                                <i class="el-icon-bottom" @click="dislikeMessage"></i>
+
+                                            </el-tooltip>
+                                            <el-tooltip class="item" effect="dark" content="重新生成"
+                                                placement="bottom-end">
+                                                <i class="el-icon-refresh-left" @click="regenerateMessage"></i>
+
+                                            </el-tooltip>
                                         </div>
+
                                     </div>
+
                                 </div>
                             </div>
 
@@ -151,15 +168,14 @@
                                 </el-option>
                             </el-select>
                             <el-select v-model="modeldefaultvalue" placeholder="默认" style="width: 130px;">
-                                <el-option v-for="item in models" :key="item.value" :label="item.label"
-                                    :value="item.value" style="text-align: center;">
+                                <el-option v-for="item in models" :key="item.value" :label="item.label" :value="item.value"
+                                    style="text-align: center;">
                                     <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
                                 </el-option>
                             </el-select>
-                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
-                                :limit="fileLimit" :on-remove="handleRemove" :file-list="fileList"
-                                :on-exceed="handleExceed" :before-upload="beforeUpload" :show-file-list="true"
-                                :headers="headers" limit="1"
+                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
+                                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
+                                :before-upload="beforeUpload" :show-file-list="true" :headers="headers"
                                 :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
                                 <!-- action="/api/file/fileUpload" -->
                                 <el-button class="btn"><i class="el-icon-paperclip"></i>附件</el-button>
@@ -180,11 +196,13 @@
 </template>
 
 <script>
-import { getChatMsg, gethistory, getChat, getstatic,chatgpt,getChatchat } from "@/api/getData";
+import { getChatMsg, gethistory, getChat, getstatic, chatgpt, getChatchat } from "@/api/getData";
 
 export default {
     data() {
         return {
+            floatactiveIndex: null,
+            showActions: false,
             promptall: [{
                 value: "生成摘要",
             }, {
@@ -193,7 +211,7 @@ export default {
                 value: '内容检查',
             }],
             promptdefaultvalue: 'default',
-            modeldefaultvalue:"default",
+            modeldefaultvalue: "default",
             isCollapse: false,
             cards: [
                 {
@@ -222,7 +240,7 @@ export default {
             historyArrlist: [],
             configs: [],
             promptall: [],
-            promptdefaultvalue: '',
+            promptdefaultvalue: '翻译1',
             dynamicMarginLeft: '50px',
             isCollapse: false,
             newMessage: '',
@@ -275,7 +293,7 @@ export default {
             // 运行上传文件大小，单位 M
             fileSize: 50,
             // 附件数量限制
-            fileLimit: 5,
+            fileLimit: 1,
             //请求头
             headers: { "Content-Type": "multipart/form-data" },
             kbs: [],
@@ -303,9 +321,49 @@ export default {
             console.log("err", err)
         })
     },
+    mounted() {
+        // 在mounted中添加鼠标悬停事件监听器
+        const answerMessageElement = this.$el.querySelector('.answer-message');
+        answerMessageElement.addEventListener('mouseenter', this.showActionButtons);
+        answerMessageElement.addEventListener('mouseleave', this.hideActionButtons);
+    },
+    beforeDestroy() {
+        // 在beforeDestroy中移除鼠标悬停事件监听器
+        const answerMessageElement = this.$el.querySelector('.answer-message');
+        answerMessageElement.removeEventListener('mouseenter', this.showActionButtons);
+        answerMessageElement.removeEventListener('mouseleave', this.hideActionButtons);
+    },
     methods: {
-                //上传文件之前
-                beforeUpload(file) {
+        showActionButtons(index) {
+            console.log("index",index)
+            if(index == 0){
+                this.floatactiveIndex = -1;
+            }
+            else{
+                this.floatactiveIndex = index;
+
+            }
+        },
+        hideActionButtons() {
+            this.floatactiveIndex = null;
+        },
+        readAloud() {
+            // 朗读功能的实现
+        },
+        copyContent() {
+            // 复制功能的实现
+        },
+        likeMessage() {
+            // 点赞功能的实现
+        },
+        dislikeMessage() {
+            // 点踩功能的实现
+        },
+        regenerateMessage() {
+            // 重新生成功能的实现
+        },
+        //上传文件之前
+        beforeUpload(file) {
             if (file.type != "" || file.type != null || file.type != undefined) {
                 //截取文件的后缀，判断文件类型
                 const FileExt = file.name.replace(/.+\./, "").toLowerCase();
@@ -409,7 +467,7 @@ export default {
             });
         }
         ,
-        startChat(){
+        startChat() {
             if (this.newMessage.trim() !== '') {
                 console.log(" this.newMessage", this.newMessage)
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
@@ -543,4 +601,21 @@ export default {
 .el-menu .el-menu-item {
     width: 100%;
 }
-</style>
+
+.floating-actions {
+    /* position: absolute; */
+    display: flex;
+    flex-direction: row;
+    margin-top: 2px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+
+
+.answer-message {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}</style>

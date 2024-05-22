@@ -156,13 +156,8 @@
                                 <!-- action="/api/file/fileUpload" -->
                                 <el-button class="btn"><i class="el-icon-paperclip"></i>上传条款</el-button>
                             </el-upload>
-                            <!-- 上传文件限制doc  上传文件请求接口 给的形式是啥  -->
-
-                            <!-- 配置 提示帮我生成摘要 内容是啥；模板2；模板2 这里点击页面要变化 请求接口 对话id 响应内容 -->
-
                             <el-input v-model="newMessage" placeholder="请输入内容" @input="sendMessage" />
                             <el-button type="primary" @click="startChat">提交</el-button>
-                            <!-- 两个接口  一个文件上传一个对话 -->
                         </el-footer>
                     </el-container>
                 </el-container>

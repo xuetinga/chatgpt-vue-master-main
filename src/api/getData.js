@@ -14,7 +14,7 @@ export const getFriend = params => {
 export const getChat = params => {
   return axios({
     method: 'post',
-    url: `http://43.140.220.187:8001/chat/`,
+    url: `http://43.140.220.187:8001/chat/new_chat`,
     data: params
   }).then(res => res.data)
 }
