@@ -2,28 +2,28 @@
     <el-container style="height: 100vh;">
 
         <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
+
         <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
-
             <el-main>
-
                 <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
                     <el-aside width="200px">
                         <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
                             <el-button type="primary" icon="el-icon-plus" @click="newChat">新聊天</el-button>
                         </el-header>
                         <!-- Sidebar content here -->
-                        <el-menu
+                        <el-menu  @select="handleSelect"
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="190px"
-                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; "
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
+                                width="190px" 
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
                                 @click="historyChat(question)">
-                                <span slot="title" @mouseover="showDeleteButton(index)"
+                                <span slot="title" 
+                                    @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
-                                    {{ question.history[0].content }}
+                                    {{ getUserContent(question.history) }}
                                     <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
                                         @click.stop="deleteItem(index)"
                                         style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);"></el-button>
-                                    <!-- 删除重命名 -->
                                 </span>
                             </el-menu-item>
                         </el-menu>
@@ -138,6 +138,7 @@ export default {
     },
     data() {
         return {
+            activeIndex: null,
             selected: '1',
             chat_id: "",
             newhistory: {},
@@ -232,6 +233,24 @@ export default {
         })
     },
     methods: {
+        getUserContent(history) {
+            console.log("historyhistory", history)
+            const userEntry = history.find(entry => entry.role === 'user');
+            return userEntry ? userEntry.content : '';
+        },
+        showDeleteButton(index) {
+            this.$set(this.historyArrlist[index], 'showDeleteButton', true);
+        },
+        hideDeleteButton(index) {
+            this.$set(this.historyArrlist[index], 'showDeleteButton', false);
+        },
+        deleteItem(index) {
+            this.historyArrlist.splice(index, 1);
+        },
+        handleSelect(index) {
+            this.activeIndex = Number(index);
+            // 处理选中项逻辑
+        },
         updateNewMessage() {
             this.newMessage = this.fileList.map(file => file.name).join(', '); // 示例中将文件名用逗号分隔
         },
@@ -294,41 +313,61 @@ export default {
         ,
 
         startChat() {
-            if (this.newMessage.trim() !== '') {
-                console.log(" this.newMessage", this.newMessage)
+            console.log("this.chat_id", this.chat_id)
+
+            if (this.newMessage.trim() !== '' || this.newMessage.trim().length > 0) {
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
-            }
-            if (this.chat_id == "") {
-                this.chat_id = this.guid()
-            }
-            console.log("chat_id", this.chat_id)
-            let config = {
-                "model": "default",
-                "prompt": this.promptdefaultvalue,
-                "knowledge": "default",
-                "LLM_config": "default"
-            }
-            let params = {
-                dialogue_id: this.chat_id,
-                query: this.newMessage,
-                config: JSON.stringify(config)
-                // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
-                // {role:"hh",content:"xx"}
-                // ,
-            }
-            console.log("params", params)
-
-            chatgpt(params).then((res) => {
-                this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
-                this.newhistory = {
-                    dialogue_id: this.chat_id, history: this.chatMessages
+                if (this.chat_id == "") {
+                    this.chat_id = this.guid()
                 }
-                this.historyArrlist.unshift(this.newhistory)
-                this.newMessage = ''; // Clear the input after sending.
-                this.chatStarted = true; // Switch to chat view.
-                console.log("resresres", this.chatMessages)
+                console.log("chat_id", this.chat_id)
+                let config = {
+                    "model": "default",
+                    "prompt": this.promptdefaultvalue,
+                    "knowledge": "default",
+                    "LLM_config": "default"
+                }
+                let params = {
+                    dialogue_id: this.chat_id,
+                    query: this.newMessage,
+                    config: JSON.stringify(config)
+                    // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
+                    // {role:"hh",content:"xx"}
+                    // ,
+                }
+                console.log("params", params)
 
-            });
+                chatgpt(params).then((res) => {
+                    this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
+                    this.newhistory = {
+                        dialogue_id: this.chat_id, history: this.chatMessages
+                    }
+                    const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
+
+                    if (existingIndex === -1) {
+                        this.historyArrlist.unshift(this.newhistory);
+                    } else {
+                        console.log("Duplicate dialogue_id found, not adding.");
+                    }
+                    this.newMessage = '';
+                    this.chatStarted = true;
+
+
+                });
+            }
+            else {
+
+
+                this.$alert('请输入内容', '提示', {
+                    confirmButtonText: '确定',
+                    callback: action => {
+
+                    }
+                });
+
+
+            }
+
 
         },
         newChat() {
@@ -392,23 +431,22 @@ export default {
         },
         historyChat(question) {
             console.log("this.question", question)
-
             this.chatStarted = true;
             question.showDeleteButton = true
             this.newhistory = question
             this.chatMessages = question.history
             this.chat_id = question.dialogue_id
         },
-        showDeleteButton(index) {
-            console.log("indexindex", this.historyArrlist[index])
-            this.historyArrlist[index].showDeleteButton = true;
-        },
-        hideDeleteButton(index) {
-            this.historyArrlist[index].showDeleteButton = false
-        },
-        deleteItem(index) {
-            this.historyArrlist.splice(index, 1);
-        },
+        // showDeleteButton(index) {
+        //     console.log("indexindex", this.historyArrlist[index])
+        //     this.historyArrlist[index].showDeleteButton = true;
+        // },
+        // hideDeleteButton(index) {
+        //     this.historyArrlist[index].showDeleteButton = false
+        // },
+        // deleteItem(index) {
+        //     this.historyArrlist.splice(index, 1);
+        // },
         //上传文件之前
         beforeUpload(file) {
             if (file.type != "" || file.type != null || file.type != undefined) {
@@ -623,5 +661,12 @@ export default {
     /* 如果需要将文件列表紧贴着按钮，可以调整此处的负值 */
     /* background-color: #ccc;
     width: 100px; */
+}
+
+.menu-item-active {
+    background-color: #f5f7fa;
+    /* 设置高亮背景颜色 */
+    color: #409EFF;
+    /* 设置高亮字体颜色 */
 }
 </style>

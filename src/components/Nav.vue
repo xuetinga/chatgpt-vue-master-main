@@ -69,7 +69,7 @@ export default {
       type: Boolean,
       required: true
     },
-    isSelect:{
+    isSelect: {
       type: String,
       required: true
     }
@@ -119,7 +119,12 @@ export default {
       this.$emit('update:isCollapse', !this.isCollapse);
       this.dynamicMarginLeft = "150px"
     },
-
+    handleOpen(key, keyPath) {
+      console.log(key, keyPath);
+    },
+    handleClose(key, keyPath) {
+      console.log(key, keyPath);
+    },
   }
 };
 </script>
