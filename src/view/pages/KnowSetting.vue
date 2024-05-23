@@ -73,7 +73,7 @@
 
                 </el-header>
                 <el-container style="">
-                    <div ref="graphContainer" class="graph-container"></div>
+
 
                     <!-- <div> -->
                     <el-row type="flex" style=" width: 100%;flex-wrap: wrap;">
@@ -93,8 +93,8 @@
                                         <i class="el-icon-edit" @click="showConfigDialog(index)">配置</i>
                                     </el-col>
                                     <el-col :span="8">
-                                        <i class="el-icon-picture-outline-round" @click="showGraph(index)">图谱</i>
 
+                                        <i class="el-icon-picture-outline-round" @click="openDialogAndRenderGraph(index)">图谱</i>
                                     </el-col>
                                     <el-col :span="8">
                                         <i class="el-icon-delete" @click="deleteKnowledge(index)">删除</i>
@@ -108,7 +108,10 @@
                     </el-row>
                     <!-- </div> -->
 
-
+                    <el-dialog title="图谱" :visible.sync="centerDialogVisible" width="600px" center
+                        :style="{ height: 'auto' }">
+                        <div ref="graphContainer" class="graph-container"></div>
+                    </el-dialog>
 
                 </el-container>
             </el-main>
@@ -155,6 +158,8 @@
                     <el-button type="primary" @click="savesetting">确 定</el-button>
                 </div>
             </el-dialog>
+
+
         </el-container>
     </el-container>
 </template>
@@ -165,6 +170,7 @@ import * as d3 from 'd3';
 export default {
     data() {
         return {
+            centerDialogVisible: false,
             graphData: {
                 nodes: [
                     { id: '天融信在税务行业有哪些典型案例', group: 1 },
@@ -331,10 +337,18 @@ export default {
     },
 
     methods: {
+        openDialogAndRenderGraph(index) {
+            this.centerDialogVisible = true;
+
+            this.$nextTick(() => {
+                this.showGraph(index);
+            });
+        },
         showGraph(index) {
+            this.centerDialogVisible = true;
             const data = this.graphData;
-            const width = 1000;
-            const height = 600;
+            const width = 500;
+            const height = 400;
             d3.select(this.$refs.graphContainer).selectAll('*').remove();
 
             const svg = d3
@@ -343,7 +357,7 @@ export default {
                 .attr('width', width)
                 .attr('height', height);
 
-            const linkDistance = 200; // 设置链接长度
+            const linkDistance = 150; // 设置链接长度
             const chargeStrength = -500; // 设置节点之间的距离，数值越负，距离越远
 
             // // 定义箭头标记
@@ -378,7 +392,7 @@ export default {
                 .enter()
                 .append('line')
                 .attr('stroke-width', d => Math.sqrt(d.value))
-                // .attr('marker-end', 'url(#arrowhead)'); // 为每条线添加箭头
+            // .attr('marker-end', 'url(#arrowhead)'); // 为每条线添加箭头
 
             // 创建链接文字
             const linkText = svg.append('g')
@@ -573,9 +587,10 @@ export default {
 
 .graph-container {
     max-height: 600px;
-    /* 根据需要设置 */
     overflow-y: auto;
     border: 1px solid #ddd;
+    width: 100%;
+    /* 根据需要调整 */
 }
 
 /* 自定义滚动条样式 */

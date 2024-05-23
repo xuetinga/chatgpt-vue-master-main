@@ -30,7 +30,7 @@
 
                     <el-container style="background-color: whitesmoke; border-radius: 5px; overflow: hidden;">
 
-                        <el-main style="justify-content: center; " >
+                        <el-main style="justify-content: center;overflow: hidden; " >
                             <!-- 聊天页面 -->
                             <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
@@ -689,6 +689,7 @@ export default {
     max-height: 500px;
     /* 根据需要设置 */
     overflow-y: auto;
+    /* width: 100%; */
     /* overflow: hidden; */
 }
 /* 自定义滚动条样式 */
@@ -697,17 +698,17 @@ export default {
 }
 
 .chat-container::-webkit-scrollbar-track {
-  background: #f1f1f1; /* 滚动条轨道颜色 */
+  background:transparent; /* 滚动条轨道颜色 */
   border-radius: 10px; /* 轨道圆角 */
 }
 
 .chat-container::-webkit-scrollbar-thumb {
-  background: #dddddd; /* 滚动条拇指颜色 */
+  background: transparent; /* 滚动条拇指颜色 */
   border-radius: 10px; /* 拇指圆角 */
 }
 
 .chat-container::-webkit-scrollbar-thumb:hover {
-  background: #abaaaa; /* 鼠标悬停时的颜色 */
+  background: transparent; /* 鼠标悬停时的颜色 */
 }
 
 

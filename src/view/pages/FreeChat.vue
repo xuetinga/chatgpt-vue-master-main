@@ -91,12 +91,12 @@
                             <!-- 聊天页面 -->
                             <div v-if="chatStarted">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
-                                    <div v-if="message.role === 'user'" class="answer-message">
+                                    <div v-if="message.role === 'user'" class="answer-message1">
                                         <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
                                             <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
-                                    <div v-else-if="message.role === 'assistant'" class="answer-message"
+                                    <div v-else-if="message.role === 'assistant'" class="answer-message1"
                                         @mouseenter="showActionButtons(index)" @mouseleave="hideActionButtons(index)">
                                         <div style="width: 800px;">
                                             <i class="el-icon-sunny"> {{ message.content }}</i>
@@ -323,13 +323,13 @@ export default {
     },
     mounted() {
         // 在mounted中添加鼠标悬停事件监听器
-        const answerMessageElement = this.$el.querySelector('.answer-message');
+        const answerMessageElement = this.$el.querySelector('.answer-message1');
         answerMessageElement.addEventListener('mouseenter', this.showActionButtons);
         answerMessageElement.addEventListener('mouseleave', this.hideActionButtons);
     },
     beforeDestroy() {
         // 在beforeDestroy中移除鼠标悬停事件监听器
-        const answerMessageElement = this.$el.querySelector('.answer-message');
+        const answerMessageElement = this.$el.querySelector('.answer-message1');
         answerMessageElement.removeEventListener('mouseenter', this.showActionButtons);
         answerMessageElement.removeEventListener('mouseleave', this.hideActionButtons);
     },
@@ -614,8 +614,10 @@ export default {
 
 
 
-.answer-message {
+.answer-message1 {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-}</style>
+}
+
+</style>
