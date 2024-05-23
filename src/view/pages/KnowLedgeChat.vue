@@ -6,19 +6,18 @@
         <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
             <el-main>
                 <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
-                    <el-aside width="200px">
+                    <el-aside width="200px" class="aside-container">
                         <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
                             <el-button type="primary" icon="el-icon-plus" @click="newChat">新聊天</el-button>
                         </el-header>
                         <!-- Sidebar content here -->
-                        <el-menu  @select="handleSelect"
+                        <el-menu @select="handleSelect"
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
-                                width="190px" 
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index"
+                                :index="index.toString()" width="190px"
                                 style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
                                 @click="historyChat(question)">
-                                <span slot="title" 
-                                    @mouseover="showDeleteButton(index)"
+                                <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
                                     {{ getUserContent(question.history) }}
                                     <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
@@ -29,11 +28,11 @@
                         </el-menu>
                     </el-aside>
 
-                    <el-container style="background-color: whitesmoke; border-radius: 5px;">
+                    <el-container style="background-color: whitesmoke; border-radius: 5px; overflow: hidden;">
 
-                        <el-main style="justify-content: center;">
+                        <el-main style="justify-content: center; " >
                             <!-- 聊天页面 -->
-                            <div v-if="chatStarted">
+                            <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
                                         <div class="card"
@@ -43,8 +42,9 @@
                                     </div>
                                     <div v-else-if="message.role === 'assistant'" class="answer-message">
                                         <div class="card" style="width: 800px;">
-                                            <i class="el-icon-sunny"> {{ message.content }}</i>
-
+                                            <i class="el-icon-sunny">
+                                                <StreamText :text="message.content" :speed="50" />
+                                            </i>
                                             <div v-if="message.reference !== null">
                                                 <el-divider></el-divider>
                                                 <i class="el-icon-paperclip"
@@ -130,11 +130,13 @@ import Index from "./chatHome/index.vue";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
+import StreamText from '@/components/StreamText.vue';
 export default {
     mixins: [commonMethodsMixin],
     components: {
         Emoji,
-        Nav
+        Nav,
+        StreamText
     },
     data() {
         return {
@@ -232,7 +234,20 @@ export default {
             console.log("err", err)
         })
     },
+    watch: {
+        chatMessages() {
+            this.scrollToBottom();
+        },
+    },
     methods: {
+        scrollToBottom() {
+            this.$nextTick(() => {
+                const container = this.$refs.chatContainer;
+                if (container) {
+                    container.scrollTop = container.scrollHeight;
+                }
+            });
+        },
         getUserContent(history) {
             console.log("historyhistory", history)
             const userEntry = history.find(entry => entry.role === 'user');
@@ -668,5 +683,49 @@ export default {
     /* 设置高亮背景颜色 */
     color: #409EFF;
     /* 设置高亮字体颜色 */
+}
+
+.chat-container {
+    max-height: 500px;
+    /* 根据需要设置 */
+    overflow-y: auto;
+    /* overflow: hidden; */
+}
+/* 自定义滚动条样式 */
+.chat-container::-webkit-scrollbar {
+  width: 6px; /* 滚动条宽度 */
+}
+
+.chat-container::-webkit-scrollbar-track {
+  background: #f1f1f1; /* 滚动条轨道颜色 */
+  border-radius: 10px; /* 轨道圆角 */
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+  background: #dddddd; /* 滚动条拇指颜色 */
+  border-radius: 10px; /* 拇指圆角 */
+}
+
+.chat-container::-webkit-scrollbar-thumb:hover {
+  background: #abaaaa; /* 鼠标悬停时的颜色 */
+}
+
+
+.aside-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.aside-container::-webkit-scrollbar-track {
+  background: #ddd; 
+  border-radius: 10px; 
+}
+
+.aside-container::-webkit-scrollbar-thumb {
+  background: #abaaaa; 
+  border-radius: 10px; 
+}
+
+.aside-container::-webkit-scrollbar-thumb:hover {
+  background: #e4e2e2;
 }
 </style>
