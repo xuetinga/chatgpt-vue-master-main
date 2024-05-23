@@ -7,7 +7,8 @@
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
-            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
+            <div v-else
+                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
@@ -72,6 +73,8 @@
 
                 </el-header>
                 <el-container style="">
+                    <div ref="graphContainer" class="graph-container"></div>
+
                     <!-- <div> -->
                     <el-row type="flex" style=" width: 100%;flex-wrap: wrap;">
                         <el-col :span="8" v-for="(knowledge, index) in kbs" :key="index">
@@ -158,10 +161,40 @@
 
 <script>
 import { getChatMsg, gethistory, getstatic } from "@/api/getData";
-
+import * as d3 from 'd3';
 export default {
     data() {
         return {
+            graphData: {
+                nodes: [
+                    { id: '天融信在税务行业有哪些典型案例', group: 1 },
+                    { id: '海关一线和二线的区别', group: 2 },
+                    { id: '公安行业有哪些典型案例', group: 2 },
+                    { id: '介绍下海关的技术支撑平台', group: 2 },
+                    { id: '海关一线和二线的区别1', group: 2 },
+                    { id: '公安行业有哪些典型案例1', group: 2 },
+                    { id: '介绍下海关的技术支撑平台1', group: 2 },
+
+                    // { id: '关联词4', group: 2 },
+                    // { id: '关联词5', group: 2 },
+                    // { id: '关联词6', group: 2 },
+                    // { id: '关联词7', group: 2 },
+                    // 添加更多的节点
+                ],
+
+                links: [
+                    { source: '天融信在税务行业有哪些典型案例', target: '海关一线和二线的区别', value: 2, label: "海关" },
+                    { source: '天融信在税务行业有哪些典型案例', target: '公安行业有哪些典型案例', value: 20, label: "典型案例" },
+                    { source: '天融信在税务行业有哪些典型案例', target: '介绍下海关的技术支撑平台', value: 2, label: "海关" },
+                    { source: '天融信在税务行业有哪些典型案例', target: '海关一线和二线的区别1', value: 2, label: "海关" },
+                    { source: '天融信在税务行业有哪些典型案例', target: '公安行业有哪些典型案例1', value: 20, label: "典型案例" },
+                    { source: '天融信在税务行业有哪些典型案例', target: '介绍下海关的技术支撑平台1', value: 2, label: "海关" },
+                    // { source: '天融信在税务行业有哪些典型案例', target: '关联词5', value: 1 },
+                    // { source: '天融信在税务行业有哪些典型案例', target: '关联词6', value: 1 },
+                    // { source: '天融信在税务行业有哪些典型案例', target: '关联词7', value: 1 },
+                    // 添加更多的链接
+                ],
+            },
             configArray: [
                 {
                     label: '配置项1',
@@ -265,7 +298,7 @@ export default {
                 }
 
             ], // 存储配置的数组
-            kbs:[]
+            kbs: []
 
         };
     },
@@ -298,7 +331,141 @@ export default {
     },
 
     methods: {
-        deleteKnowledge (){
+        showGraph(index) {
+            const data = this.graphData;
+            const width = 1000;
+            const height = 600;
+            d3.select(this.$refs.graphContainer).selectAll('*').remove();
+
+            const svg = d3
+                .select(this.$refs.graphContainer)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            const linkDistance = 200; // 设置链接长度
+            const chargeStrength = -500; // 设置节点之间的距离，数值越负，距离越远
+
+            // // 定义箭头标记
+            // svg.append('defs').append('marker')
+            //     .attr('id', 'arrowhead')
+            //     .attr('viewBox', '-0 -5 10 10')
+            //     .attr('refX', 25) // 调整箭头位置
+            //     .attr('refY', 0)
+            //     .attr('orient', 'auto')
+            //     .attr('markerWidth', 6) // 调整箭头大小
+            //     .attr('markerHeight', 6) // 调整箭头大小
+            //     .attr('xoverflow', 'visible')
+            //     .append('svg:path')
+            //     .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+            //     .attr('fill', '#999')
+            //     .style('stroke', 'none');
+
+            const simulation = d3
+                .forceSimulation(data.nodes)
+                .force('link', d3.forceLink(data.links).id(d => d.id).distance(linkDistance))
+                .force('charge', d3.forceManyBody().strength(chargeStrength))
+                .force('center', d3.forceCenter(200, height / 2));
+
+            const extendLength = 200;
+
+            // 创建链接路径
+            const link = svg.append('g')
+                .attr('stroke', '#999')
+                .attr('stroke-opacity', 0.6)
+                .selectAll('line')
+                .data(data.links)
+                .enter()
+                .append('line')
+                .attr('stroke-width', d => Math.sqrt(d.value))
+                // .attr('marker-end', 'url(#arrowhead)'); // 为每条线添加箭头
+
+            // 创建链接文字
+            const linkText = svg.append('g')
+                .selectAll('text')
+                .data(data.links)
+                .enter()
+                .append('text')
+                .text(d => d.label) // 显示链接的标签
+                .attr('font-size', 12)
+                .attr('fill', '#000');
+
+            // 初始节点半径
+            const initialRadius = 20;
+            // 放大后的节点半径
+            const enlargedRadius = 30;
+
+            // 创建节点
+            const node = svg
+                .append('g')
+                .selectAll('circle')
+                .data(data.nodes)
+                .enter()
+                .append('circle')
+                .attr('r', initialRadius)
+                .attr('fill', d => (d.group === 1 ? 'red' : 'green'))
+                .call(
+                    d3
+                        .drag()
+                        .on('start', dragstarted)
+                        .on('drag', dragged)
+                        .on('end', dragended)
+                )
+                .on('mouseover', function (event, d) {
+                    // 鼠标悬停时放大节点
+                    d3.select(this).attr('r', enlargedRadius);
+                })
+                .on('mouseout', function (event, d) {
+                    // 鼠标移开时恢复节点原始大小
+                    d3.select(this).attr('r', initialRadius);
+                });
+
+            const text = svg
+                .append('g')
+                .selectAll('text')
+                .data(data.nodes)
+                .enter()
+                .append('text')
+                .text(d => d.id)
+                .attr('x', 15)
+                .attr('y', 3);
+
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+
+                linkText
+                    .attr('x', d => (d.source.x + d.target.x) / 2) // 文字在链接的中间位置
+                    .attr('y', d => (d.source.y + d.target.y) / 2);
+
+                node.attr('cx', d => d.x).attr('cy', d => d.y);
+
+                text.attr('x', d => d.x).attr('y', d => d.y);
+            });
+
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(event, d) {
+                d.fx = event.x;
+                d.fy = event.y;
+            }
+
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
+        },
+
+
+        deleteKnowledge() {
 
         },
         savesetting() {
@@ -402,5 +569,37 @@ export default {
     text-align: center;
     padding-left: 20;
     margin-bottom: 20px;
+}
+
+.graph-container {
+    max-height: 600px;
+    /* 根据需要设置 */
+    overflow-y: auto;
+    border: 1px solid #ddd;
+}
+
+/* 自定义滚动条样式 */
+.graph-container::-webkit-scrollbar {
+    width: 12px;
+    /* 滚动条宽度 */
+}
+
+.graph-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    /* 滚动条轨道颜色 */
+    border-radius: 10px;
+    /* 轨道圆角 */
+}
+
+.graph-container::-webkit-scrollbar-thumb {
+    background: #888;
+    /* 滚动条拇指颜色 */
+    border-radius: 10px;
+    /* 拇指圆角 */
+}
+
+.graph-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+    /* 鼠标悬停时的颜色 */
 }
 </style>
