@@ -21,7 +21,7 @@
                                     {{ getUserContent(question.history) }}
                                     <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
                                         @click.stop="deleteItem(index)"
-                                        style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);"></el-button>
+                                        style="position: absolute; right: 5px; top: 55%; transform: translateY(-51%);"></el-button>
                                 </span>
                             </el-menu-item>
                         </el-menu>
@@ -41,9 +41,13 @@
                                     </div>
                                     <div v-else-if="message.role === 'assistant'" class="answer-message">
                                         <div class="card" style="width: 800px;">
-                                            <i class="el-icon-sunny">
+
+                                            <span v-if="index === chatMessages.length - 1">
                                                 <StreamText :text="message.content" :speed="50" />
-                                            </i>
+                                            </span>
+                                            <span v-else>
+                                                {{ message.content }}
+                                            </span>
                                             <div v-if="message.reference !== null">
                                                 <el-divider></el-divider>
                                                 <i class="el-icon-paperclip"
@@ -102,7 +106,7 @@
                                     </span>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item v-for="item in models" :key="item.label"
-                                        @click.native="handleSelectDrop(item)">
+                                            @click.native="handleSelectDrop(item)">
                                             {{ item.value }}
                                         </el-dropdown-item>
                                     </el-dropdown-menu>
@@ -243,8 +247,8 @@ export default {
         },
     },
     methods: {
-        handleSelectDrop(item){
-            console.log("promptdefaultvalue",item.value)
+        handleSelectDrop(item) {
+            console.log("promptdefaultvalue", item.value)
             this.promptdefaultvalue = item.value
         },
         scrollToBottom() {
@@ -814,7 +818,8 @@ export default {
     box-shadow: none;
     /* flex-grow: 1; */
 }
-.input-select1{
+
+.input-select1 {
     margin-left: 20px;
 }
 </style>
