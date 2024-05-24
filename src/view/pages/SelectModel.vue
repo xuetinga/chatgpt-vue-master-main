@@ -1,65 +1,6 @@
 <template>
     <el-container style="height: 100vh;">
-        <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-            <div v-if="isCollapse"
-                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
-                <el-button @click="toggleCollapse">
-                    <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
-                </el-button>
-            </div>
-            <div v-else
-                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
-                <el-button @click="toggleCollapse">
-                    <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
-                </el-button>
-            </div>
-            <el-menu @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-                <el-menu-item index="0" @click.native="goToMain">
-                    <img src="../../imgs/logo.png" style="width: 25px; height: 25px;" />
-                    <span slot="title">Yoka</span>
-                </el-menu-item>
-                <el-menu-item index="1" @click.native="goToKnowledgeQA">
-                    <i class="el-icon-s-opportunity"></i>
-                    <span slot="title">知识库问答</span>
-                </el-menu-item>
-                <el-menu-item index="2" @click.native="goToFreeChat">
-                    <i class="el-icon-chat-dot-square"></i>
-                    <span slot="title">自由对话</span>
-                </el-menu-item>
-                <el-menu-item index="3" @click.native="goToCheckChat">
-                    <i class="el-icon-document"></i>
-                    <span slot="title">条款检查</span>
-                </el-menu-item>
-                <el-menu-item index="4" @click.native="goToTitleSetChat">
-                    <i class="el-icon-s-promotion"></i>
-                    <span slot="title">题目生成</span>
-                </el-menu-item>
-            </el-menu>
-
-
-
-            <div class="fixed-bottom-menu">
-                <el-menu default-active="7" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
-                    :collapse="isCollapse">
-                    <el-menu-item index="5" @click.native="goToKnowSetting">
-                        <i class="el-icon-coordinate"></i>
-                        <span slot="title">知识管理</span>
-                    </el-menu-item>
-                    <el-menu-item index="6" @click.native="goToPrompt">
-                        <i class="el-icon-setting"></i>
-                        <span slot="title">prompt设置</span>
-                    </el-menu-item>
-                    <el-menu-item index="7" @click.native="goToSelectModel">
-                        <i class="el-icon-chat-dot-round"></i>
-                        <span slot="title">模型选择</span>
-                    </el-menu-item>
-                    <el-menu-item index="8" @click.native="goToHelp">
-                        <i class="el-icon-magic-stick"></i>
-                        <span slot="title">帮助</span>
-                    </el-menu-item>
-                </el-menu>
-            </div>
-        </el-aside>
+        <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
 
         <el-container>
 
@@ -113,10 +54,20 @@
 
 <script>
 import { getChatMsg, gethistory, getstatic } from "@/api/getData";
-
+import Emoji from "@/components/Emoji.vue";
+import Nav from "@/components/Nav.vue";
+import commonMethodsMixin from '../../util/publicfun.js';
+import StreamText from '@/components/StreamText.vue';
 export default {
+    mixins: [commonMethodsMixin],
+    components: {
+        Emoji,
+        Nav,
+        StreamText
+    },
     data() {
         return {
+            selected: '7',
             currentDate: new Date(),
             isCollapse: false,
             dialogTableVisible: false,
@@ -166,6 +117,10 @@ export default {
     },
 
     methods: {
+        updateIsCollapse(value) {
+            this.isCollapse = value;
+            // this.updateIsCollapse(value);
+        },
         toggleCollapse() {
             this.isCollapse = !this.isCollapse; // 切换状态
         },
@@ -236,33 +191,5 @@ export default {
 </script>
 
 <style>
-.el-menu .el-menu-item {
-    width: 100%;
-}
 
-.fixed-bottom-menu {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 250px;
-}
-
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-    width: 200px;
-    min-height: 400px;
-}
-
-.el-menu-vertical-demo::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0);
-    /* 设置初始背景色透明 */
-    z-index: -1;
-    transition: background-color 0.3s ease;
-    /* 添加过渡效果 */
-}
 </style>

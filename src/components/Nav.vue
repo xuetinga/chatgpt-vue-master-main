@@ -38,7 +38,7 @@
 
 
     <div class="fixed-bottom-menu">
-      <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
+      <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse" :default-active="isSelect">
         <el-menu-item index="5" @click.native="goToKnowSetting">
           <i class="el-icon-coordinate"></i>
           <span slot="title">知识管理</span>
@@ -51,7 +51,7 @@
           <i class="el-icon-chat-dot-round"></i>
           <span slot="title">模型选择</span>
         </el-menu-item>
-        <el-menu-item index="7" @click.native="goToHelp">
+        <el-menu-item index="8" @click.native="goToHelp">
           <i class="el-icon-magic-stick"></i>
           <span slot="title">帮助</span>
         </el-menu-item>
@@ -129,4 +129,28 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-menu .el-menu-item {
+    border-radius: 10px;
+    /* 圆角 */
+}
+.el-menu .el-menu-item:hover {
+    border-radius: 10px;
+    /* 圆角 */
+}
+
+.el-menu-vertical-demo .el-menu-item:hover {
+    border-radius: 10px;
+    /* 圆角 */
+}
+.fixed-bottom-menu {
+    position: absolute;
+    bottom: 0;
+    width: 150px;
+    height: 250px;
+
+}
+.el-menu-vertical-demo{
+}
+
+</style>

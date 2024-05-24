@@ -1,71 +1,46 @@
 <template>
   <el-container style="height: 100vh;">
-    <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-      <div v-if="isCollapse"
-        style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
-        <el-button @click="toggleCollapse">
-          <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
-        </el-button>
-      </div>
-      <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
-        <el-button @click="toggleCollapse">
-          <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
-        </el-button>
-      </div>
-      <el-menu @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-        <el-menu-item index="0" @click.native="goToMain">
-          <img src="../../imgs/logo.png" style="width: 25px; height: 25px;" />
-          <span slot="title">Yoka</span>
-        </el-menu-item>
-        <el-menu-item index="1" @click.native="goToKnowledgeQA">
-          <i class="el-icon-s-opportunity"></i>
-          <span slot="title">知识库问答</span>
-        </el-menu-item>
-        <el-menu-item index="2" @click.native="goToFreeChat">
-          <i class="el-icon-chat-dot-square"></i>
-          <span slot="title">自由对话</span>
-        </el-menu-item>
-        <el-menu-item index="3" @click.native="goToCheckChat">
-          <i class="el-icon-document"></i>
-          <span slot="title">条款检查</span>
-        </el-menu-item>
-        <el-menu-item index="4" @click.native="goToTitleSetChat">
-          <i class="el-icon-s-promotion"></i>
-          <span slot="title">题目生成</span>
-        </el-menu-item>
-      </el-menu>
-
-
-
-      <div class="fixed-bottom-menu">
-        <el-menu class="el-menu-vertical-demo" default-active="8" @open="handleOpen" @close="handleClose"
-          :collapse="isCollapse">
-          <el-menu-item index="5" @click.native="goToKnowSetting">
-            <i class="el-icon-coordinate"></i>
-            <span slot="title">知识管理</span>
-          </el-menu-item>
-          <el-menu-item index="6" @click.native="goToPrompt">
-            <i class="el-icon-setting"></i>
-            <span slot="title">prompt设置</span>
-          </el-menu-item>
-          <el-menu-item index="7" @click.native="goToSelectModel">
-            <i class="el-icon-chat-dot-round"></i>
-            <span slot="title">模型选择</span>
-          </el-menu-item>
-          <el-menu-item index="8" @click.native="goToHelp">
-            <i class="el-icon-magic-stick"></i>
-            <span slot="title">帮助</span>
-          </el-menu-item>
-        </el-menu>
-      </div>
-    </el-aside>
+    <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
 
     <el-container>
       <el-header style="text-align: right; line-height: 60px">
         <!-- 头部内容 -->
-        DB-GPT
+        Yoka
       </el-header>
       <el-main>
+        使用 ChatGPT 需要多少费用？
+        ChatGPT 可以免费使用，但我们也提供订阅计划，可在定价页面上查看。
+
+
+
+        ChatGPT 如何工作？
+        ChatGPT 是基于 GPT-3.5 进行微调的，GPT-3.5 是一种经过训练以生成文本的语言模型。ChatGPT 通过使用带人类反馈的强化学习 (RLHF) 针对对话进行了优化，RLHF
+        是一种使用人类演示和偏好比较来引导模型朝着期望行为发展的方法。
+
+
+        为什么人工智能看起来如此真实、栩栩如生？
+        这些模型是根据互联网上人类编写的大量数据（包括对话）进行训练的，因此它提供的响应可能听起来像人类的。重要的是要记住，这是系统设计的直接结果（即最大限度地提高输出与模型训练数据集之间的相似性），并且这些输出有时可能不准确、不真实或具有误导性。
+
+
+
+        我能相信人工智能告诉我真相吗？
+        ChatGPT 不连接互联网，偶尔会给出错误答案。它对 2021 年以后的世界和事件的了解有限，有时还可能给出有害的指示或有偏见的内容。
+
+
+
+        我们建议检查模型的响应是否准确。如果您发现答案不正确，请使用“反对”按钮提供反馈。
+
+
+
+        谁可以查看我的对话？
+        作为我们对安全和负责任的人工智能的承诺的一部分，我们会审查对话以改进我们的系统并确保内容符合我们的政策和安全要求。
+
+
+
+        你会用我的谈话来进行训练吗？
+        当您使用我们为个人提供的服务（例如 ChatGPT）时，我们可能会使用您的内容来训练我们的模型。您可以通过我们的隐私门户选择退出训练，只需点击“不要对我的内容进行训练”，或者要关闭对您的 ChatGPT
+        对话的训练，请按照我们的数据控制常见问题解答中的说明进行操作。一旦您选择退出，新的对话将不会用于训练我们的模型。
+
 
       </el-main>
     </el-container>
@@ -117,19 +92,6 @@
 .sub-title {
   /* Styling for subtitle, if necessary */
 }
-
-.fixed-bottom-menu {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 250px;
-}
-
-fixed-button {}
-
-.el-menu .el-menu-item {
-  width: 100%;
-}
 </style>
 <script>
 window.addEventListener('resize', function () {
@@ -137,10 +99,20 @@ window.addEventListener('resize', function () {
   var fixedButton = document.querySelector('.fixed-button');
   fixedButton.style.top = asideRect.top + 'px';  // 调整 top 值以跟随 aside
 });
-
+import Emoji from "@/components/Emoji.vue";
+import Nav from "@/components/Nav.vue";
+import commonMethodsMixin from '../../util/publicfun.js';
+import StreamText from '@/components/StreamText.vue';
 export default {
+  mixins: [commonMethodsMixin],
+  components: {
+    Emoji,
+    Nav,
+    StreamText
+  },
   data() {
     return {
+      selected: '8',
       isCollapse: false,
       cards: [
         {
@@ -168,33 +140,37 @@ export default {
     };
   },
   methods: {
+    updateIsCollapse(value) {
+      this.isCollapse = value;
+      // this.updateIsCollapse(value);
+    },
     historyChat(question) {
-            console.log("this.question", question)
+      console.log("this.question", question)
 
-            this.chatStarted = true;
-            question.showDeleteButton = true
-            this.newhistory = question
-            this.chatMessages = question.history
-            this.chat_id = question.dialogue_id
-        },
-        showDeleteButton(index) {
-            console.log("indexindex", this.historyArrlist[index])
-            this.historyArrlist[index].showDeleteButton = true;
-        },
-        hideDeleteButton(index) {
-            this.historyArrlist[index].showDeleteButton = false
-        },
-        deleteItem(index) {
-            this.historyArrlist.splice(index, 1);
-        },
+      this.chatStarted = true;
+      question.showDeleteButton = true
+      this.newhistory = question
+      this.chatMessages = question.history
+      this.chat_id = question.dialogue_id
+    },
+    showDeleteButton(index) {
+      console.log("indexindex", this.historyArrlist[index])
+      this.historyArrlist[index].showDeleteButton = true;
+    },
+    hideDeleteButton(index) {
+      this.historyArrlist[index].showDeleteButton = false
+    },
+    deleteItem(index) {
+      this.historyArrlist.splice(index, 1);
+    },
     guid() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                var r = Math.random() * 16 | 0,
-                    v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
-        ,
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0,
+          v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+    ,
     toggleCollapse() {
       this.isCollapse = !this.isCollapse; // 切换状态
     },

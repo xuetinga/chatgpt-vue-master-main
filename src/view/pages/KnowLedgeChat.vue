@@ -256,7 +256,6 @@ export default {
             });
         },
         getUserContent(history) {
-            console.log("historyhistory", history)
             const userEntry = history.find(entry => entry.role === 'user');
             return userEntry ? userEntry.content : '';
         },
@@ -784,6 +783,7 @@ export default {
     background-color: transparent;
     justify-content: space-around;
     flex-direction: row;
+    margin-right: 10px;
 }
 
 .upload-icon,

@@ -1,61 +1,7 @@
 <template>
   <el-container style="height: 100vh;">
 
-    <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
-      <!-- <div class="fixed-button" style=" position: fixed; top:15px; border:0px;text-align: center;
-  z-index: 1000; background-color:pink;">
-        <el-button @click="toggleCollapse">
-          <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
-        </el-button>
-      </div> -->
-
-      <el-menu default-active="0" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-        <el-menu-item index="0" @click.native="goToMain">
-          <img src="../imgs/logo.png" style="width: 25px; height: 25px;" />
-                    <span slot="title">Yoka</span>
-
-        </el-menu-item>
-        <el-menu-item index="1" @click.native="goToKnowledgeQA">
-          <i class="el-icon-s-opportunity"></i>
-          <span slot="title">知识库问答</span>
-        </el-menu-item>
-        <el-menu-item index="2" @click.native="goToFreeChat">
-          <i class="el-icon-chat-dot-square"></i>
-          <span slot="title">自由对话</span>
-        </el-menu-item>
-        <el-menu-item index="3" @click.native="goToCheckChat">
-          <i class="el-icon-document"></i>
-          <span slot="title">条款检查</span>
-        </el-menu-item>
-        <el-menu-item index="4" @click.native="goToTitleSetChat">
-          <i class="el-icon-s-promotion"></i>
-          <span slot="title">题目生成</span>
-        </el-menu-item>
-      </el-menu>
-
-
-
-      <div class="fixed-bottom-menu">
-        <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
-          <el-menu-item index="5" @click.native="goToKnowSetting">
-            <i class="el-icon-coordinate"></i>
-            <span slot="title">知识管理</span>
-          </el-menu-item>
-          <el-menu-item index="6" @click.native="goToPrompt">
-            <i class="el-icon-setting"></i>
-            <span slot="title">prompt设置</span>
-          </el-menu-item>
-          <el-menu-item index="7" @click.native="goToSelectModel">
-            <i class="el-icon-chat-dot-round"></i>
-            <span slot="title">模型选择</span>
-          </el-menu-item>
-          <el-menu-item index="7" @click.native="goToHelp">
-            <i class="el-icon-magic-stick"></i>
-            <span slot="title">帮助</span>
-          </el-menu-item>
-        </el-menu>
-      </div>
-    </el-aside>
+    <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
 
     <el-container style=" justify-content: center;align-items: center;">
       <el-header style="text-align: center; line-height: 40px;margin-top:120px ; font-family: 'Courier New', Courier, monospace; font-size: 100px; font-weight: 700;">
@@ -179,18 +125,8 @@ export default {
   /* Styling for subtitle, if necessary */
 }
 
-.fixed-bottom-menu {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 250px;
-}
 
-fixed-button {}
 
-.el-menu .el-menu-item {
-  width: 100%;
-}
 </style>
 <script>
 window.addEventListener('resize', function() {
@@ -198,10 +134,20 @@ window.addEventListener('resize', function() {
   var fixedButton = document.querySelector('.fixed-button');
   fixedButton.style.top = asideRect.top + 'px';  // 调整 top 值以跟随 aside
 });
-
+import Emoji from "@/components/Emoji.vue";
+import Nav from "@/components/Nav.vue";
+import commonMethodsMixin from '../util/publicfun.js';
+import StreamText from '@/components/StreamText.vue';
   export default {
+    mixins: [commonMethodsMixin],
+    components: {
+        Emoji,
+        Nav,
+        StreamText
+    },
     data() {
       return {
+        selected: '0',
         isCollapse: false,
         cards: [
         {
@@ -229,6 +175,10 @@ window.addEventListener('resize', function() {
       };
     },
     methods: {
+      updateIsCollapse(value) {
+            this.isCollapse = value;
+            // this.updateIsCollapse(value);
+        },
       toggleCollapse() {
       this.isCollapse = !this.isCollapse; // 切换状态
       },

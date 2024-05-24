@@ -103,22 +103,5 @@ export default {
   /* Styling for subtitle, if necessary */
 }
 
-.fixed-bottom-menu {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 250px;
-}
 
-fixed-button {
-  position: fixed;
-  top: 20px;
-  width: 100%;
-  text-align: center;
-  right: -30px;
-  z-index: 1000;
-}
-.el-menu .el-menu-item{
-  width: 100%;
-}
 </style>
