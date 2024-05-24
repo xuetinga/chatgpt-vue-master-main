@@ -559,7 +559,7 @@ export default {
 .input-field-wrapper {
     display: flex;
     align-items: center;
-    /* flex-grow: 1; */
+    flex-grow: 1;
     position: relative;
 }
 

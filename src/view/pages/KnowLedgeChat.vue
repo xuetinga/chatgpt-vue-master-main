@@ -14,7 +14,7 @@
                         <el-menu @select="handleSelect"
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
                             <el-menu-item v-for="(question, index) in historyArrlist" :key="index"
-                                :index="index.toString()"  class="menu-item-history"
+                                :index="index.toString()" class="menu-item-history"
                                 @click="historyChat(question, index)">
                                 <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
@@ -88,33 +88,37 @@
                         <el-footer style="align-items: flex-start; display: flex">
                             <!-- Input area -->
 
-                            <el-select v-model="promptdefaultvalue" placeholder="默认">
-                                <el-option v-for="item in models" :key="item.value" :label="item.label"
-                                    :value="item.value" style="text-align: center;">
-                                    <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
-                                </el-option>
-                            </el-select>
-                            <!--    
-                            <div class="upload-container">
-                                <div class="file-list-container">
-                                    <el-upload-list :list="fileList" :disabled="true"></el-upload-list>
+
+                            <div class="input-wrapper">
+                                <!-- <el-select v-model="promptdefaultvalue" placeholder="默认" class="input-select1">
+                                    <el-option v-for="item in models" :key="item.value" :label="item.label"
+                                        :value="item.value" style="text-align: center;">
+                                        <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
+                                    </el-option>
+                                </el-select> -->
+                                <el-dropdown class="input-select1">
+                                    <span class="el-dropdown-link">
+                                        {{ promptdefaultvalue }}<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </span>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item v-for="item in models" :key="item.label"
+                                        @click.native="handleSelectDrop(item)">
+                                            {{ item.value }}
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown>
+                                <div class="input-field-wrapper">
+                                    <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
+                                        @input="sendMessage">
+                                    </el-input>
+
                                 </div>
-                                <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
-                                    :limit="fileLimit" :on-remove="handleRemove" :file-list="fileList"
-                                    :on-exceed="handleExceed" :before-upload="beforeUpload" :show-file-list="false"
-                                    :headers="headers" limit="1">
-                                    <el-button class="btn"><i class="el-icon-paperclip"></i>上传附件</el-button>
-                                </el-upload>
+                                <div class="input-button">
+                                    <i class="el-icon-s-promotion" @click="startChat" style="margin-right: 5px;">
+                                    </i>
+                                </div>
 
-                            </div>  -->
-
-                            <!-- 上传文件限制doc  上传文件请求接口 给的形式是啥  -->
-
-                            <!-- 配置 提示帮我生成摘要 内容是啥；模板2；模板2 这里点击页面要变化 请求接口 对话id 响应内容 -->
-
-                            <el-input v-model="newMessage" placeholder="请输入内容" @input="sendMessage" />
-                            <el-button type="primary" @click="startChat">提交</el-button>
-                            <!-- 两个接口  一个文件上传一个对话 -->
+                            </div>
                         </el-footer>
                     </el-container>
                 </el-container>
@@ -239,6 +243,10 @@ export default {
         },
     },
     methods: {
+        handleSelectDrop(item){
+            console.log("promptdefaultvalue",item.value)
+            this.promptdefaultvalue = item.value
+        },
         scrollToBottom() {
             this.$nextTick(() => {
                 const container = this.$refs.chatContainer;
@@ -747,7 +755,66 @@ export default {
 
 
 }
+
 .menu-item-history:hover {
-  border-radius: 10px; /* 圆角 */
+    border-radius: 10px;
+    /* 圆角 */
+}
+
+.upload-wrapper {
+    margin-right: 10px;
+    /* 调整上传按钮和输入框之间的间距 */
+    flex-grow: 1;
+    /* 占据剩余空间 */
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #f1f1f1;
+    border-radius: 20px;
+    width: 100%;
+    height: 40px;
+    justify-content: space-between;
+}
+
+.input-button {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    justify-content: space-around;
+    flex-direction: row;
+}
+
+.upload-icon,
+.send-btn {
+    /* background: transparent;
+    border: none; */
+
+}
+
+.icon-btn {
+    /* background: transparent;
+    border: none; */
+    /* color: #c0c4cc; */
+    /* 这个颜色可以根据你的设计调整 */
+    /* padding: 0 12px; */
+}
+
+.input-field-wrapper {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    position: relative;
+}
+
+.input-field .el-input__inner {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    /* flex-grow: 1; */
+}
+.input-select1{
+    margin-left: 20px;
 }
 </style>
