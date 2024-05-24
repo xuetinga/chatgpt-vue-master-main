@@ -7,7 +7,8 @@
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
             </div>
-            <div v-else style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
+            <div v-else
+                style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left: 90px;">
                 <el-button @click="toggleCollapse">
                     <i :class="`el-icon-arrow-${isCollapse ? 'right' : 'left'}`"></i>
                 </el-button>
@@ -59,7 +60,7 @@
             </div>
         </el-aside>
 
-        <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }" >
+        <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
             <el-main>
 
                 <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
@@ -92,14 +93,15 @@
                             <div v-if="chatStarted">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
-                                            <i class="el-icon-user">  {{ message.content }}</i>
+                                        <div class="card"
+                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                            <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
                                     <div v-else-if="message.role === 'assistant'" class="answer-message">
                                         <div class="card" style="width: 800px;">
-                                            <i class="el-icon-sunny">  {{ message.content }}</i>
-                                            
+                                            <i class="el-icon-sunny"> {{ message.content }}</i>
+
                                             <el-divider></el-divider>
                                             <i class="el-icon-paperclip"
                                                 style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
@@ -149,15 +151,18 @@
                 </el-option>
             </el-select> -->
 
-                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
-                                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
-                                :before-upload="beforeUpload" :show-file-list="true" :headers="headers" limit="1"
-                                :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
-                                <!-- action="/api/file/fileUpload" -->
-                                <el-button class="btn"><i class="el-icon-paperclip"></i>上传条款</el-button>
-                            </el-upload>
-                            <el-input v-model="newMessage" placeholder="请输入内容" @input="sendMessage" />
-                            <el-button type="primary" @click="startChat">提交</el-button>
+                            <div class="uploadcontainer">
+                                <div class="upload-wrapper">
+                                    <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
+                                        :limit="fileLimit" :on-remove="handleRemove" :file-list="fileList"
+                                        :on-exceed="handleExceed" :headers="headers" :before-upload="beforeUpload"
+                                        :show-file-list="true" limit="1">
+                                        <el-button class="btn"><i class="el-icon-paperclip"></i>上传条款</el-button>
+                                    </el-upload>
+                                </div>
+                                <el-input v-model="newMessage" placeholder="请输入内容" @input="sendMessage" />
+                                <el-button type="primary" @click="startChat">提交</el-button>
+                            </div>
                         </el-footer>
                     </el-container>
                 </el-container>
@@ -269,7 +274,7 @@ export default {
         };
     },
     methods: {
-                //上传文件之前
+        //上传文件之前
         beforeUpload(file) {
             if (file.type != "" || file.type != null || file.type != undefined) {
                 //截取文件的后缀，判断文件类型
@@ -355,7 +360,7 @@ export default {
             });
         }
         ,
-        startChat(){
+        startChat() {
             if (this.newMessage.trim() !== '') {
                 console.log(" this.newMessage", this.newMessage)
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
@@ -373,7 +378,7 @@ export default {
             let params = {
                 dialogue_id: this.chat_id,
                 query: this.newMessage,
-                config:JSON.stringify(config)
+                config: JSON.stringify(config)
                 // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                 // {role:"hh",content:"xx"}
                 // ,
@@ -544,5 +549,13 @@ export default {
 <style>
 .el-menu .el-menu-item {
     width: 100%;
+}
+.uploadcontainer {
+  display: flex;
+  align-items: center;
+}
+.upload-wrapper {
+  margin-right: 10px; /* 调整上传按钮和输入框之间的间距 */
+  flex-grow: 1; /* 占据剩余空间 */
 }
 </style>

@@ -7,6 +7,7 @@
 <script>
 
 import Home from './view/home.vue'
+
 import { getChatMsg, gethistory,getstatic } from "@/api/getData";
 
 export default {

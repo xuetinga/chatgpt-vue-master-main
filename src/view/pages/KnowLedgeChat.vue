@@ -14,9 +14,8 @@
                         <el-menu @select="handleSelect"
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
                             <el-menu-item v-for="(question, index) in historyArrlist" :key="index"
-                                :index="index.toString()" width="190px"
-                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-                                @click="historyChat(question)">
+                                :index="index.toString()"  class="menu-item-history"
+                                @click="historyChat(question, index)">
                                 <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
                                     {{ getUserContent(question.history) }}
@@ -30,7 +29,7 @@
 
                     <el-container style="background-color: whitesmoke; border-radius: 5px; overflow: hidden;">
 
-                        <el-main style="justify-content: center;overflow: hidden; " >
+                        <el-main style="justify-content: center;overflow: hidden; ">
                             <!-- 聊天页面 -->
                             <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
@@ -444,10 +443,12 @@ export default {
             this.chatMessages = [];
 
         },
-        historyChat(question) {
+        historyChat(question, index) {
             console.log("this.question", question)
             this.chatStarted = true;
-            question.showDeleteButton = true
+            this.historyArrlist.forEach((item, i) => {
+                item.showDeleteButton = i === index;
+            });
             this.newhistory = question
             this.chatMessages = question.history
             this.chat_id = question.dialogue_id
@@ -692,41 +693,61 @@ export default {
     /* width: 100%; */
     /* overflow: hidden; */
 }
+
 /* 自定义滚动条样式 */
 .chat-container::-webkit-scrollbar {
-  width: 6px; /* 滚动条宽度 */
+    width: 6px;
+    /* 滚动条宽度 */
 }
 
 .chat-container::-webkit-scrollbar-track {
-  background:transparent; /* 滚动条轨道颜色 */
-  border-radius: 10px; /* 轨道圆角 */
+    background: transparent;
+    /* 滚动条轨道颜色 */
+    border-radius: 10px;
+    /* 轨道圆角 */
 }
 
 .chat-container::-webkit-scrollbar-thumb {
-  background: transparent; /* 滚动条拇指颜色 */
-  border-radius: 10px; /* 拇指圆角 */
+    background: transparent;
+    /* 滚动条拇指颜色 */
+    border-radius: 10px;
+    /* 拇指圆角 */
 }
 
 .chat-container::-webkit-scrollbar-thumb:hover {
-  background: transparent; /* 鼠标悬停时的颜色 */
+    background: transparent;
+    /* 鼠标悬停时的颜色 */
 }
 
 
 .aside-container::-webkit-scrollbar {
-  width: 6px;
+    width: 6px;
 }
 
 .aside-container::-webkit-scrollbar-track {
-  background: #ddd; 
-  border-radius: 10px; 
+    background: #ddd;
+    border-radius: 10px;
 }
 
 .aside-container::-webkit-scrollbar-thumb {
-  background: #abaaaa; 
-  border-radius: 10px; 
+    background: #abaaaa;
+    border-radius: 10px;
 }
 
 .aside-container::-webkit-scrollbar-thumb:hover {
-  background: #e4e2e2;
+    background: #e4e2e2;
+}
+
+.menu-item-history {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 5px;
+    border-radius: 10px;
+
+
+}
+.menu-item-history:hover {
+  border-radius: 10px; /* 圆角 */
 }
 </style>
