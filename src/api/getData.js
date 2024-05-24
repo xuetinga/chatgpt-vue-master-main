@@ -49,7 +49,7 @@ export const chatupload = params => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: `http://43.140.220.187:8001/upload`,
+    url: `http://43.140.220.187:8001/upload/img`,
     data: params,
   }).then(res => {
     return res

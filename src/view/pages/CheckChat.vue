@@ -142,26 +142,30 @@
 
 
                         <el-footer style="align-items: flex-start; display: flex">
-                            <!-- Input area -->
 
-                            <!-- <el-select v-model="promptdefaultvalue" placeholder="请选择配置">
-                <el-option v-for="item in promptall" :key="item.value" :label="item.label"
-                    :value="item.value" style="text-align: center;">
-                    <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
-                </el-option>
-            </el-select> -->
+                            <div class="input-wrapper">
 
-                            <div class="uploadcontainer">
-                                <div class="upload-wrapper">
-                                    <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
-                                        :limit="fileLimit" :on-remove="handleRemove" :file-list="fileList"
-                                        :on-exceed="handleExceed" :headers="headers" :before-upload="beforeUpload"
-                                        :show-file-list="true" limit="1">
-                                        <el-button class="btn"><i class="el-icon-paperclip"></i>上传条款</el-button>
-                                    </el-upload>
+                                <div class="input-field-wrapper">
+                                    <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
+                                        @input="sendMessage">
+                                    </el-input>
+
                                 </div>
-                                <el-input v-model="newMessage" placeholder="请输入内容" @input="sendMessage" />
-                                <el-button type="primary" @click="startChat">提交</el-button>
+                                <div class="input-button">
+                                    <div v-for="(file, index) in fileList" :key="index" class="file-tag">
+                                        <span
+                                            style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
+                file.name }}</span>
+                                        <i class="el-icon-close" @click="removeFile(index)"></i>
+                                    </div>
+                                    <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
+                                        :before-upload="beforeUpload" :show-file-list="false">
+                                        <i class="el-icon-paperclip" style="margin-right: 5px;"></i>
+                                    </el-upload>
+                                    <i class="el-icon-s-promotion" @click="startChat" style="margin-right: 5px;">
+                                    </i>
+                                </div>
+
                             </div>
                         </el-footer>
                     </el-container>
@@ -274,47 +278,38 @@ export default {
         };
     },
     methods: {
-        //上传文件之前
+
         beforeUpload(file) {
-            if (file.type != "" || file.type != null || file.type != undefined) {
-                //截取文件的后缀，判断文件类型
-                const FileExt = file.name.replace(/.+\./, "").toLowerCase();
-                //计算文件的大小
-                const isLt5M = file.size / 1024 / 1024 < 50; //这里做文件大小限制
-                //如果大于50M
-                if (!isLt5M) {
-                    this.$showMessage('上传文件大小不能超过 50MB!');
-                    return false;
-                }
-                //如果文件类型不在允许上传的范围内
-                if (this.fileType.includes(FileExt)) {
-                    return true;
-                }
-                else {
-                    this.$message.error("上传文件格式不正确!");
-                    return false;
-                }
+            const FileExt = file.name.split('.').pop().toLowerCase();
+            const isLt50M = file.size / 1024 / 1024 < 50;
+
+            if (!isLt50M) {
+                this.$message.error('上传文件大小不能超过 50MB!');
+                return false;
+            }
+
+            if (!this.fileType.includes(FileExt)) {
+                this.$message.error('上传文件格式不正确!');
+                return false;
+            }
+
+            return true;
+        },
+        handleClose(index) {
+            this.fileList.splice(index, 1);
+            if (this.fileList.length === 0) {
+                this.fileflag = true;
+                this.$set(this.rules.url, 0, { required: true, validator: this.validatorUrl, trigger: 'blur' });
             }
         },
-        //上传了的文件给移除的事件，由于我没有用到默认的展示，所以没有用到
-        handleRemove() {
-        },
-        //这是我自定义的移除事件
-        handleClose(i) {
-            this.fileList.splice(i, 1);//删除上传的文件
-            if (this.fileList.length == 0) {//如果删完了
-                this.fileflag = true;//显示url必填的标识
-                this.$set(this.rules.url, 0, { required: true, validator: this.validatorUrl, trigger: 'blur' })//然后动态的添加本地方法的校验规则
-            }
-        },
-        //超出文件个数的回调
         handleExceed() {
             this.$message({
                 type: 'warning',
                 message: '超出最大上传文件数量的限制！'
-            }); return
+            });
+            return;
         },
-        //上传文件的事件
+
         uploadFile(item) {
             // this.$showMessage('文件上传中........')
             //上传文件的需要formdata类型;所以要转
@@ -505,42 +500,7 @@ export default {
         goToHelp() {
             window.location.href = '#/HelpChat';
         },
-        submitForm() {
-            console.log('Submitting form data along with the fileList:',);
 
-        },
-        handleRemove(file, fileList) {
-            console.log(file, fileList);
-        },
-        handlePreview(file) {
-            console.log(file);
-        },
-        handleExceed(files, fileList) {
-            this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-        },
-        beforeRemove(file, fileList) {
-            return this.$confirm(`确定移除 ${file.name}？`);
-        },
-        uploadFiles() {
-            const formData = new FormData();
-            this.fileList.forEach(file => {
-                formData.append('files', file.raw);
-            });
-
-            axios.post('https://your-remote-api.com/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-                .then(response => {
-                    // 处理上传成功的逻辑
-                    console.log('文件上传成功', response.data);
-                })
-                .catch(error => {
-                    // 处理上传失败的逻辑
-                    console.error('文件上传失败', error);
-                });
-        }
 
     }
 }
@@ -550,12 +510,86 @@ export default {
 .el-menu .el-menu-item {
     width: 100%;
 }
+
 .uploadcontainer {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
+
 .upload-wrapper {
-  margin-right: 10px; /* 调整上传按钮和输入框之间的间距 */
-  flex-grow: 1; /* 占据剩余空间 */
+    margin-right: 10px;
+    /* 调整上传按钮和输入框之间的间距 */
+    flex-grow: 1;
+    /* 占据剩余空间 */
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #f1f1f1;
+    border-radius: 20px;
+    width: 100%;
+    height: 40px;
+    justify-content: space-between;
+}
+
+.input-button {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    justify-content: space-around;
+    flex-direction: row;
+}
+
+.upload-icon,
+.send-btn {
+    /* background: transparent;
+    border: none; */
+
+}
+
+.icon-btn {
+    /* background: transparent;
+    border: none; */
+    /* color: #c0c4cc; */
+    /* 这个颜色可以根据你的设计调整 */
+    /* padding: 0 12px; */
+}
+
+.input-field-wrapper {
+    display: flex;
+    align-items: center;
+    /* flex-grow: 1; */
+    position: relative;
+}
+
+.input-field .el-input__inner {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    /* flex-grow: 1; */
+}
+
+.file-tag {
+    display: flex;
+    align-items: center;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    padding: 4px 4px;
+    position: relative;
+    line-height: 18px;
+}
+
+.file-tag span {
+    margin-right: 0px;
+}
+
+.file-tag i {
+    cursor: pointer;
+    display: none;
+}
+
+.file-tag:hover i {
+    display: inline-block;
 }
 </style>
