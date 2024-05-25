@@ -132,7 +132,7 @@
 </template>
 
 <script>
-import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat ,delete_dialogue} from "@/api/getData";
+import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue } from "@/api/getData";
 import Index from "./chatHome/index.vue";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
@@ -260,14 +260,14 @@ export default {
             });
         },
         getUserContent(history) {
-            if(history.length>0){
+            if (history.length > 0) {
                 const userEntry = history.find(entry => entry.role === 'user');
                 return userEntry ? userEntry.content : '';
             }
-            else{
+            else {
                 return ""
             }
-         
+
         },
         showDeleteButton(index) {
             this.$set(this.historyArrlist[index], 'showDeleteButton', true);
@@ -276,16 +276,41 @@ export default {
             this.$set(this.historyArrlist[index], 'showDeleteButton', false);
         },
         deleteItem(index) {
-            console.log("deleteItem",this.historyArrlist[index])
-            let params = {
-                    dialogue_id: this.historyArrlist[index].dialogue_id,
-                }
-            delete_dialogue(params).then((res)=>{
-                this.historyArrlist.splice(index, 1);
-                console.log("res",res)
-            }).catch((err)=>{
+            console.log("deleteItem", this.historyArrlist[index])
 
-            })
+            let params = {
+                dialogue_id: this.historyArrlist[index].dialogue_id,
+            }
+            this.$confirm('此操作将永久删除该对话, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                });
+                delete_dialogue(params).then((res) => {
+                    this.historyArrlist.splice(index, 1);
+                    this.newMessage = ""
+                    this.chatStarted = false
+                    this.$nextTick(() => {
+                        document.activeElement.blur();
+                    });
+                    this.$nextTick(() => {
+                        this.$refs.dummyInput.focus();
+                    });
+                }).catch((err) => {
+
+                })
+
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
+
         },
         handleSelect(index) {
             this.activeIndex = Number(index);
@@ -479,10 +504,8 @@ export default {
             this.chatMessages = question.history
             this.chat_id = question.dialogue_id
         },
-   
-        deleteItem(index) {
-            this.historyArrlist.splice(index, 1);
-        },
+
+
         //上传文件之前
         beforeUpload(file) {
             if (file.type != "" || file.type != null || file.type != undefined) {
