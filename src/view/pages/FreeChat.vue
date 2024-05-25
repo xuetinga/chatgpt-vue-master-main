@@ -33,6 +33,7 @@
                         <el-main style="justify-content: center;">
                             <!-- 聊天页面 -->
                             <div v-if="chatStarted">
+                             
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message1">
                                         <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
@@ -144,12 +145,14 @@ import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
 import StreamText from '@/components/StreamText.vue';
+import VueMarkdown from 'vue-markdown';
 export default {
     mixins: [commonMethodsMixin],
     components: {
         Emoji,
         Nav,
-        StreamText
+        StreamText,
+        VueMarkdown
     },
     data() {
         return {

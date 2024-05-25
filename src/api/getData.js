@@ -121,4 +121,16 @@ export const delete_dialogue = params => {
     return res
   })
 }
+// 获取聊天信息
+export const chatStreamgpt = params => {
+  return axios({
+    method: 'post',
+    // url: `http://43.140.220.187:8001/chat/knowledge_base_chat`,
 
+    url: `http://43.140.220.187:8001/stream-chat?dialogue_id=${params.dialogue_id}&query=${params.query}&config=${params.config}`,
+    data: params,
+
+  }).then(res => {
+    return res
+  })
+}

@@ -132,7 +132,7 @@
 </template>
 
 <script>
-import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue } from "@/api/getData";
+import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue, chatStreamgpt } from "@/api/getData";
 import Index from "./chatHome/index.vue";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
@@ -147,6 +147,7 @@ export default {
     },
     data() {
         return {
+            currentStreamMessage: '',
             activeIndex: null,
             selected: '1',
             chat_id: "",
@@ -401,9 +402,13 @@ export default {
                     // ,
                 }
                 console.log("params", params)
-
+                chatStreamgpt(params).then((res) => {
+                    const streamData = res.data; // Assuming this contains the stream data
+                    console.log("chatStreamgpt",)
+                    this.handleStreamData(streamData);
+                });
                 chatgpt(params).then((res) => {
-                    this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
+                    // this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
                     this.newhistory = {
                         dialogue_id: this.chat_id, history: this.chatMessages
                     }
@@ -419,6 +424,7 @@ export default {
 
 
                 });
+               
             }
             else {
 
@@ -434,6 +440,22 @@ export default {
             }
 
 
+        },
+        handleStreamData(streamData) {
+            const streamLines = streamData.split('\r\n\r\n').filter(line => line.startsWith('data: ')).map(line => line.slice(6));
+            let currentIndex = 0;
+            let streamMessage = { content: '', role: 'assistant' };
+            this.chatMessages.push(streamMessage);
+
+            const streamNextChunk = () => {
+                if (currentIndex < streamLines.length) {
+                    streamMessage.content += streamLines[currentIndex];
+                    this.$set(this.chatMessages, this.chatMessages.length - 1, { ...streamMessage });
+                    currentIndex++;
+                    setTimeout(streamNextChunk, 10); // Adjust the timing as needed
+                }
+            };
+            streamNextChunk()
         },
         newChat() {
             if (this.chatMessages.length == 0) {
