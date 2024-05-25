@@ -108,4 +108,17 @@ export const setclause_check = params => {
     return res
   })
 }
+// 删除对应id的对话
+export const delete_dialogue = params => {
+  return axios({
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://43.140.220.187:8001/chat/delete_chat/${params.dialogue_id}`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
 

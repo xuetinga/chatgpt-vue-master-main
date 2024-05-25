@@ -132,7 +132,7 @@
 </template>
 
 <script>
-import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat } from "@/api/getData";
+import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat ,delete_dialogue} from "@/api/getData";
 import Index from "./chatHome/index.vue";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
@@ -260,8 +260,14 @@ export default {
             });
         },
         getUserContent(history) {
-            const userEntry = history.find(entry => entry.role === 'user');
-            return userEntry ? userEntry.content : '';
+            if(history.length>0){
+                const userEntry = history.find(entry => entry.role === 'user');
+                return userEntry ? userEntry.content : '';
+            }
+            else{
+                return ""
+            }
+         
         },
         showDeleteButton(index) {
             this.$set(this.historyArrlist[index], 'showDeleteButton', true);
@@ -270,7 +276,16 @@ export default {
             this.$set(this.historyArrlist[index], 'showDeleteButton', false);
         },
         deleteItem(index) {
-            this.historyArrlist.splice(index, 1);
+            console.log("deleteItem",this.historyArrlist[index])
+            let params = {
+                    dialogue_id: this.historyArrlist[index].dialogue_id,
+                }
+            delete_dialogue(params).then((res)=>{
+                this.historyArrlist.splice(index, 1);
+                console.log("res",res)
+            }).catch((err)=>{
+
+            })
         },
         handleSelect(index) {
             this.activeIndex = Number(index);
@@ -464,16 +479,10 @@ export default {
             this.chatMessages = question.history
             this.chat_id = question.dialogue_id
         },
-        // showDeleteButton(index) {
-        //     console.log("indexindex", this.historyArrlist[index])
-        //     this.historyArrlist[index].showDeleteButton = true;
-        // },
-        // hideDeleteButton(index) {
-        //     this.historyArrlist[index].showDeleteButton = false
-        // },
-        // deleteItem(index) {
-        //     this.historyArrlist.splice(index, 1);
-        // },
+   
+        deleteItem(index) {
+            this.historyArrlist.splice(index, 1);
+        },
         //上传文件之前
         beforeUpload(file) {
             if (file.type != "" || file.type != null || file.type != undefined) {
