@@ -33,10 +33,11 @@
                         <el-main style="justify-content: center;">
                             <!-- 聊天页面 -->
                             <div v-if="chatStarted">
-                             
+
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message1">
-                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                        <div class="card"
+                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
                                             <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
@@ -46,22 +47,19 @@
                                             <i class="el-icon-sunny"> {{ message.content }}</i>
                                         </div>
                                         <div class="floating-actions" v-show="floatactiveIndex === index">
-                                     
+
                                             <el-tooltip class="item" effect="dark" content="朗读"
                                                 placement="bottom-start">
                                                 <i class="el-icon-video-play" @click="readAloud"></i>
                                             </el-tooltip>
-                                            <el-tooltip class="item" effect="dark" content="复制"
-                                                placement="bottom">
+                                            <el-tooltip class="item" effect="dark" content="复制" placement="bottom">
                                                 <i class="el-icon-copy-document" @click="copyContent"></i>
                                             </el-tooltip>
-                                            <el-tooltip class="item" effect="dark" content="点赞"
-                                                placement="bottom-end">
+                                            <el-tooltip class="item" effect="dark" content="点赞" placement="bottom-end">
                                                 <i class="el-icon-thumb" @click="likeMessage"></i>
 
                                             </el-tooltip>
-                                            <el-tooltip class="item" effect="dark" content="点踩"
-                                                placement="bottom-end">
+                                            <el-tooltip class="item" effect="dark" content="点踩" placement="bottom-end">
                                                 <i class="el-icon-bottom" @click="dislikeMessage"></i>
 
                                             </el-tooltip>
@@ -105,32 +103,53 @@
                         <el-footer style="align-items: flex-start; display: flex">
                             <!-- Input area -->
 
-                            <el-select v-model="promptdefaultvalue" placeholder="提示词" style="width: 130px;">
-                                <el-option v-for="item in promptall" :key="item.value" :label="item.label"
-                                    :value="item.value" style="text-align: center;">
-                                    <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
-                                </el-option>
-                            </el-select>
-                            <el-select v-model="modeldefaultvalue" placeholder="默认" style="width: 130px;">
-                                <el-option v-for="item in models" :key="item.value" :label="item.label" :value="item.value"
-                                    style="text-align: center;">
-                                    <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
-                                </el-option>
-                            </el-select>
-                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
-                                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
-                                :before-upload="beforeUpload" :show-file-list="true" :headers="headers"
-                                :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
-                                <!-- action="/api/file/fileUpload" -->
-                                <el-button class="btn"><i class="el-icon-paperclip"></i>附件</el-button>
-                            </el-upload>
-                            <!-- 上传文件限制doc  上传文件请求接口 给的形式是啥  -->
 
-                            <!-- 配置 提示帮我生成摘要 内容是啥；模板2；模板2 这里点击页面要变化 请求接口 对话id 响应内容 -->
 
-                            <el-input v-model="newMessage" placeholder="请输入内容" @input="sendMessage" />
-                            <el-button type="primary" @click="startChat">提交</el-button>
-                            <!-- 两个接口  一个文件上传一个对话 -->
+                            <div class="input-wrapper">
+                                <el-dropdown class="input-select1">
+                                    <span class="el-dropdown-link">
+                                        {{ promptdefaultvalue }}<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </span>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item v-for="item in promptall" :key="item.label"
+                                            @click.native="handleSelectDrop1(item)">
+                                            {{ item.value }}
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown>
+                                <el-dropdown class="input-select1">
+                                    <span class="el-dropdown-link">
+                                        {{ modeldefaultvalue }}<i class="el-icon-arrow-down el-icon--right"></i>
+                                    </span>
+                                    <el-dropdown-menu slot="dropdown">
+                                        <el-dropdown-item v-for="item in models" :key="item.label"
+                                            @click.native="handleSelectDrop(item)">
+                                            {{ item.value }}
+                                        </el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </el-dropdown>
+                                <div class="input-field-wrapper">
+                                    <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
+                                        @input="sendMessage">
+                                    </el-input>
+
+                                </div>
+                                <div class="input-button">
+                                    <div v-for="(file, index) in fileList" :key="index" class="file-tag">
+                                        <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
+            file.name }}</span>
+                                        <i class="el-icon-close" @click="removeFile(index)"></i>
+                                    </div>
+                                    <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
+                                        :before-upload="beforeUpload" :show-file-list="false">
+                                        <i class="el-icon-paperclip" style="margin-right: 5px;"></i>
+                                    </el-upload>
+                                    <i class="el-icon-s-promotion" @click="startChat" style="margin-right: 5px;">
+                                    </i>
+                                </div>
+
+
+                            </div>
                         </el-footer>
                     </el-container>
                 </el-container>
@@ -156,7 +175,7 @@ export default {
     },
     data() {
         return {
-            selected:'2',
+            selected: '2',
             floatactiveIndex: null,
             showActions: false,
             promptall: [{
@@ -166,8 +185,7 @@ export default {
             }, {
                 value: '内容检查',
             }],
-            promptdefaultvalue: 'default',
-            modeldefaultvalue: "default",
+
             isCollapse: false,
             cards: [
                 {
@@ -197,6 +215,7 @@ export default {
             configs: [],
             promptall: [],
             promptdefaultvalue: '翻译1',
+            modeldefaultvalue: "default",
             dynamicMarginLeft: '50px',
             isCollapse: false,
             newMessage: '',
@@ -290,16 +309,24 @@ export default {
         answerMessageElement.removeEventListener('mouseleave', this.hideActionButtons);
     },
     methods: {
+        handleSelectDrop1(item) {
+            console.log("promptdefaultvalue", item.value)
+            this.promptdefaultvalue = item.value
+        },
+        handleSelectDrop(item) {
+            console.log("modeldefaultvalue", item.value)
+            this.modeldefaultvalue = item.value
+        },
         updateIsCollapse(value) {
             this.isCollapse = value;
             // this.updateIsCollapse(value);
         },
         showActionButtons(index) {
-            console.log("index",index)
-            if(index == 0){
+            console.log("index", index)
+            if (index == 0) {
                 this.floatactiveIndex = -1;
             }
-            else{
+            else {
                 this.floatactiveIndex = index;
 
             }
@@ -431,39 +458,53 @@ export default {
             if (this.newMessage.trim() !== '') {
                 console.log(" this.newMessage", this.newMessage)
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
-            }
-            if (this.chat_id == "") {
-                this.chat_id = this.guid()
-            }
-            console.log("chat_id", this.chat_id)
-            let config = {
-                "model": this.modeldefaultvalue,
-                "prompt": this.promptdefaultvalue,
-                "knowledge": "default",
-                "LLM_config": "default"
-            }
-            let params = {
-                dialogue_id: this.chat_id,
-                query: this.newMessage,
-                config: JSON.stringify(config)
-                // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
-                // {role:"hh",content:"xx"}
-                // ,
-            }
-            console.log("params", params)
-
-            getChatchat(params).then((res) => {
-                console.log("resresresgetChatchat", res)
-
-                this.chatMessages.push({ content: res.response, role: 'assistant', reference: res.reference });
-                this.newhistory = {
-                    dialogue_id: this.chat_id, history: this.chatMessages
+                if (this.chat_id == "") {
+                    this.chat_id = this.guid()
                 }
-                this.historyArrlist.unshift(this.newhistory)
-                this.newMessage = ''; // Clear the input after sending.
-                this.chatStarted = true; // Switch to chat view.
+                console.log("chat_id", this.chat_id)
+                let config = {
+                    "model": this.modeldefaultvalue,
+                    "prompt": this.promptdefaultvalue,
+                    "knowledge": "default",
+                    "LLM_config": "default"
+                }
+                let params = {
+                    dialogue_id: this.chat_id,
+                    query: this.newMessage,
+                    config: JSON.stringify(config)
+                    // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
+                    // {role:"hh",content:"xx"}
+                    // ,
+                }
+                console.log("params", params)
 
-            });
+                getChatchat(params).then((res) => {
+                    console.log("resresresgetChatchat", res)
+
+                    this.chatMessages.push({ content: res.response, role: 'assistant', reference: res.reference });
+                    this.newhistory = {
+                        dialogue_id: this.chat_id, history: this.chatMessages
+                    }
+                    this.historyArrlist.unshift(this.newhistory)
+                    this.newMessage = ''; // Clear the input after sending.
+                    this.chatStarted = true; // Switch to chat view.
+
+                });
+            }
+
+
+            else {
+
+
+                this.$alert('请输入内容', '提示', {
+                    confirmButtonText: '确定',
+                    callback: action => {
+
+                    }
+                });
+
+
+            }
         },
         newChat() {
             if (this.chatMessages.length == 0) {
@@ -580,4 +621,55 @@ export default {
     flex-direction: column;
 }
 
+.upload-icon,
+.send-btn {
+    /* background: transparent;
+    border: none; */
+
+}
+
+.icon-btn {
+    /* background: transparent;
+    border: none; */
+    /* color: #c0c4cc; */
+    /* 这个颜色可以根据你的设计调整 */
+    /* padding: 0 12px; */
+}
+
+.input-field-wrapper {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    position: relative;
+}
+
+.input-field .el-input__inner {
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    /* flex-grow: 1; */
+}
+
+.file-tag {
+    display: flex;
+    align-items: center;
+    background-color: #e0e0e0;
+    border-radius: 12px;
+    padding: 4px 4px;
+    position: relative;
+    line-height: 18px;
+}
+
+.file-tag span {
+    margin-right: 0px;
+}
+
+.file-tag i {
+    cursor: pointer;
+    display: none;
+}
+
+.file-tag:hover i {
+    display: inline-block;
+}
 </style>

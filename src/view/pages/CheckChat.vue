@@ -95,9 +95,8 @@
                                 </div>
                                 <div class="input-button">
                                     <div v-for="(file, index) in fileList" :key="index" class="file-tag">
-                                        <span
-                                            style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
-                file.name }}</span>
+                                        <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
+            file.name }}</span>
                                         <i class="el-icon-close" @click="removeFile(index)"></i>
                                     </div>
                                     <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
@@ -133,7 +132,7 @@ export default {
     },
     data() {
         return {
-            selected:"3",
+            selected: "3",
             newMessage: "",
             promptall: [{
                 value: "生成摘要",
@@ -230,6 +229,7 @@ export default {
         };
     },
     methods: {
+
         updateIsCollapse(value) {
             this.isCollapse = value;
             // this.updateIsCollapse(value);
@@ -314,39 +314,53 @@ export default {
             if (this.newMessage.trim() !== '') {
                 console.log(" this.newMessage", this.newMessage)
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
-            }
-            if (this.chat_id == "") {
-                this.chat_id = this.guid()
-            }
-            console.log("chat_id", this.chat_id)
-            let config = {
-                "model": "default",
-                "prompt": "default",
-                "knowledge": "default",
-                "LLM_config": "default"
-            }
-            let params = {
-                dialogue_id: this.chat_id,
-                query: this.newMessage,
-                config: JSON.stringify(config)
-                // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
-                // {role:"hh",content:"xx"}
-                // ,
-            }
-            console.log("params", params)
-
-            setclause_check(params).then((res) => {
-                console.log("resresresgetChatchat", res)
-
-                this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
-                this.newhistory = {
-                    dialogue_id: this.chat_id, history: this.chatMessages
+                if (this.chat_id == "") {
+                    this.chat_id = this.guid()
                 }
-                this.historyArrlist.unshift(this.newhistory)
-                this.newMessage = ''; // Clear the input after sending.
-                this.chatStarted = true; // Switch to chat view.
+                console.log("chat_id", this.chat_id)
+                let config = {
+                    "model": "default",
+                    "prompt": "default",
+                    "knowledge": "default",
+                    "LLM_config": "default"
+                }
+                let params = {
+                    dialogue_id: this.chat_id,
+                    query: this.newMessage,
+                    config: JSON.stringify(config)
+                    // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
+                    // {role:"hh",content:"xx"}
+                    // ,
+                }
+                console.log("params", params)
 
-            });
+                setclause_check(params).then((res) => {
+                    console.log("resresresgetChatchat", res)
+
+                    this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
+                    this.newhistory = {
+                        dialogue_id: this.chat_id, history: this.chatMessages
+                    }
+                    this.historyArrlist.unshift(this.newhistory)
+                    this.newMessage = ''; // Clear the input after sending.
+                    this.chatStarted = true; // Switch to chat view.
+
+                });
+            }
+
+
+            else {
+
+
+                this.$alert('请输入内容', '提示', {
+                    confirmButtonText: '确定',
+                    callback: action => {
+
+                    }
+                });
+
+
+            }
         },
         newChat() {
             if (this.chatMessages.length == 0) {

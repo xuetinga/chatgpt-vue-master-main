@@ -9,9 +9,6 @@
       </el-header>
       <el-main>
         <vue-markdown :source="markdown" :breaks="true" :typographer="true" :linkify="true" :highlight="false"></vue-markdown>
-
-
-
       </el-main>
     </el-container>
   </el-container>
