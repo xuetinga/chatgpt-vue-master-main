@@ -32,20 +32,24 @@
                     </el-tabs>
 
                     <el-dialog title="Prompt" :visible.sync="dialogFormVisible">
-                        <el-form :model="form">
-                            <el-form-item label="NAME" :label-width="formLabelWidth">
+                        <el-form :model="form" ref="form">
+                            <el-form-item label="name" :label-width="formLabelWidth">
                                 <el-input v-model="form.name" autocomplete="off"></el-input>
                             </el-form-item>
-                            <el-form-item label="SUB SCENE" :label-width="formLabelWidth">
-                                <el-select v-model="form.region" placeholder="请选择活动区域">
-                                    <el-option label="区域一" value="shanghai"></el-option>
-                                    <el-option label="区域二" value="beijing"></el-option>
+                            <el-form-item label="type" :label-width="formLabelWidth">
+                                <el-select v-model="form.type" placeholder="请选择">
+                                    <el-option label="public" value="public"></el-option>
+                                    <el-option label="private" value="private"></el-option>
                                 </el-select>
                             </el-form-item>
+                            <el-form-item label="Content" :label-width="formLabelWidth">
+                                <el-input type="textarea" v-model="form.content"></el-input>
+                            </el-form-item>
+                         
                         </el-form>
                         <div slot="footer" class="dialog-footer">
                             <el-button @click="dialogFormVisible = false">取 消</el-button>
-                            <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                            <el-button type="primary" @click="submitForm">确 定</el-button>
                         </div>
                     </el-dialog>
 
@@ -101,13 +105,8 @@ export default {
             dialogFormVisible: false,
             form: {
                 name: '',
-                region: '',
-                date1: '',
-                date2: '',
-                delivery: false,
-                type: [],
-                resource: '',
-                desc: ''
+                type: '',
+                content: ''
             },
             formLabelWidth: '120px'
 
@@ -144,6 +143,15 @@ export default {
 
     },
     methods: {
+        submitForm() {
+            // 获取表单数据
+            const formData = this.form;
+            this.dialogFormVisible = false;
+            // 打印到控制台以确认数据
+            console.log('提交的表单数据:', formData);
+
+
+        },
         updateIsCollapse(value) {
             this.isCollapse = value;
             // this.updateIsCollapse(value);
@@ -184,10 +192,7 @@ export default {
         goToHelp() {
             window.location.href = '#/HelpChat';
         },
-        submitForm() {
-            console.log('Submitting form data along with the fileList:',);
 
-        },
         filterHandler(value, row, column) {
             const property = column["property"];
             return row[property] === value;
@@ -224,6 +229,4 @@ export default {
 .el-menu .el-menu-item {
     width: 100%;
 }
-
-
 </style>
