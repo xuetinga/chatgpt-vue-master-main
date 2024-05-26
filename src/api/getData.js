@@ -187,7 +187,6 @@ export const chatkbStreamgpt = async (params, handleChunk, handleReferences) => 
       const lines = chunkValue.split('\n').filter(line => line.startsWith('data: '));
       lines.forEach(line => {
         const content = line.slice(6).trim(); // Remove 'data: ' prefix and trim whitespace
-        console.log("forEach",content.startsWith('{"response"'))
         if (isReferences) {
           references = content;
         } else if (content.startsWith('{"response"')) {

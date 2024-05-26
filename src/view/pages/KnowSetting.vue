@@ -126,13 +126,13 @@ export default {
             centerDialogVisible: false,
             graphData: {
                 nodes: [
-                    { id: '天融信在税务行业有哪些典型案例', group: 1 },
-                    { id: '海关一线和二线的区别', group: 2 },
-                    { id: '公安行业有哪些典型案例', group: 2 },
-                    { id: '介绍下海关的技术支撑平台', group: 2 },
-                    { id: '海关一线和二线的区别1', group: 2 },
-                    { id: '公安行业有哪些典型案例1', group: 2 },
-                    { id: '介绍下海关的技术支撑平台1', group: 2 },
+                    { id: 'A在税务行业有哪些典型案例', group: 1 },
+                    { id: '海港一线和二线的区别', group: 2 },
+                    { id: 'B行业有哪些典型案例', group: 2 },
+                    { id: '介绍下海港的技术支撑平台', group: 2 },
+                    { id: '海港一线和二线的区别1', group: 2 },
+                    { id: 'B行业有哪些典型案例1', group: 2 },
+                    { id: '介绍下海港的技术支撑平台1', group: 2 },
 
                     // { id: '关联词4', group: 2 },
                     // { id: '关联词5', group: 2 },
@@ -142,21 +142,21 @@ export default {
                 ],
 
                 links: [
-                    { source: '天融信在税务行业有哪些典型案例', target: '海关一线和二线的区别', value: 2, label: "海关" },
-                    { source: '天融信在税务行业有哪些典型案例', target: '公安行业有哪些典型案例', value: 20, label: "典型案例" },
-                    { source: '天融信在税务行业有哪些典型案例', target: '介绍下海关的技术支撑平台', value: 2, label: "海关" },
-                    { source: '天融信在税务行业有哪些典型案例', target: '海关一线和二线的区别1', value: 2, label: "海关" },
-                    { source: '天融信在税务行业有哪些典型案例', target: '公安行业有哪些典型案例1', value: 20, label: "典型案例" },
-                    { source: '天融信在税务行业有哪些典型案例', target: '介绍下海关的技术支撑平台1', value: 2, label: "海关" },
-                    // { source: '天融信在税务行业有哪些典型案例', target: '关联词5', value: 1 },
-                    // { source: '天融信在税务行业有哪些典型案例', target: '关联词6', value: 1 },
-                    // { source: '天融信在税务行业有哪些典型案例', target: '关联词7', value: 1 },
+                    { source: 'A在税务行业有哪些典型案例', target: '海港一线和二线的区别', value: 2, label: "海港" },
+                    { source: 'A在税务行业有哪些典型案例', target: 'B行业有哪些典型案例', value: 20, label: "典型案例" },
+                    { source: 'A在税务行业有哪些典型案例', target: '介绍下海港的技术支撑平台', value: 2, label: "海港" },
+                    { source: 'A在税务行业有哪些典型案例', target: '海港一线和二线的区别1', value: 2, label: "海港" },
+                    { source: 'A在税务行业有哪些典型案例', target: 'B行业有哪些典型案例1', value: 20, label: "典型案例" },
+                    { source: 'A在税务行业有哪些典型案例', target: '介绍下海港的技术支撑平台1', value: 2, label: "海港" },
+                    // { source: 'A在税务行业有哪些典型案例', target: '关联词5', value: 1 },
+                    // { source: 'A在税务行业有哪些典型案例', target: '关联词6', value: 1 },
+                    // { source: 'A在税务行业有哪些典型案例', target: '关联词7', value: 1 },
                     // 添加更多的链接
                 ],
             },
             configArray: [
                 {
-                    label: '配置项1',
+                    label: '模型选择',
                     key: 'config1',
                     options: [
                         { label: '选项1-1', value: 'option1-1' },
@@ -165,7 +165,7 @@ export default {
                     ]
                 },
                 {
-                    label: '配置项2',
+                    label: '块大小',
                     key: 'config2',
                     options: [
                         { label: '选项2-1', value: 'option2-1' },
@@ -173,17 +173,17 @@ export default {
                         // 其他选项...
                     ]
                 },
+                // {
+                //     label: '块重叠',
+                //     key: 'config3',
+                //     options: [
+                //         { label: '选项3-1', value: 'option3-1' },
+                //         { label: '选项3-2', value: 'option3-2' },
+                //         // 其他选项...
+                //     ]
+                // },
                 {
-                    label: '配置项3',
-                    key: 'config3',
-                    options: [
-                        { label: '选项3-1', value: 'option3-1' },
-                        { label: '选项3-2', value: 'option3-2' },
-                        // 其他选项...
-                    ]
-                },
-                {
-                    label: '配置项4',
+                    label: '文本切分方式',
                     key: 'config4',
                     options: [
                         { label: '选项4-1', value: 'option4-1' },
@@ -191,24 +191,24 @@ export default {
                         // 其他选项...
                     ]
                 },
-                {
-                    label: '配置项5',
-                    key: 'config5',
-                    options: [
-                        { label: '选项5-1', value: 'option5-1' },
-                        { label: '选项5-2', value: 'option5-2' },
-                        // 其他选项...
-                    ]
-                },
-                {
-                    label: '配置项6',
-                    key: 'config6',
-                    options: [
-                        { label: '选项6-1', value: 'option6-1' },
-                        { label: '选项6-2', value: 'option6-2' },
-                        // 其他选项...
-                    ]
-                },
+                // {
+                //     label: '配置项5',
+                //     key: 'config5',
+                //     options: [
+                //         { label: '选项5-1', value: 'option5-1' },
+                //         { label: '选项5-2', value: 'option5-2' },
+                //         // 其他选项...
+                //     ]
+                // },
+                // {
+                //     label: '配置项6',
+                //     key: 'config6',
+                //     options: [
+                //         { label: '选项6-1', value: 'option6-1' },
+                //         { label: '选项6-2', value: 'option6-2' },
+                //         // 其他选项...
+                //     ]
+                // },
             ],
             settingform: {
                 name: '',

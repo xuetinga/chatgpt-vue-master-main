@@ -51,7 +51,7 @@
 
 
                                         </div>
-                                        <div class="floating-actions" v-show="floatactiveIndex === index">
+                                        <div class="floating-actions" v-show="floatactiveIndex == index">
 
                                             <el-tooltip class="item" effect="dark" content="朗读" placement="bottom-start">
                                                 <i class="el-icon-video-play" @click="readAloud"></i>
@@ -305,15 +305,15 @@ export default {
     },
     mounted() {
         // 在mounted中添加鼠标悬停事件监听器
-        const answerMessageElement = this.$el.querySelector('.answer-message1');
-        // answerMessageElement.addEventListener('mouseenter', this.showActionButtons);
+        const answerMessageElement = this.$el.querySelector('.answer-message');
+        answerMessageElement.addEventListener('mouseenter', this.showActionButtons);
         // answerMessageElement.addEventListener('mouseleave', this.hideActionButtons);
     },
     beforeDestroy() {
         // 在beforeDestroy中移除鼠标悬停事件监听器
-        const answerMessageElement = this.$el.querySelector('.answer-message1');
-        // answerMessageElement.removeEventListener('mouseenter', this.showActionButtons);
-        // answerMessageElement.removeEventListener('mouseleave', this.hideActionButtons);
+        const answerMessageElement = this.$el.querySelector('.answer-message');
+        answerMessageElement.removeEventListener('mouseenter', this.showActionButtons);
+        answerMessageElement.removeEventListener('mouseleave', this.hideActionButtons);
     },
     methods: {
         getUserContent(history) {
@@ -516,7 +516,7 @@ export default {
             }
             const lastMessageIndex = this.chatMessages.length - 1;
             this.chatMessages[lastMessageIndex].content += content;
-            
+
             this.$set(this.chatMessages, lastMessageIndex, { ...this.chatMessages[lastMessageIndex] });
             this.newhistory = {
                 dialogue_id: this.chat_id, history: this.chatMessages

@@ -31,21 +31,56 @@
                     </el-dialog>
 
                 </el-container>
-                <el-row>
-                    <el-col :span="8" v-for="(o, index) in modellist" :key="index">
-                        <el-card :body-style="{ padding: '0px' }">
-                            <i class="el-icon-notebook-1" style="margin: 10px;"></i>
-                            <div style="padding: 14px;">
-                                <span>{{ o }}</span>
-                                <div class="bottom clearfix">
-                                    <!-- <time class="time">{{ currentDate }}</time> -->
-                                    {{ o }}{{ o }}{{ o }}
+                <el-row :gutter="20">
+                    <el-col :span="8" v-for="(knowledge, index) in modellist" :key="index">
+                        <el-card :style="{ height: '200px' }" shadow="hover">
+                            <template #header>
+                                <div class="headerbutton">
+                                    <div>
+                                        <i class="el-icon-picture-outline-round" @click="showGraph(index)"></i>
+                                        <span>{{ knowledge }}</span>
+                                    </div>
+                                    <el-button type="success" icon="el-icon-check" circle v-if="index == 1"></el-button>
                                 </div>
+                            </template>
+                            <div class="text item" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                {{ knowledge }} {{ knowledge }} {{ knowledge }}
                             </div>
+                            <el-row style="margin-top: 20px;">
+                                <el-col :span="8">
+                                    <i class="el-icon-edit" @click="showConfigDialog(index)">配置</i>
+                                </el-col>
+                                <el-col :span="8">
+                                    <i class="el-icon-picture-outline-round" @click="openDialogAndRenderGraph(index)">启动</i>
+                                </el-col>
+                                <el-col :span="8">
+                                    <i class="el-icon-delete" @click="deleteKnowledge(index)">停止</i>
+                                </el-col>
+                            </el-row>
                         </el-card>
                     </el-col>
                 </el-row>
 
+                <el-dialog title="配置" :visible.sync="settingdialogFormVisible">
+                <el-form :model="settingform">
+                    <el-row>
+                        <el-col :span="8" v-for="(config, index) in configArray" :key="index">
+                            <el-form-item :label="config.label">
+                                <el-select v-model="settingform[config.key]" :placeholder="'请选择' + config.label">
+                                    <el-option v-for="(option, optionIndex) in config.options" :key="optionIndex"
+                                        :label="option.label" :value="option.value"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                </el-form>
+
+
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="settingdialogFormVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="savesetting">确 定</el-button>
+                </div>
+            </el-dialog>
 
             </el-main>
         </el-container>
@@ -67,6 +102,8 @@ export default {
     },
     data() {
         return {
+            
+            settingdialogFormVisible:false,
             selected: '7',
             currentDate: new Date(),
             isCollapse: false,
@@ -83,7 +120,74 @@ export default {
                 desc: ''
             },
             formLabelWidth: '120px',
-            modellist: []
+            modellist: [],
+            configArray: [
+                {
+                    label: 'tempreature',
+                    key: 'config1',
+                    options: [
+                        { label: '选项1-1', value: 'option1-1' },
+                        { label: '选项1-2', value: 'option1-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: 'top_k',
+                    key: 'config2',
+                    options: [
+                        { label: '选项2-1', value: 'option2-1' },
+                        { label: '选项2-2', value: 'option2-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: 'top_p',
+                    key: 'config3',
+                    options: [
+                        { label: '选项3-1', value: 'option3-1' },
+                        { label: '选项3-2', value: 'option3-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: '序列长',
+                    key: 'config4',
+                    options: [
+                        { label: '选项4-1', value: 'option4-1' },
+                        { label: '选项4-2', value: 'option4-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: '采样',
+                    key: 'config5',
+                    options: [
+                        { label: '选项5-1', value: 'option5-1' },
+                        { label: '选项5-2', value: 'option5-2' },
+                        // 其他选项...
+                    ]
+                },
+                {
+                    label: '重复惩罚',
+                    key: 'config6',
+                    options: [
+                        { label: '选项6-1', value: 'option6-1' },
+                        { label: '选项6-2', value: 'option6-2' },
+                        // 其他选项...
+                    ]
+                },
+            ],
+            settingform: {
+                name: '',
+                content: '',
+                region: '',
+                date1: '',
+                date2: '',
+                delivery: false,
+                type: [],
+                resource: '',
+                desc: ''
+            },
 
 
 
@@ -117,6 +221,13 @@ export default {
     },
 
     methods: {
+        savesetting() {
+            this.settingdialogFormVisible = false;
+            console.log("settingdialogFormVisible", this.settingform)
+        },
+        showConfigDialog(index) {
+            this.settingdialogFormVisible = true
+        },
         updateIsCollapse(value) {
             this.isCollapse = value;
             // this.updateIsCollapse(value);
@@ -191,5 +302,9 @@ export default {
 </script>
 
 <style>
-
+.headerbutton {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 </style>

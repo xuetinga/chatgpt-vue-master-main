@@ -51,11 +51,12 @@
                                                 <el-divider></el-divider>
                                                 <i class="el-icon-paperclip"
                                                     style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
-                                           
+
                                                 <div v-for="(item, index1) in message.reference" :key="index1"
                                                     class="reference-item">
-                                                    <div class="reference-content" @mouseenter="showFullReference(index,index1)"
-                                                        @mouseleave="hideFullReference(index,index1)">
+                                                    <div class="reference-content"
+                                                        @mouseenter="showFullReference(index, index1)"
+                                                        @mouseleave="hideFullReference(index, index1)">
                                                         <template v-if="message.isHovered[index1]">
                                                             {{ item[0] }} {{ item[2] }}
                                                         </template>
@@ -131,7 +132,7 @@
 
 <script>
 import axios from 'axios';
-import { chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
+import { delete_dialogue,chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
@@ -293,6 +294,16 @@ export default {
         }
     },
     methods: {
+        historyChat(question, index) {
+            console.log("this.question", question)
+            this.chatStarted = true;
+            this.historyArrlist.forEach((item, i) => {
+                item.showDeleteButton = i === index;
+            });
+            this.newhistory = question
+            this.chatMessages = question.history
+            this.chat_id = question.dialogue_id
+        },
         scrollToBottom() {
             this.$nextTick(() => {
                 const container = this.$refs.chatContainer;
@@ -302,7 +313,7 @@ export default {
             });
         },
         showFullReference(messageIndex, referenceIndex) {
-            console.log("this.chatMessages[messageIndex]",this.chatMessages[messageIndex])
+            console.log("this.chatMessages[messageIndex]", this.chatMessages[messageIndex])
             this.$set(this.chatMessages[messageIndex].isHovered, referenceIndex, true);
         },
         hideFullReference(messageIndex, referenceIndex) {
@@ -325,20 +336,21 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                this.$message({
-                    type: 'success',
-                    message: '删除成功!'
-                });
+
                 delete_dialogue(params).then((res) => {
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
                     this.historyArrlist.splice(index, 1);
                     this.newMessage = ""
                     this.chatStarted = false
-                    this.$nextTick(() => {
-                        document.activeElement.blur();
-                    });
-                    this.$nextTick(() => {
-                        this.$refs.dummyInput.focus();
-                    });
+                    // this.$nextTick(() => {
+                    //     document.activeElement.blur();
+                    // });
+                    // this.$nextTick(() => {
+                    //     this.$refs.dummyInput.focus();
+                    // });
                 }).catch((err) => {
 
                 })
@@ -357,7 +369,7 @@ export default {
         },
         getUserContent(history) {
             if (history.length > 0) {
-                const userEntry = history.find(entry => entry.role === 'user');
+                const userEntry = history.find(entry => entry.role === 'assistant');
                 return userEntry ? userEntry.content : '';
             }
             else {

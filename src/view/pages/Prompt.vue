@@ -45,7 +45,7 @@
                             <el-form-item label="Content" :label-width="formLabelWidth">
                                 <el-input type="textarea" v-model="form.content"></el-input>
                             </el-form-item>
-                         
+
                         </el-form>
                         <div slot="footer" class="dialog-footer">
                             <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -148,9 +148,19 @@ export default {
             const formData = this.form;
             this.dialogFormVisible = false;
             // 打印到控制台以确认数据
-            console.log('提交的表单数据:', formData);
+            console.log('提交的表单数据:', formData.type, this.privateTableData);
 
-
+            if (formData.type == "public") {
+                this.publicTableData.push({ "content": formData.content, "scene": formData.name, "type": "public" })
+            }
+            if (formData.type == "private") {
+                this.privateTableData.push({ "content": formData.content, "scene": formData.name, "type": "private" })
+            }
+            this.form = {
+                type: '',
+                content: '',
+                name: ''
+            };
         },
         updateIsCollapse(value) {
             this.isCollapse = value;
