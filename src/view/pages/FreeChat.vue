@@ -11,18 +11,16 @@
                             <el-button type="primary" icon="el-icon-plus" @click="newChat">新对话</el-button>
                         </el-header>
                         <!-- Sidebar content here -->
-                        <el-menu
+                        <el-menu @select="handleSelect"
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="190px"
-                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; "
-                                @click="historyChat(question)">
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
+                                class="menu-item-history" @click="historyChat(question, index)">
                                 <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
-                                    {{ question.history[0].content }}
+                                    {{ getUserContent(question.history) }}
                                     <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
                                         @click.stop="deleteItem(index)"
-                                        style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);"></el-button>
-                                    <!-- 删除重命名 -->
+                                        style="position: absolute; right: 5px; top: 55%; transform: translateY(-51%);"></el-button>
                                 </span>
                             </el-menu-item>
                         </el-menu>
@@ -32,24 +30,30 @@
 
                         <el-main style="justify-content: center;">
                             <!-- 聊天页面 -->
-                            <div v-if="chatStarted">
-
+                            <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
-                                    <div v-if="message.role === 'user'" class="answer-message1">
-                                        <div class="card"
-                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                    <div v-if="message.role === 'user'" class="answer-message">
+                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
                                             <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
-                                    <div v-else-if="message.role === 'assistant'" class="answer-message1"
-                                        @mouseenter="showActionButtons(index)" @mouseleave="hideActionButtons(index)">
-                                        <div style="width: 800px;">
-                                            <i class="el-icon-sunny"> {{ message.content }}</i>
+                                    <div v-else-if="message.role === 'assistant'" class="answer-message">
+                                        <div class="card" style="width: 800px;">
+
+                                            <span v-if="index === chatMessages.length - 1">
+                                                <vue-markdown :source="message.content" :breaks="true" :typographer="true"
+                                                    :linkify="true" :highlight="false"></vue-markdown>
+
+                                            </span>
+                                            <span v-else>
+                                                {{ message.content }}
+                                            </span>
+
+
                                         </div>
                                         <div class="floating-actions" v-show="floatactiveIndex === index">
 
-                                            <el-tooltip class="item" effect="dark" content="朗读"
-                                                placement="bottom-start">
+                                            <el-tooltip class="item" effect="dark" content="朗读" placement="bottom-start">
                                                 <i class="el-icon-video-play" @click="readAloud"></i>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="复制" placement="bottom">
@@ -63,17 +67,15 @@
                                                 <i class="el-icon-bottom" @click="dislikeMessage"></i>
 
                                             </el-tooltip>
-                                            <el-tooltip class="item" effect="dark" content="重新生成"
-                                                placement="bottom-end">
+                                            <el-tooltip class="item" effect="dark" content="重新生成" placement="bottom-end">
                                                 <i class="el-icon-refresh-left" @click="regenerateMessage"></i>
 
                                             </el-tooltip>
                                         </div>
-
                                     </div>
-
                                 </div>
                             </div>
+
 
                             <div v-else>
                                 <el-row type="flex" class="main-message">
@@ -130,14 +132,14 @@
                                 </el-dropdown>
                                 <div class="input-field-wrapper">
                                     <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
-                                        @input="sendMessage">
+                                        @keydown.enter="startChat">
                                     </el-input>
 
                                 </div>
                                 <div class="input-button">
                                     <div v-for="(file, index) in fileList" :key="index" class="file-tag">
                                         <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
-            file.name }}</span>
+                                            file.name }}</span>
                                         <i class="el-icon-close" @click="removeFile(index)"></i>
                                     </div>
                                     <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
@@ -159,7 +161,7 @@
 </template>
 
 <script>
-import { getChatMsg, gethistory, getChat, getstatic, chatgpt, getChatchat } from "@/api/getData";
+import { chatkbStreamgpt, chatStreamgpt, getChatMsg, gethistory, getChat, getstatic, chatgpt, getChatchat } from "@/api/getData";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
@@ -214,8 +216,8 @@ export default {
             historyArrlist: [],
             configs: [],
             promptall: [],
-            promptdefaultvalue: '翻译1',
-            modeldefaultvalue: "default",
+            promptdefaultvalue: 'default',
+            modeldefaultvalue: "deepseek",
             dynamicMarginLeft: '50px',
             isCollapse: false,
             newMessage: '',
@@ -278,9 +280,14 @@ export default {
         };
     },
     created() {
+        gethistory().then((res) => {
+            console.log("gethistoryres", res)
+            this.historyArrlist = res.data
+        }).catch((err) => {
+            console.log("errr", err)
+        })
         getstatic().then((res) => {
             console.log("全局11111", res.data)
-
 
             this.promptall = res.data.prompts.map(prompt => {
                 return {
@@ -299,16 +306,30 @@ export default {
     mounted() {
         // 在mounted中添加鼠标悬停事件监听器
         const answerMessageElement = this.$el.querySelector('.answer-message1');
-        answerMessageElement.addEventListener('mouseenter', this.showActionButtons);
-        answerMessageElement.addEventListener('mouseleave', this.hideActionButtons);
+        // answerMessageElement.addEventListener('mouseenter', this.showActionButtons);
+        // answerMessageElement.addEventListener('mouseleave', this.hideActionButtons);
     },
     beforeDestroy() {
         // 在beforeDestroy中移除鼠标悬停事件监听器
         const answerMessageElement = this.$el.querySelector('.answer-message1');
-        answerMessageElement.removeEventListener('mouseenter', this.showActionButtons);
-        answerMessageElement.removeEventListener('mouseleave', this.hideActionButtons);
+        // answerMessageElement.removeEventListener('mouseenter', this.showActionButtons);
+        // answerMessageElement.removeEventListener('mouseleave', this.hideActionButtons);
     },
     methods: {
+        getUserContent(history) {
+            if (history.length > 0) {
+                const userEntry = history.find(entry => entry.role === 'user');
+                return userEntry ? userEntry.content : '';
+            }
+            else {
+                return ""
+            }
+
+        },
+        handleSelect(index) {
+            this.activeIndex = Number(index);
+            // 处理选中项逻辑
+        },
         handleSelectDrop1(item) {
             console.log("promptdefaultvalue", item.value)
             this.promptdefaultvalue = item.value
@@ -455,8 +476,9 @@ export default {
         }
         ,
         startChat() {
-            if (this.newMessage.trim() !== '') {
-                console.log(" this.newMessage", this.newMessage)
+            console.log("this.chat_id", this.chat_id)
+
+            if (this.newMessage.trim() !== '' || this.newMessage.trim().length > 0) {
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
                 if (this.chat_id == "") {
                     this.chat_id = this.guid()
@@ -477,34 +499,47 @@ export default {
                     // ,
                 }
                 console.log("params", params)
+                chatkbStreamgpt(params, this.handleChunk, this.handleReferences);
 
-                getChatchat(params).then((res) => {
-                    console.log("resresresgetChatchat", res)
-
-                    this.chatMessages.push({ content: res.response, role: 'assistant', reference: res.reference });
-                    this.newhistory = {
-                        dialogue_id: this.chat_id, history: this.chatMessages
-                    }
-                    this.historyArrlist.unshift(this.newhistory)
-                    this.newMessage = ''; // Clear the input after sending.
-                    this.chatStarted = true; // Switch to chat view.
-
-                });
             }
-
-
             else {
-
-
                 this.$alert('请输入内容', '提示', {
                     confirmButtonText: '确定',
                     callback: action => {
-
                     }
                 });
-
-
             }
+        },
+        handleChunk(first, content) {
+            if (first) {
+                this.chatMessages.push({ content: '', role: 'assistant', reference: [] });
+            }
+            const lastMessageIndex = this.chatMessages.length - 1;
+            this.chatMessages[lastMessageIndex].content += content;
+            
+            this.$set(this.chatMessages, lastMessageIndex, { ...this.chatMessages[lastMessageIndex] });
+            this.newhistory = {
+                dialogue_id: this.chat_id, history: this.chatMessages
+            }
+            const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
+
+            if (existingIndex === -1) {
+                this.historyArrlist.unshift(this.newhistory);
+            } else {
+                console.log("Duplicate dialogue_id found, not adding.");
+            }
+            this.newMessage = '';
+            this.chatStarted = true;
+        },
+        handleReferences(reference) {
+            console.log("reference", JSON.parse(reference).reference)
+            const lastMessageIndex = this.chatMessages.length - 1;
+            this.chatMessages[lastMessageIndex].content = JSON.parse(reference).response;
+
+            this.chatMessages[lastMessageIndex].reference = JSON.parse(reference).reference;
+            this.$set(this.chatMessages, lastMessageIndex, { ...this.chatMessages[lastMessageIndex] });
+            console.log("this.chatMessages", this.chatMessages)
+
         },
         newChat() {
             if (this.chatMessages.length == 0) {
@@ -671,5 +706,20 @@ export default {
 
 .file-tag:hover i {
     display: inline-block;
+}
+
+.menu-item-history {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 5px;
+    border-radius: 10px;
+
+
+}
+
+.menu-item-history:hover {
+    border-radius: 10px;
+    /* 圆角 */
 }
 </style>

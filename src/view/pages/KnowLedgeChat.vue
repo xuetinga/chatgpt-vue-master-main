@@ -13,9 +13,8 @@
                         <!-- Sidebar content here -->
                         <el-menu @select="handleSelect"
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index"
-                                :index="index.toString()" class="menu-item-history"
-                                @click="historyChat(question, index)">
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
+                                class="menu-item-history" @click="historyChat(question, index)">
                                 <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
                                     {{ getUserContent(question.history) }}
@@ -34,8 +33,7 @@
                             <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card"
-                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
                                             <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
@@ -43,21 +41,31 @@
                                         <div class="card" style="width: 800px;">
 
                                             <span v-if="index === chatMessages.length - 1">
-                                                <StreamText :text="message.content" :speed="50" />
+                                                <vue-markdown :source="message.content" :breaks="true" :typographer="true"
+                                                    :linkify="true" :highlight="false"></vue-markdown>
                                             </span>
                                             <span v-else>
                                                 {{ message.content }}
                                             </span>
-                                            <div v-if="message.reference !== null">
+                                            <div v-if="message.reference.length > 0">
                                                 <el-divider></el-divider>
                                                 <i class="el-icon-paperclip"
                                                     style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
-                                                <div v-for="(item, index) in message.reference" :key="index"
+                                                <div v-for="(item, index1) in message.reference" :key="index1"
                                                     class="reference-item">
-                                                    <a :href="item.link" target="_blank">{{ item[0] }}</a>
-                                                    <div class="reference-content">{{ item[1] }}</div>
+                                                    <div class="reference-content"
+                                                        @mouseenter="showFullReference(index, index1)"
+                                                        @mouseleave="hideFullReference(index, index1)">
+                                                        <template v-if="message.isHovered[index1]">
+                                                            {{ item[0] }} {{ item[2] }}
+                                                        </template>
+                                                        <template v-else>
+                                                            {{ item[1] }}
+                                                        </template>
+                                                    </div>
                                                 </div>
                                             </div>
+
 
                                         </div>
                                     </div>
@@ -72,7 +80,7 @@
                                         </div>
                                     </el-col>
                                 </el-row>
-                                <el-row type="flex" class="response-options">
+                                <!-- <el-row type="flex" class="response-options">
                                     <el-col :span="8" v-for="(card, index) in cards1" :key="index">
                                         <el-card @click.native="sendMessage(card.message)">
                                             <div slot="header" class="clearfix">
@@ -81,9 +89,13 @@
                                             <div class="text item">
                                                 {{ card.content }}
                                             </div>
+                                            <div v-if="message.reference != null">
+                                                <el-divider></el-divider>
+                                               
+                                            </div>
                                         </el-card>
                                     </el-col>
-                                </el-row>
+                                </el-row> -->
                             </div>
 
                         </el-main>
@@ -132,18 +144,21 @@
 </template>
 
 <script>
-import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue, chatStreamgpt } from "@/api/getData";
+import { chatkbStreamgpt, getkbhistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue, chatStreamgpt, getkbChat, getclauseChat } from "@/api/getData";
 import Index from "./chatHome/index.vue";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
 import StreamText from '@/components/StreamText.vue';
+import VueMarkdown from 'vue-markdown';
+
 export default {
     mixins: [commonMethodsMixin],
     components: {
         Emoji,
         Nav,
-        StreamText
+        StreamText,
+        VueMarkdown
     },
     data() {
         return {
@@ -212,12 +227,13 @@ export default {
             fileLimit: 5,
             //请求头
             headers: { "Content-Type": "multipart/form-data" },
-
+            itemDetailsVisible: [],
+            isHovered: [],
         };
     },
     created() {
         console.log("created", this.$root.configs)
-        gethistory().then((res) => {
+        getkbhistory().then((res) => {
             console.log("gethistoryres", res)
             this.historyArrlist = res.data
         }).catch((err) => {
@@ -243,11 +259,34 @@ export default {
         })
     },
     watch: {
-        chatMessages() {
-            this.scrollToBottom();
-        },
+        
+        chatMessages: {
+            handler(newMessages) {
+                this.scrollToBottom();
+                console.log("newMessages",newMessages)
+                newMessages.forEach(message => {
+                    // 确保 message 对象具有 reference 属性并进行初始化
+                    if (!message.reference) {
+                        this.$set(message, 'reference', []);
+                    }
+                    if (!message.isHovered) {
+                        this.$set(message, 'isHovered', Array(message.reference.length).fill(false));
+                    }
+                });
+            },
+            immediate: true,
+            deep: true
+        }
     },
     methods: {
+        showFullReference(messageIndex, referenceIndex) {
+            console.log("this.chatMessages[messageIndex]",this.chatMessages[messageIndex])
+
+            this.$set(this.chatMessages[messageIndex].isHovered, referenceIndex, true);
+        },
+        hideFullReference(messageIndex, referenceIndex) {
+            this.$set(this.chatMessages[messageIndex].isHovered, referenceIndex, false);
+        },
         handleSelectDrop(item) {
             console.log("promptdefaultvalue", item.value)
             this.promptdefaultvalue = item.value
@@ -388,7 +427,7 @@ export default {
                 }
                 console.log("chat_id", this.chat_id)
                 let config = {
-                    "model": "default",
+                    "model": "deepseek",
                     "prompt": this.promptdefaultvalue,
                     "knowledge": "default",
                     "LLM_config": "default"
@@ -402,29 +441,9 @@ export default {
                     // ,
                 }
                 console.log("params", params)
-                chatStreamgpt(params).then((res) => {
-                    const streamData = res.data; // Assuming this contains the stream data
-                    console.log("chatStreamgpt",)
-                    this.handleStreamData(streamData);
-                });
-                chatgpt(params).then((res) => {
-                    // this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
-                    this.newhistory = {
-                        dialogue_id: this.chat_id, history: this.chatMessages
-                    }
-                    const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
-
-                    if (existingIndex === -1) {
-                        this.historyArrlist.unshift(this.newhistory);
-                    } else {
-                        console.log("Duplicate dialogue_id found, not adding.");
-                    }
-                    this.newMessage = '';
-                    this.chatStarted = true;
+                chatkbStreamgpt(params, this.handleChunk, this.handleReferences);
 
 
-                });
-               
             }
             else {
 
@@ -441,28 +460,50 @@ export default {
 
 
         },
-        handleStreamData(streamData) {
-            const streamLines = streamData.split('\r\n\r\n').filter(line => line.startsWith('data: ')).map(line => line.slice(6));
-            let currentIndex = 0;
-            let streamMessage = { content: '', role: 'assistant' };
-            this.chatMessages.push(streamMessage);
+        handleChunk(first, content) {
+            if (first) {
+                this.chatMessages.push({ content: '', role: 'assistant', reference: [] });
+            }
+            const lastMessageIndex = this.chatMessages.length - 1;
+            this.chatMessages[lastMessageIndex].content += content;
+            this.$set(this.chatMessages, lastMessageIndex, { ...this.chatMessages[lastMessageIndex] });
+            this.newhistory = {
+                dialogue_id: this.chat_id, history: this.chatMessages
+            }
+            const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
 
-            const streamNextChunk = () => {
-                if (currentIndex < streamLines.length) {
-                    streamMessage.content += streamLines[currentIndex];
-                    this.$set(this.chatMessages, this.chatMessages.length - 1, { ...streamMessage });
-                    currentIndex++;
-                    setTimeout(streamNextChunk, 10); // Adjust the timing as needed
-                }
-            };
-            streamNextChunk()
+            if (existingIndex === -1) {
+                this.historyArrlist.unshift(this.newhistory);
+            } else {
+                console.log("Duplicate dialogue_id found, not adding.");
+            }
+            this.newMessage = '';
+            this.chatStarted = true;
+        },
+        handleReferences(reference) {
+            console.log("reference", JSON.parse(reference).reference)
+            const lastMessageIndex = this.chatMessages.length - 1;
+            this.chatMessages[lastMessageIndex].content = JSON.parse(reference).response;
+
+            this.chatMessages[lastMessageIndex].reference = JSON.parse(reference).reference;
+            this.$set(this.chatMessages, lastMessageIndex, { ...this.chatMessages[lastMessageIndex] });
+            console.log("this.chatMessages", this.chatMessages)
+            // 初始化itemDetailsVisible数组
+            this.itemDetailsVisible = Array(this.chatMessages[lastMessageIndex].reference.length).fill(false);
+
+        },
+        showDetails(index) {
+            this.$set(this.itemDetailsVisible, index, true);
+        },
+        hideDetails(index) {
+            this.$set(this.itemDetailsVisible, index, false);
         },
         newChat() {
             if (this.chatMessages.length == 0) {
                 //说明没有新建
-                getChat().then((res) => {
+                getkbChat().then((res) => {
                     //
-                    console.log("getChat", res)
+                    console.log("getkbChat", res)
 
                     this.chat_id = res.dialogue_id
                     this.chatStarted = true;
@@ -716,7 +757,7 @@ export default {
     border-radius: 5px;
     margin-top: 10px;
     color: rgb(23, 23, 23);
-    font-size: 10px;
+    font-size: 15px;
 }
 
 .reference-item a {
@@ -752,7 +793,7 @@ export default {
 }
 
 .chat-container {
-    max-height: 500px;
+    max-height: 600px;
     /* 根据需要设置 */
     overflow-y: auto;
     /* width: 100%; */
@@ -875,5 +916,4 @@ export default {
 
 .input-select1 {
     margin-left: 20px;
-}
-</style>
+}</style>

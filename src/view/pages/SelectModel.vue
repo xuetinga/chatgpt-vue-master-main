@@ -34,12 +34,12 @@
                 <el-row>
                     <el-col :span="8" v-for="(o, index) in modellist" :key="index">
                         <el-card :body-style="{ padding: '0px' }">
-                            <i class="el-icon-notebook-1"></i>
+                            <i class="el-icon-notebook-1" style="margin: 10px;"></i>
                             <div style="padding: 14px;">
                                 <span>{{ o }}</span>
                                 <div class="bottom clearfix">
                                     <!-- <time class="time">{{ currentDate }}</time> -->
-                                    {{ o }}{{ o }}{{ o }}{{ o }}{{ o }}
+                                    {{ o }}{{ o }}{{ o }}
                                 </div>
                             </div>
                         </el-card>

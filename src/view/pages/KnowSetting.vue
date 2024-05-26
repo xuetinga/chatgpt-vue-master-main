@@ -21,7 +21,7 @@
                         <el-col :span="8" v-for="(knowledge, index) in kbs" :key="index">
                             <el-card height="80px" shadow="hover">
                                 <div slot="header">
-                                    <i class="el-icon-picture-outline-round" @click="showGraph(index)">头像</i>
+                                    <i class="el-icon-picture-outline-round" @click="showGraph(index)"></i>
 
                                     <span>{{ knowledge.name }}</span>
                                 </div>

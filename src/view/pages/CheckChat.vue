@@ -11,18 +11,16 @@
                             <el-button type="primary" icon="el-icon-plus" @click="newChat">新条款</el-button>
                         </el-header>
                         <!-- Sidebar content here -->
-                        <el-menu
+                        <el-menu @select="handleSelect"
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" width="190px"
-                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; "
-                                @click="historyChat(question)">
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
+                                class="menu-item-history" @click="historyChat(question, index)">
                                 <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
-                                    {{ question.history[0].content }}
+                                    {{ getUserContent(question.history) }}
                                     <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
                                         @click.stop="deleteItem(index)"
-                                        style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%);"></el-button>
-                                    <!-- 删除重命名 -->
+                                        style="position: absolute; right: 5px; top: 55%; transform: translateY(-51%);"></el-button>
                                 </span>
                             </el-menu-item>
                         </el-menu>
@@ -32,27 +30,42 @@
 
                         <el-main style="justify-content: center;">
                             <!-- 聊天页面 -->
-                            <div v-if="chatStarted">
+                            <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card"
-                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
                                             <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
                                     <div v-else-if="message.role === 'assistant'" class="answer-message">
                                         <div class="card" style="width: 800px;">
-                                            <i class="el-icon-sunny"> {{ message.content }}</i>
 
-                                            <el-divider></el-divider>
-                                            <i class="el-icon-paperclip"
-                                                style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
-
-                                            <div v-for="(item, index) in message.reference" :key="index"
-                                                class="reference-item">
-                                                <a :href="item.link" target="_blank">{{ item[0] }}</a>
-                                                <div class="reference-content">{{ item[1] }}</div>
+                                            <span v-if="index === chatMessages.length - 1">
+                                                <vue-markdown :source="message.content" :breaks="true" :typographer="true"
+                                                    :linkify="true" :highlight="false"></vue-markdown>
+                                            </span>
+                                            <span v-else>
+                                                {{ message.content }}
+                                            </span>
+                                            <div v-if="message.reference.length > 0">
+                                                <el-divider></el-divider>
+                                                <i class="el-icon-paperclip"
+                                                    style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
+                                           
+                                                <div v-for="(item, index1) in message.reference" :key="index1"
+                                                    class="reference-item">
+                                                    <div class="reference-content" @mouseenter="showFullReference(index,index1)"
+                                                        @mouseleave="hideFullReference(index,index1)">
+                                                        <template v-if="message.isHovered[index1]">
+                                                            {{ item[0] }} {{ item[2] }}
+                                                        </template>
+                                                        <template v-else>
+                                                            {{ item[1] }}
+                                                        </template>
+                                                    </div>
+                                                </div>
                                             </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -96,7 +109,7 @@
                                 <div class="input-button">
                                     <div v-for="(file, index) in fileList" :key="index" class="file-tag">
                                         <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
-            file.name }}</span>
+                                            file.name }}</span>
                                         <i class="el-icon-close" @click="removeFile(index)"></i>
                                     </div>
                                     <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
@@ -118,17 +131,47 @@
 
 <script>
 import axios from 'axios';
-import { getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat } from "@/api/getData";
+import { chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
 import StreamText from '@/components/StreamText.vue';
+import VueMarkdown from 'vue-markdown';
+
 export default {
     mixins: [commonMethodsMixin],
     components: {
         Emoji,
         Nav,
-        StreamText
+        StreamText,
+        VueMarkdown
+    },
+    created() {
+        console.log("created", this.$root.configs)
+        getclausehistory().then((res) => {
+            console.log("gethistoryres", res.data)
+            this.historyArrlist = res.data
+        }).catch((err) => {
+            console.log("errr", err)
+        })
+        getstatic().then((res) => {
+            console.log("getstatic111", res.data)
+
+            this.configs = res.data.prompts
+
+            this.promptall = res.data.prompts.map(prompt => {
+                return {
+                    value: prompt.scene
+                };
+            });
+            this.models = res.data.models.map(prompt => {
+                return {
+                    value: prompt
+                };
+            });
+        }).catch((err) => {
+            console.log("err", err)
+        })
     },
     data() {
         return {
@@ -226,10 +269,102 @@ export default {
             fileLimit: 5,
             //请求头
             headers: { "Content-Type": "multipart/form-data" },
+            isHovered: [],
         };
     },
-    methods: {
+    watch: {
 
+        chatMessages: {
+            handler(newMessages) {
+                this.scrollToBottom();
+                console.log("newMessages", newMessages)
+                newMessages.forEach(message => {
+                    // 确保 message 对象具有 reference 属性并进行初始化
+                    if (!message.reference) {
+                        this.$set(message, 'reference', []);
+                    }
+                    if (!message.isHovered) {
+                        this.$set(message, 'isHovered', Array(message.reference.length).fill(false));
+                    }
+                });
+            },
+            immediate: true,
+            deep: true
+        }
+    },
+    methods: {
+        scrollToBottom() {
+            this.$nextTick(() => {
+                const container = this.$refs.chatContainer;
+                if (container) {
+                    container.scrollTop = container.scrollHeight;
+                }
+            });
+        },
+        showFullReference(messageIndex, referenceIndex) {
+            console.log("this.chatMessages[messageIndex]",this.chatMessages[messageIndex])
+            this.$set(this.chatMessages[messageIndex].isHovered, referenceIndex, true);
+        },
+        hideFullReference(messageIndex, referenceIndex) {
+            this.$set(this.chatMessages[messageIndex].isHovered, referenceIndex, false);
+        },
+        showDeleteButton(index) {
+            this.$set(this.historyArrlist[index], 'showDeleteButton', true);
+        },
+        hideDeleteButton(index) {
+            this.$set(this.historyArrlist[index], 'showDeleteButton', false);
+        },
+        deleteItem(index) {
+            console.log("deleteItem", this.historyArrlist[index])
+
+            let params = {
+                dialogue_id: this.historyArrlist[index].dialogue_id,
+            }
+            this.$confirm('此操作将永久删除该对话, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                });
+                delete_dialogue(params).then((res) => {
+                    this.historyArrlist.splice(index, 1);
+                    this.newMessage = ""
+                    this.chatStarted = false
+                    this.$nextTick(() => {
+                        document.activeElement.blur();
+                    });
+                    this.$nextTick(() => {
+                        this.$refs.dummyInput.focus();
+                    });
+                }).catch((err) => {
+
+                })
+
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
+
+        },
+        handleSelect(index) {
+            this.activeIndex = Number(index);
+            // 处理选中项逻辑
+        },
+        getUserContent(history) {
+            if (history.length > 0) {
+                const userEntry = history.find(entry => entry.role === 'user');
+                return userEntry ? userEntry.content : '';
+            }
+            else {
+                return ""
+            }
+
+        },
         updateIsCollapse(value) {
             this.isCollapse = value;
             // this.updateIsCollapse(value);
@@ -311,15 +446,16 @@ export default {
         }
         ,
         startChat() {
-            if (this.newMessage.trim() !== '') {
-                console.log(" this.newMessage", this.newMessage)
+            console.log("this.chat_id", this.chat_id)
+
+            if (this.newMessage.trim() !== '' || this.newMessage.trim().length > 0) {
                 this.chatMessages.push({ content: this.newMessage, role: 'user' });
                 if (this.chat_id == "") {
                     this.chat_id = this.guid()
                 }
                 console.log("chat_id", this.chat_id)
                 let config = {
-                    "model": "default",
+                    "model": "deepseek",
                     "prompt": "default",
                     "knowledge": "default",
                     "LLM_config": "default"
@@ -333,22 +469,11 @@ export default {
                     // ,
                 }
                 console.log("params", params)
+                chatclauseStreamgpt(params, this.handleChunk, this.handleReferences);
 
-                setclause_check(params).then((res) => {
-                    console.log("resresresgetChatchat", res)
 
-                    this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
-                    this.newhistory = {
-                        dialogue_id: this.chat_id, history: this.chatMessages
-                    }
-                    this.historyArrlist.unshift(this.newhistory)
-                    this.newMessage = ''; // Clear the input after sending.
-                    this.chatStarted = true; // Switch to chat view.
 
-                });
             }
-
-
             else {
 
 
@@ -361,16 +486,76 @@ export default {
 
 
             }
+
+
         },
+        handleChunk(first, content) {
+            if (first) {
+                this.chatMessages.push({ content: '', role: 'assistant', reference: [] });
+            }
+            console.log("content", content)
+
+            const lastMessageIndex = this.chatMessages.length - 1;
+            this.chatMessages[lastMessageIndex].content += content;
+            this.$set(this.chatMessages, lastMessageIndex, { ...this.chatMessages[lastMessageIndex] });
+            this.newhistory = {
+                dialogue_id: this.chat_id, history: this.chatMessages
+            }
+            const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
+
+            if (existingIndex === -1) {
+                this.historyArrlist.unshift(this.newhistory);
+            } else {
+                console.log("Duplicate dialogue_id found, not adding.");
+            }
+            this.newMessage = '';
+            this.chatStarted = true;
+        },
+        handleReferences(reference) {
+            console.log("this.chatMessages111", this.chatMessages);
+
+            if (this.chatMessages.length === 0 || !this.chatStarted) {
+                // If no message exists, create a new one
+                this.chatMessages.push({ content: '', role: 'assistant', reference: [] });
+                this.newMessage = '';
+                this.chatStarted = true;
+            }
+            const lastMessageIndex = this.chatMessages.length - 1;
+            this.chatMessages[lastMessageIndex].reference = JSON.parse(reference).reference;
+            this.chatMessages[lastMessageIndex].content = JSON.parse(reference).response;
+
+            this.$set(this.chatMessages, lastMessageIndex, { ...this.chatMessages[lastMessageIndex] });
+
+            // Initialize itemDetailsVisible array
+            this.itemDetailsVisible = Array(this.chatMessages[lastMessageIndex].reference.length).fill(false);
+
+            console.log("this.chatMessages", this.chatMessages);
+
+            // Update the historyArrlist
+            this.newhistory = {
+                dialogue_id: this.chat_id, history: this.chatMessages
+            };
+
+            const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
+
+            if (existingIndex === -1) {
+                this.historyArrlist.unshift(this.newhistory);
+            } else {
+                this.historyArrlist[existingIndex] = this.newhistory;
+            }
+        },
+
         newChat() {
             if (this.chatMessages.length == 0) {
                 //说明没有新建
-                getChat().then((res) => {
+                getclauseChat().then((res) => {
                     //
-                    console.log("getChat", res)
+                    console.log("getclauseChat", res)
 
                     this.chat_id = res.dialogue_id
                     this.chatStarted = true;
+                    console.log("chatStarted", this.chatStarted)
+
                     this.chatMessages = res.history
                 }).catch((err) => {
                     console.log("err")
@@ -560,5 +745,20 @@ export default {
 
 .file-tag:hover i {
     display: inline-block;
+}
+
+.menu-item-history {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 5px;
+    border-radius: 10px;
+
+
+}
+
+.menu-item-history:hover {
+    border-radius: 10px;
+    /* 圆角 */
 }
 </style>

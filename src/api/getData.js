@@ -11,10 +11,24 @@ export const getFriend = params => {
   }).then(res => res.data)
 }
 // 获取最初聊天信息
+export const getkbChat = params => {
+  return axios({
+    method: 'post',
+    url: `http://172.20.10.2:8001/chat/new_kb_chat`,
+    data: params
+  }).then(res => res.data)
+}
+export const getclauseChat = params => {
+  return axios({
+    method: 'post',
+    url: `http://172.20.10.2:8001/chat/new_clause_chat`,
+    data: params
+  }).then(res => res.data)
+}
 export const getChat = params => {
   return axios({
     method: 'post',
-    url: `http://43.140.220.187:8001/chat/new_chat`,
+    url: `http://172.20.10.2:8001/chat/new_chat`,
     data: params
   }).then(res => res.data)
 }
@@ -22,7 +36,7 @@ export const getChat = params => {
 export const getChatchat = params => {
   return axios({
     method: 'post',
-    url: `http://43.140.220.187:8001/chat/${params.dialogue_id}/chat?query=${params.query}&config=${params.config}`,
+    url: `http://172.20.10.2:8001/chat/${params.dialogue_id}/chat?query=${params.query}&config=${params.config}`,
     data: params
   }).then(res => res.data)
 }
@@ -33,9 +47,9 @@ export const getChatchat = params => {
 export const chatgpt = params => {
   return axios({
     method: 'post',
-    // url: `http://43.140.220.187:8001/chat/knowledge_base_chat`,
+    // url: `http://172.20.10.2:8001/chat/knowledge_base_chat`,
 
-    url: `http://43.140.220.187:8001/chat/${params.dialogue_id}/knowledge_base_chat?query=${params.query}&config=${params.config}`,
+    url: `http://172.20.10.2:8001/chat/${params.dialogue_id}/knowledge_base_chat?query=${params.query}&config=${params.config}`,
     data: params,
 
   }).then(res => {
@@ -49,7 +63,7 @@ export const chatupload = params => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: `http://43.140.220.187:8001/upload/img`,
+    url: `http://172.20.10.2:8001/upload/img`,
     data: params,
   }).then(res => {
     return res
@@ -63,7 +77,33 @@ export const gethistory = params => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: `http://43.140.220.187:8001/history/chat_history`,
+    url: `http://172.20.10.2:8001/history/chat_history`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+// 获取history
+export const getkbhistory = params => {
+  return axios({
+    method: 'get',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://172.20.10.2:8001/history/kb_chat_history`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+// 获取history
+export const getclausehistory = params => {
+  return axios({
+    method: 'get',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://172.20.10.2:8001/history/clause_chat_history`,
     data: params,
   }).then(res => {
     return res
@@ -76,7 +116,7 @@ export const getexam = params => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: `http://43.140.220.187:8001/exam`,
+    url: `http://172.20.10.2:8001/exam`,
     data: params,
   }).then(res => {
     return res
@@ -89,7 +129,7 @@ export const getstatic = params => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: `http://43.140.220.187:8001/static`,
+    url: `http://172.20.10.2:8001/static`,
     data: params,
   }).then(res => {
     return res
@@ -102,7 +142,7 @@ export const setclause_check = params => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: `http://43.140.220.187:8001/chat/${params.dialogue_id}/clause_check?query=${params.query}&config=${params.config}`,
+    url: `http://172.20.10.2:8001/chat/${params.dialogue_id}/clause_check?query=${params.query}&config=${params.config}`,
     data: params,
   }).then(res => {
     return res
@@ -115,22 +155,153 @@ export const delete_dialogue = params => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: `http://43.140.220.187:8001/chat/delete_chat/${params.dialogue_id}`,
+    url: `http://172.20.10.2:8001/chat/delete_chat/${params.dialogue_id}`,
     data: params,
   }).then(res => {
     return res
   })
 }
-// 获取聊天信息
-export const chatStreamgpt = params => {
-  return axios({
-    method: 'post',
-    // url: `http://43.140.220.187:8001/chat/knowledge_base_chat`,
 
-    url: `http://43.140.220.187:8001/stream-chat?dialogue_id=${params.dialogue_id}&query=${params.query}&config=${params.config}`,
-    data: params,
+export const chatkbStreamgpt = async (params, handleChunk, handleReferences) => {
+  const response = await fetch(`http://172.20.10.2:8001/chat/${params.dialogue_id}/knowledge_base_stream_chat?query=${params.query}&config=${params.config}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+    },
+    body: JSON.stringify(params)
+  });
 
-  }).then(res => {
-    return res
-  })
-}
+  const readableStream = response.body;
+  if (readableStream) {
+    const reader = readableStream.getReader();
+    let first = true;
+    let isReferences = false;
+    let references = '';
+    
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+      const chunkValue = new TextDecoder().decode(value);
+      const lines = chunkValue.split('\n').filter(line => line.startsWith('data: '));
+      lines.forEach(line => {
+        const content = line.slice(6).trim(); // Remove 'data: ' prefix and trim whitespace
+        console.log("forEach",content.startsWith('{"response"'))
+        if (isReferences) {
+          references = content;
+        } else if (content.startsWith('{"response"')) {
+          
+          isReferences = true;
+          references = content;
+        } else {
+          handleChunk(first, content);
+        }
+        first = false;
+      });
+    }
+    
+    reader.releaseLock();
+    
+    if (isReferences && references) {
+      handleReferences(references);
+    }
+  }
+};
+
+export const chatclauseStreamgpt = async (params, handleChunk, handleReferences) => {
+  const response = await fetch(`http://172.20.10.2:8001/chat/${params.dialogue_id}/clause_stream_check?query=${params.query}&config=${params.config}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+    },
+    body: JSON.stringify(params)
+  });
+
+  const readableStream = response.body;
+  if (readableStream) {
+    const reader = readableStream.getReader();
+    let first = true;
+    let isReferences = false;
+    let references = '';
+    let hasdata = false;
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+      const chunkValue = new TextDecoder().decode(value);
+      const lines = chunkValue.split('\n').filter(line => line.startsWith('data: '));
+      lines.forEach(line => {
+        const content = line.slice(6).trim(); // Remove 'data: ' prefix and trim whitespace
+        if (isReferences) {
+          references = content;
+        } else if (content.startsWith('{"response"')) {
+          isReferences = true;
+          references = content;
+        } else {
+          hasdata =true
+          handleChunk(first, content);
+        }
+        first = false;
+      });
+      if(hasdata == false){
+        handleChunk(true, "");
+      }
+    }
+    
+    reader.releaseLock();
+    
+    if (isReferences && references) {
+      handleReferences(references);
+    }
+  }
+};
+export const chatStreamgpt = async (params, handleChunk, handleReferences) => {
+  const response = await fetch(`http://172.20.10.2:8001/chat/${params.dialogue_id}/stream_chat?query=${params.query}&config=${params.config}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+    },
+    body: JSON.stringify(params)
+  });
+
+  const readableStream = response.body;
+  if (readableStream) {
+    const reader = readableStream.getReader();
+    let first = true;
+    let isReferences = false;
+    let references = '';
+    
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+      const chunkValue = new TextDecoder().decode(value);
+      const lines = chunkValue.split('\n').filter(line => line.startsWith('data: '));
+      lines.forEach(line => {
+        const content = line.slice(6).trim(); // Remove 'data: ' prefix and trim whitespace
+        if (isReferences) {
+          references = content;
+        } else if (content.startsWith('{"response"')) {
+          isReferences = true;
+          references = content;
+        } 
+        else if (content.startsWith('"markdown"')) {
+          handleChunk(first, "");
+        } 
+        else {
+          handleChunk(first, content);
+        }
+        first = false;
+      });
+    }
+    
+    reader.releaseLock();
+    
+    if (isReferences && references) {
+      handleReferences(references);
+    }
+  }
+};
