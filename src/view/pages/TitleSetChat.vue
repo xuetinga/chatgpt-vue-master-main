@@ -9,12 +9,11 @@
 
 
           <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload" :limit="fileLimit"
-                                :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed"
-                                :before-upload="beforeUpload" :show-file-list="true" :headers="headers" limit="1"
-                                :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
-                                <!-- action="/api/file/fileUpload" -->
-                                <el-button size="small" type="primary" icon="el-icon-plus" >上传条款</el-button>
-                            </el-upload>
+            :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed" :before-upload="beforeUpload"
+            :show-file-list="true" :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
+            <!-- action="/api/file/fileUpload" -->
+            <el-button size="small" type="primary" icon="el-icon-plus">上传条款</el-button>
+          </el-upload>
         </el-header>
         <el-table ref="table" :data="currentPageData" @filter-change="_filterChange" border>
           <template v-for="(item, index) in dataList">
@@ -44,7 +43,7 @@
 </template>
 
 <script>
-import { getChatMsg, gethistory, getexam } from "@/api/getData";
+import { getChatMsg, gethistory, getexam, upload_exam } from "@/api/getData";
 import { saveAs } from 'file-saver';
 import Docxtemplater from 'docxtemplater';
 import JSZip from 'jszip';
@@ -130,13 +129,14 @@ function exportWord(template, exportRow, outputFilename) {
 
 export default {
   mixins: [commonMethodsMixin],
-    components: {
-        Emoji,
-        Nav,
-        StreamText
-    },
+  components: {
+    Emoji,
+    Nav,
+    StreamText
+  },
   data() {
     return {
+      fileLimit: 1,
       selected: '4',
       tableData: [], // 原始数据
       currentPage: 1, // 当前页码
@@ -151,7 +151,7 @@ export default {
         },
         {
           label: "题目标题",
-          value: "title",
+          value: "file",
           sort: true
 
         },
@@ -168,7 +168,7 @@ export default {
         },
 
       ],
-      fileList:[]
+      fileList: []
 
 
 
@@ -182,6 +182,11 @@ export default {
     }).catch((err) => {
       console.log("errr", err)
     })
+  },
+  watch: {
+    tableData() {
+      // this.updatePagedData();
+    },
   },
   computed: {
     // 筛选项
@@ -207,12 +212,21 @@ export default {
   },
 
   methods: {
+    //上传了的文件给移除的事件，由于我没有用到默认的展示，所以没有用到
+    handleRemove() {
+    },
+    handleExceed() {
+
+    },
+    beforeUpload() {
+
+    },
     updateIsCollapse(value) {
-            this.isCollapse = value;
-            // this.updateIsCollapse(value);
-        },
+      this.isCollapse = value;
+      // this.updateIsCollapse(value);
+    },
     //上传文件的事件
-    uploadFile(item) {
+    async uploadFile(item) {
       // this.$showMessage('文件上传中........')
       //上传文件的需要formdata类型;所以要转
       console.log("FormDatas", item)
@@ -223,21 +237,32 @@ export default {
       let params = {
         file: FormDatas.get("file"),
       }
+        ;
       this.fileList.push(item.file);
+      await upload_exam(FormDatas, this.handleChunk);
 
-      chatupload(params).then(res => {
-        console.log("res", res.data.content)
-        // if (res.data.id != '' || res.data.id != null) {
-        //     this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
-        //     let i = this.fileList.indexOf(item.file)
-        //     this.fileList[i].id = res.data.id;//id也添加进去，最后整个大表单提交的时候需要的
-        //     if (this.fileList.length > 0) {//如果上传了附件就把校验规则给干掉
-        //         this.fileflag = false;
-        //         this.$set(this.rules.url, 0, '')
-        //     }
-        //     //this.handleSuccess();
-        // }
-      })
+    },
+    handleChunk(chunkValue) {
+      try {
+        const data = JSON.parse(chunkValue);
+        this.tableData.unshift(data);
+        this.updatePagedData();
+      } catch (error) {
+        console.error('Error parsing chunk value', error);
+      }
+    },
+    handleSizeChange(newSize) {
+      this.pageSize = newSize;
+      this.updatePagedData();
+    },
+    handleCurrentChange(newPage) {
+      this.currentPage = newPage;
+      this.updatePagedData();
+    },
+    updatePagedData() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      const end = start + this.pageSize;
+      this.currentPageData = this.tableData.slice(start, end);
     },
     //上传成功后的回调
     handleSuccess() {
@@ -378,6 +403,4 @@ export default {
 }
 </script>
 
-<style>
-
-</style>
+<style></style>

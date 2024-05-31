@@ -304,3 +304,60 @@ export const chatStreamgpt = async (params, handleChunk, handleReferences) => {
     }
   }
 };
+// 条款检查上传
+
+export const upload_exam = async (file, handleChunk) => {
+  
+
+  try {
+    const response = await fetch('http://121.43.126.21:8001/exam/upload_exam', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+      },
+      body: file,
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const readableStream = response.body;
+    if (readableStream) {
+      const reader = readableStream.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        let boundaryIndex;
+        while ((boundaryIndex = buffer.indexOf('data: ')) !== -1) {
+          const lineEndIndex = buffer.indexOf('\n', boundaryIndex);
+          if (lineEndIndex === -1) break;
+
+          const chunkValue = buffer.substring(boundaryIndex + 6, lineEndIndex).trim(); // Remove 'data: ' prefix and trim whitespace
+          buffer = buffer.substring(lineEndIndex + 1);
+
+          if (chunkValue) {
+            handleChunk(chunkValue);
+          }
+        }
+      }
+
+      // Process any remaining buffered data
+      if (buffer.length > 0) {
+        handleChunk(buffer);
+      }
+
+      reader.releaseLock();
+    }
+  } catch (error) {
+    console.error('Error uploading file', error);
+  }
+};
+
+
