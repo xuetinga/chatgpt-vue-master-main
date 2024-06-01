@@ -17,12 +17,12 @@
         </el-header>
         <el-table ref="table" :data="currentPageData" @filter-change="_filterChange" border>
           <template v-for="(item, index) in dataList">
-            <el-table-column v-if="item.sort" sortable :show-overflow-tooltip="true" :key="index" :label="item.label"
-              align="center" :prop="item.value" :filter-multiple="true" :filters="filterData(item)"
+            <el-table-column v-if="item.sort" :key="index" :label="item.label" align="center" :prop="item.value"
+              sortable :show-overflow-tooltip="true" :filter-multiple="true" :filters="filterData(item)"
               :filter-method="filterTag">
             </el-table-column>
-            <el-table-column v-else :show-overflow-tooltip="true" :key="index" :label="item.label" align="center"
-              :prop="item.value">
+            <el-table-column v-else :key="index" :label="item.label" align="center" :prop="item.value"
+              :show-overflow-tooltip="true">
             </el-table-column>
           </template>
         </el-table>
@@ -210,7 +210,40 @@ export default {
       return this.tableData.slice(startIndex, endIndex);
     }
   },
+  mounted() {
+    // 初始化数据，这里是一个示例
+    this.tableData = [
+      
+    ];
+    this.totalItems = this.tableData.length;
+    this.dataList= [
+        {
+          label: "题目分类",
+          value: "parent",
+          sort: true
 
+        },
+        {
+          label: "题目标题",
+          value: "file",
+          sort: true
+
+        },
+        {
+          label: "题目内容",
+          value: "content",
+          sort: false
+        },
+        {
+          label: "时间",
+          value: "time",
+          sort: true
+
+        },
+
+      ],
+    this.updatePagedData();
+  },
   methods: {
     //上传了的文件给移除的事件，由于我没有用到默认的展示，所以没有用到
     handleRemove() {
@@ -259,10 +292,12 @@ export default {
       this.currentPage = newPage;
       this.updatePagedData();
     },
+    
     updatePagedData() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
-      this.currentPageData = this.tableData.slice(start, end);
+      this.tableData.slice(start, end);
+    
     },
     //上传成功后的回调
     handleSuccess() {
