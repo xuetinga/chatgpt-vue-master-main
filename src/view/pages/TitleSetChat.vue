@@ -213,36 +213,36 @@ export default {
   mounted() {
     // 初始化数据，这里是一个示例
     this.tableData = [
-      
+
     ];
     this.totalItems = this.tableData.length;
-    this.dataList= [
-        {
-          label: "题目分类",
-          value: "parent",
-          sort: true
+    this.dataList = [
+      {
+        label: "题目分类",
+        value: "parent",
+        sort: true
 
-        },
-        {
-          label: "题目标题",
-          value: "file",
-          sort: true
+      },
+      {
+        label: "题目标题",
+        value: "file",
+        sort: true
 
-        },
-        {
-          label: "题目内容",
-          value: "content",
-          sort: false
-        },
-        {
-          label: "时间",
-          value: "time",
-          sort: true
+      },
+      {
+        label: "题目内容",
+        value: "content",
+        sort: false
+      },
+      {
+        label: "时间",
+        value: "time",
+        sort: true
 
-        },
+      },
 
-      ],
-    this.updatePagedData();
+    ],
+      this.updatePagedData();
   },
   methods: {
     //上传了的文件给移除的事件，由于我没有用到默认的展示，所以没有用到
@@ -272,14 +272,28 @@ export default {
       }
         ;
       this.fileList.push(item.file);
+
       await upload_exam(FormDatas, this.handleChunk);
+      // const response = await upload_exam(FormDatas,handleChunk);
+      // // 假设接口返回的是一个流式响应或一个包含数据块的数组
+      // const chunks = response.data; // 假设这里返回一个数组
+
+      // const processStream = async (chunks) => {
+      //   for (const chunk of chunks) {
+      //     this.handleChunk(JSON.stringify(chunk));
+      //     await new Promise(resolve => setTimeout(resolve, 500)); // 模拟延迟
+      //   }
+      // };
+
+      // await processStream(chunks);
 
     },
     handleChunk(chunkValue) {
       try {
         const data = JSON.parse(chunkValue);
+        console.log("datadatadata",data)
         this.tableData.unshift(data);
-        this.updatePagedData();
+        this.totalItems = this.tableData.length;
       } catch (error) {
         console.error('Error parsing chunk value', error);
       }
@@ -292,12 +306,12 @@ export default {
       this.currentPage = newPage;
       this.updatePagedData();
     },
-    
+
     updatePagedData() {
       const start = (this.currentPage - 1) * this.pageSize;
       const end = start + this.pageSize;
       this.tableData.slice(start, end);
-    
+
     },
     //上传成功后的回调
     handleSuccess() {

@@ -349,9 +349,9 @@ export const upload_exam = async (file, handleChunk) => {
       }
 
       // Process any remaining buffered data
-      if (buffer.length > 0) {
-        handleChunk(buffer);
-      }
+      // if (buffer.length > 0) {
+      //   handleChunk(buffer);
+      // }
 
       reader.releaseLock();
     }
