@@ -360,4 +360,29 @@ export const upload_exam = async (file, handleChunk) => {
   }
 };
 
+export const upload_kg = async (file, handleChunk) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  // 发送文件上传请求并逐条处理返回的数据流
+  const response = await axios.post('http://121.43.126.21:8001/knowledge/upload_kg', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    responseType: 'stream' // 使用流式响应
+  });
+
+  const reader = response.data.getReader();
+  const decoder = new TextDecoder('utf-8');
+
+  // 逐条读取数据
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const chunk = decoder.decode(value);
+    handleChunk(chunk);
+    await new Promise(resolve => setTimeout(resolve, 500)); // 模拟延迟
+  }
+};
 
