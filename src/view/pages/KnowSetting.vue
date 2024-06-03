@@ -134,7 +134,7 @@ export default {
             centerDialogVisible: false,
             graphData: {
                 nodes: [
-                    { id: '航道管理', group: 1 },
+                    { id: 'A在税务行业有哪些典型案例', group: 1 },
                     { id: '海港一线和二线的区别', group: 2 },
                     { id: 'B行业有哪些典型案例', group: 2 },
                     { id: '介绍下海港的技术支撑平台', group: 2 },
@@ -356,7 +356,7 @@ export default {
         },
         showGraph(index) {
             console.log("fileList", this.selectfile)
-            upload_kg(this.selectfile, this.handleChunk);
+            // upload_kg(this.selectfile, this.handleChunk);
 
             this.centerDialogVisible = true;
             const data = this.graphData;
