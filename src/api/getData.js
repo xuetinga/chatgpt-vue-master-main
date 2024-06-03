@@ -360,9 +360,11 @@ export const upload_exam = async (file, handleChunk) => {
   }
 };
 
+
+
 export const upload_kg = async (file, handleChunk) => {
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append('file', file.file);
 
   // 发送文件上传请求并逐条处理返回的数据流
   const response = await axios.post('http://121.43.126.21:8001/knowledge/upload_kg', formData, {
@@ -372,17 +374,34 @@ export const upload_kg = async (file, handleChunk) => {
     responseType: 'stream' // 使用流式响应
   });
 
-  const reader = response.data.getReader();
-  const decoder = new TextDecoder('utf-8');
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
 
-  // 逐条读取数据
   while (true) {
-    const { done, value } = await reader.read();
+    const { value, done } = await reader.read();
     if (done) break;
 
-    const chunk = decoder.decode(value);
-    handleChunk(chunk);
-    await new Promise(resolve => setTimeout(resolve, 500)); // 模拟延迟
+    buffer += decoder.decode(value, { stream: true });
+
+    let boundaryIndex;
+    while ((boundaryIndex = buffer.indexOf('"content":')) !== -1) {
+      const start = boundaryIndex + 10;
+      const end = buffer.indexOf('}', start);
+      if (end === -1) break;
+
+      const chunk = buffer.substring(start, end).trim();
+      buffer = buffer.substring(end + 1);
+
+      const contentMatch = chunk.match(/"(.*?)"/);
+      if (contentMatch) {
+        const content = contentMatch[1];
+        handleChunk(content);
+      }
+    }
   }
+
+  reader.releaseLock();
 };
+
 

@@ -35,7 +35,8 @@
                                     </el-col>
                                     <el-col :span="8">
 
-                                        <i class="el-icon-picture-outline-round" @click="openDialogAndRenderGraph(index)">图谱</i>
+                                        <i class="el-icon-picture-outline-round"
+                                            @click="openDialogAndRenderGraph(index)">图谱</i>
                                     </el-col>
                                     <el-col :span="8">
                                         <i class="el-icon-delete" @click="deleteKnowledge(index)">删除</i>
@@ -71,7 +72,14 @@
                     <el-form-item label="知识内容">
                         <el-input v-model="form.content" autocomplete="off"></el-input>
                     </el-form-item>
-
+                    <el-form-item label="知识文件">
+                        <el-upload class="upload-demo" action="#" :on-preview="handlePreview" :on-remove="handleRemove"
+                            :before-remove="beforeRemove" :on-change="handleChange" :file-list="fileList"
+                            :http-request="uploadFile">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        </el-upload>
+                    </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -106,7 +114,7 @@
 </template>
 
 <script>
-import { getChatMsg, gethistory, getstatic } from "@/api/getData";
+import { getChatMsg, gethistory, getstatic, upload_kg } from "@/api/getData";
 import * as d3 from 'd3';
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
@@ -126,7 +134,7 @@ export default {
             centerDialogVisible: false,
             graphData: {
                 nodes: [
-                    { id: 'A在税务行业有哪些典型案例', group: 1 },
+                    { id: '航道管理', group: 1 },
                     { id: '海港一线和二线的区别', group: 2 },
                     { id: 'B行业有哪些典型案例', group: 2 },
                     { id: '介绍下海港的技术支撑平台', group: 2 },
@@ -257,7 +265,9 @@ export default {
                 }
 
             ], // 存储配置的数组
-            kbs: []
+            kbs: [],
+            selectfile:"",
+            fileList:[]
 
         };
     },
@@ -270,7 +280,9 @@ export default {
         })
 
     },
-
+    mounted() {
+        this.loadFiles();
+    },
     computed: {
         // 筛选项
         filterData() {
@@ -290,6 +302,47 @@ export default {
     },
 
     methods: {
+        handlePreview(){
+
+        },
+        handleRemove(){
+
+        },
+        beforeRemove(){
+
+        },
+
+        parseNetworkData(networkData) {
+            const nodes = [];
+            const links = [];
+            // Helper function to add nodes and avoid duplicates
+            function addNode(id, group) {
+                if (!nodes.find(node => node.id === id)) {
+                    nodes.push({ id, group });
+                }
+            }
+
+            networkData.forEach(entry => {
+                const content = entry.content;
+                const parts = content.match(/([^，]+)/g);
+                if (parts.length === 3) {
+                    const [subject, relationship, object] = parts;
+                    addNode(subject, 1);
+                    addNode(object, 2);
+                    links.push({
+                        source: subject,
+                        target: object,
+                        value: 1,
+                        label: relationship
+                    });
+                }
+            });
+
+            return { nodes, links };
+        },
+
+
+
         updateIsCollapse(value) {
             this.isCollapse = value;
             // this.updateIsCollapse(value);
@@ -302,6 +355,9 @@ export default {
             });
         },
         showGraph(index) {
+            console.log("fileList", this.selectfile)
+            upload_kg(this.selectfile, this.handleChunk);
+
             this.centerDialogVisible = true;
             const data = this.graphData;
             const width = 500;
@@ -434,7 +490,16 @@ export default {
                 d.fy = null;
             }
         },
-
+        handleChunk(chunkValue) {
+            try {
+                const data = JSON.parse(chunkValue);
+                console.log("datadatadata", data)
+                this.tableData.unshift(data);
+                this.totalItems = this.tableData.length;
+            } catch (error) {
+                console.error('Error parsing chunk value', error);
+            }
+        },
 
         deleteKnowledge() {
 
@@ -498,7 +563,50 @@ export default {
         },
         next() {
             if (this.active++ > 2) this.active = 0;
+        },
+        handleChange(file, fileList) {
+            this.fileList = fileList;
+            this.saveFiles();
+        },
+        uploadFile(param) {
+            this.selectfile = param
+            // const reader = new FileReader();
+            // reader.onload = (e) => {
+            //     const newFile = {
+            //         uid: param.file.uid,
+            //         name: param.file.name,
+            //         url: e.target.result,
+            //         description: '' // 初始描述为空，可以后续编辑
+            //     };
+            //     this.fileList.push(newFile);
+            //     this.saveFiles();
+            // };
+            // reader.readAsDataURL(param.file);
+        },
+        saveFiles() {
+            localStorage.setItem('fileList', JSON.stringify(this.fileList));
+        },
+        loadFiles() {
+            const files = localStorage.getItem('fileList');
+            if (files) {
+                this.fileList = JSON.parse(files);
+            }
+        },
+        editFile(fileUid) {
+            const file = this.fileList.find(file => file.uid === fileUid);
+            if (file) {
+                const newDescription = prompt('编辑描述内容', file.description || '');
+                if (newDescription !== null) {
+                    file.description = newDescription;
+                    this.saveFiles();
+                }
+            }
+        },
+        deleteFile(fileUid) {
+            this.fileList = this.fileList.filter(file => file.uid !== fileUid);
+            this.saveFiles();
         }
+
 
 
     }
@@ -506,8 +614,6 @@ export default {
 </script>
 
 <style>
-
-
 .response-options {
     text-align: center;
     padding-left: 20;
