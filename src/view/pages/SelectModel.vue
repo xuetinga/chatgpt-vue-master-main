@@ -33,27 +33,33 @@
                 </el-container>
                 <el-row :gutter="20">
                     <el-col :span="8" v-for="(knowledge, index) in modellist" :key="index">
-                        <el-card :style="{ height: '200px' }" shadow="hover">
+                        <el-card
+                            :style="{ height: '250px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }"
+                            shadow="hover">
                             <template #header>
-                                <div class="headerbutton">
+                                <div class="headerbutton"
+                                    style="display: flex; justify-content: space-between; align-items: center; height: 50px;">
                                     <div>
                                         <i class="el-icon-picture-outline-round" @click="showGraph(index)"></i>
                                         <span>{{ knowledge }}</span>
                                     </div>
-                                    <el-button type="success" icon="el-icon-check" circle v-if="index == 1"></el-button>
+                                    <el-button size="mini" type="success" icon="el-icon-check" circle
+                                        v-if="index == 1"></el-button>
                                 </div>
                             </template>
-                            <div class="text item" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            <div class="text item"
+                                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 {{ knowledge }} {{ knowledge }} {{ knowledge }}
                             </div>
                             <el-row style="margin-top: 20px;">
-                                <el-col :span="8">
+                                <el-col :span="8" style="text-align: center;">
                                     <i class="el-icon-edit" @click="showConfigDialog(index)">配置</i>
                                 </el-col>
-                                <el-col :span="8">
-                                    <i class="el-icon-picture-outline-round" @click="openDialogAndRenderGraph(index)">启动</i>
+                                <el-col :span="8" style="text-align: center;">
+                                    <i class="el-icon-picture-outline-round"
+                                        @click="openDialogAndRenderGraph(index)">启动</i>
                                 </el-col>
-                                <el-col :span="8">
+                                <el-col :span="8" style="text-align: center;">
                                     <i class="el-icon-delete" @click="deleteKnowledge(index)">停止</i>
                                 </el-col>
                             </el-row>
@@ -62,25 +68,25 @@
                 </el-row>
 
                 <el-dialog title="配置" :visible.sync="settingdialogFormVisible">
-                <el-form :model="settingform">
-                    <el-row>
-                        <el-col :span="8" v-for="(config, index) in configArray" :key="index">
-                            <el-form-item :label="config.label">
-                                <el-select v-model="settingform[config.key]" :placeholder="'请选择' + config.label">
-                                    <el-option v-for="(option, optionIndex) in config.options" :key="optionIndex"
-                                        :label="option.label" :value="option.value"></el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </el-form>
+                    <el-form :model="settingform">
+                        <el-row>
+                            <el-col :span="8" v-for="(config, index) in configArray" :key="index">
+                                <el-form-item :label="config.label">
+                                    <el-select v-model="settingform[config.key]" :placeholder="'请选择' + config.label">
+                                        <el-option v-for="(option, optionIndex) in config.options" :key="optionIndex"
+                                            :label="option.label" :value="option.value"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                    </el-form>
 
 
-                <div slot="footer" class="dialog-footer">
-                    <el-button @click="settingdialogFormVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="savesetting">确 定</el-button>
-                </div>
-            </el-dialog>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="settingdialogFormVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="savesetting">确 定</el-button>
+                    </div>
+                </el-dialog>
 
             </el-main>
         </el-container>
@@ -102,8 +108,8 @@ export default {
     },
     data() {
         return {
-            
-            settingdialogFormVisible:false,
+
+            settingdialogFormVisible: false,
             selected: '7',
             currentDate: new Date(),
             isCollapse: false,
@@ -302,9 +308,16 @@ export default {
 </script>
 
 <style>
+
 .headerbutton {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.text.item {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
