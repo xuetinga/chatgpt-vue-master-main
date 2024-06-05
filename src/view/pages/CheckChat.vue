@@ -13,8 +13,9 @@
                         <!-- Sidebar content here -->
                         <el-menu @select="handleSelect"
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
-                                class="menu-item-history" @click="historyChat(question, index)">
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index"
+                                :index="index.toString()" class="menu-item-history"
+                                @click="historyChat(question, index)">
                                 <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
                                     {{ getUserContent(question.history) }}
@@ -33,7 +34,8 @@
                             <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                        <div class="card"
+                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
                                             <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
@@ -41,8 +43,9 @@
                                         <div class="card" style="width: 800px;">
 
                                             <span v-if="index === chatMessages.length - 1">
-                                                <vue-markdown :source="message.content" :breaks="true" :typographer="true"
-                                                    :linkify="true" :highlight="false"></vue-markdown>
+                                                <vue-markdown :source="message.content" :breaks="true"
+                                                    :typographer="true" :linkify="true"
+                                                    :highlight="false"></vue-markdown>
                                             </span>
                                             <span v-else>
                                                 {{ message.content }}
@@ -110,7 +113,7 @@
                                 <div class="input-button">
                                     <div v-for="(file, index) in fileList" :key="index" class="file-tag">
                                         <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
-                                            file.name }}</span>
+            file.name }}</span>
                                         <i class="el-icon-close" @click="removeFile(index)"></i>
                                     </div>
                                     <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
@@ -132,7 +135,7 @@
 
 <script>
 import axios from 'axios';
-import { delete_dialogue,chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
+import { clause_doc_stream_check, delete_dialogue, chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
@@ -419,25 +422,46 @@ export default {
 
             var FormDatas = new FormData()
             FormDatas.append('file', item.file);
-            console.log("FormDatas", FormDatas.get("file"))
-            let params = {
-                file: FormDatas.get("file"),
-            }
+
+
             this.fileList.push(item.file);
 
-            chatupload(params).then(res => {
-                console.log("res", res.data.content)
-                // if (res.data.id != '' || res.data.id != null) {
-                //     this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
-                //     let i = this.fileList.indexOf(item.file)
-                //     this.fileList[i].id = res.data.id;//id也添加进去，最后整个大表单提交的时候需要的
-                //     if (this.fileList.length > 0) {//如果上传了附件就把校验规则给干掉
-                //         this.fileflag = false;
-                //         this.$set(this.rules.url, 0, '')
-                //     }
-                //     //this.handleSuccess();
-                // }
-            })
+            // .then(res => {
+            // console.log("res", res.data.content)
+            // if (res.data.id != '' || res.data.id != null) {
+            //     this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
+            //     let i = this.fileList.indexOf(item.file)
+            //     this.fileList[i].id = res.data.id;//id也添加进去，最后整个大表单提交的时候需要的
+            //     if (this.fileList.length > 0) {//如果上传了附件就把校验规则给干掉
+            //         this.fileflag = false;
+            //         this.$set(this.rules.url, 0, '')
+            //     }
+            //     //this.handleSuccess();
+            // }
+            // })
+        },
+        handleChunk1(first, content) {
+            if (first) {
+                this.chatMessages.push({ content: '', role: 'assistant', reference: [] });
+            }
+            console.log("content", content)
+
+            const lastMessageIndex = this.chatMessages.length - 1;
+            this.chatMessages[lastMessageIndex].content += content;
+            this.$set(this.chatMessages, lastMessageIndex, { ...this.chatMessages[lastMessageIndex] });
+            this.newhistory = {
+                dialogue_id: this.chat_id, history: this.chatMessages
+            }
+            const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
+
+            if (existingIndex === -1) {
+                this.historyArrlist.unshift(this.newhistory);
+            } else {
+                console.log("Duplicate dialogue_id found, not adding.");
+            }
+            this.newMessage = '';
+            this.chatStarted = true;
+            this.fileList=[]
         },
         //上传成功后的回调
         handleSuccess() {
@@ -460,8 +484,15 @@ export default {
         startChat() {
             console.log("this.chat_id", this.chat_id)
 
-            if (this.newMessage.trim() !== '' || this.newMessage.trim().length > 0) {
-                this.chatMessages.push({ content: this.newMessage, role: 'user' });
+            if (this.newMessage.trim() !== '' || this.newMessage.trim().length > 0 || this.fileList.length > 0) {
+                if(this.fileList.length > 0){
+                    // this.newMessage = ""
+                    this.chatMessages.push({ content: "让我来分析这个文档      "+this.fileList[0].name, role: 'user' });
+                    
+                }
+                else{
+                    this.chatMessages.push({ content: this.newMessage, role: 'user' });
+                }
                 if (this.chat_id == "") {
                     this.chat_id = this.guid()
                 }
@@ -481,10 +512,18 @@ export default {
                     // ,
                 }
                 console.log("params", params)
-                chatclauseStreamgpt(params, this.handleChunk, this.handleReferences);
+                if (this.fileList.length > 0) {
+                    let params1 = {
+                        dialogue_id: this.chat_id,
+                        config: JSON.stringify(config),
+                        file: this.fileList[0]
+                    }
+                    clause_doc_stream_check(params1, this.handleChunk1)
+                }
+                else {
+                    chatclauseStreamgpt(params, this.handleChunk, this.handleReferences);
 
-
-
+                }
             }
             else {
 
@@ -666,8 +705,8 @@ export default {
         goToHelp() {
             window.location.href = '#/HelpChat';
         },
-        removeFile(index){
-            this.fileList =[]
+        removeFile(index) {
+            this.fileList = []
         },
 
     }

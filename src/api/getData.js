@@ -404,4 +404,72 @@ export const upload_kg = async (file, handleChunk) => {
   reader.releaseLock();
 };
 
+// 获取聊天信息
+export const clause_doc_stream_check1 = params => {
+  return axios({
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://121.43.126.21:8001/chat/${params.dialogue_id}/clause_doc_stream_check?config=${params.config}`,
+    data: params.file,
 
+  }).then(res => {
+    return res
+  })
+}
+export const clause_doc_stream_check = async (params, handleChunk, handleReferences) => {
+  const formData = new FormData();
+  // Assuming params.file is already a FormData object, if not, add the fields manually
+  formData.append('file', params.file);
+
+  // Ensure config is URL encoded
+
+  const response = await fetch(`http://121.43.126.21:8001/chat/${params.dialogue_id}/clause_doc_stream_check?config=${params.config}`, {
+    method: 'post',
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const readableStream = response.body;
+  if (readableStream) {
+    const reader = readableStream.getReader();
+    let first = true;
+    let isReferences = false;
+    let references = '';
+    
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+      const chunkValue = new TextDecoder().decode(value);
+      const lines = chunkValue.split('\n').filter(line => line.startsWith('data: '));
+      lines.forEach(line => {
+        const content = line.slice(6).trim(); // Remove 'data: ' prefix and trim whitespace
+        if (isReferences) {
+          references = content;
+        } else if (content.startsWith('{"response"')) {
+          isReferences = true;
+          references = content;
+        } 
+        else if (content.startsWith('"markdown"')) {
+          handleChunk(first, "");
+        } 
+        else {
+          handleChunk(first, content);
+        }
+        first = false;
+      });
+    }
+    
+    reader.releaseLock();
+    
+    if (isReferences && references) {
+      handleReferences(references);
+    }
+  }
+};
