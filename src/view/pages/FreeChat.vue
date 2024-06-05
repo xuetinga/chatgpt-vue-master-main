@@ -311,15 +311,20 @@ export default {
     mounted() {
         // 在mounted中添加鼠标悬停事件监听器
         const answerMessageElement = this.$el.querySelector('.answer-message');
-        answerMessageElement.addEventListener('mouseenter', this.showActionButtons);
-        // answerMessageElement.addEventListener('mouseleave', this.hideActionButtons);
+        if (answerMessageElement) {
+            answerMessageElement.addEventListener('mouseenter', this.showActionButtons);
+            answerMessageElement.addEventListener('mouseleave', this.hideActionButtons);
+        }
     },
     beforeDestroy() {
         // 在beforeDestroy中移除鼠标悬停事件监听器
         const answerMessageElement = this.$el.querySelector('.answer-message');
-        answerMessageElement.removeEventListener('mouseenter', this.showActionButtons);
-        answerMessageElement.removeEventListener('mouseleave', this.hideActionButtons);
+        if (answerMessageElement) {
+            answerMessageElement.removeEventListener('mouseenter', this.showActionButtons);
+            answerMessageElement.removeEventListener('mouseleave', this.hideActionButtons);
+        }
     },
+
     methods: {
         getUserContent(history) {
             if (history.length > 0) {
@@ -504,7 +509,7 @@ export default {
                     // {role:"hh",content:"xx"}
                     // ,
                 }
-                console.log("params", params,this.promptdefaultvalue)
+                console.log("params", params, this.promptdefaultvalue)
                 if (this.modeldefaultvalue == "spark") {
                     chatgpt(params).then((res) => {
                         this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
