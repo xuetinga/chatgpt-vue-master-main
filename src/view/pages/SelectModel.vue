@@ -34,7 +34,7 @@
                 <el-row :gutter="20">
                     <el-col :span="8" v-for="(knowledge, index) in modellist" :key="index">
                         <el-card
-                            :style="{ height: '250px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }"
+                            :style="{ height: '200px', display: 'flex', flexDirection: 'column',}"
                             shadow="hover">
                             <template #header>
                                 <div class="headerbutton"
@@ -48,7 +48,7 @@
                                 </div>
                             </template>
                             <div class="text item"
-                                style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                >
                                 {{ knowledge }} {{ knowledge }} {{ knowledge }}
                             </div>
                             <el-row style="margin-top: 20px;">
