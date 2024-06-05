@@ -666,7 +666,9 @@ export default {
         goToHelp() {
             window.location.href = '#/HelpChat';
         },
-
+        removeFile(index){
+            this.fileList =[]
+        },
 
     }
 }
