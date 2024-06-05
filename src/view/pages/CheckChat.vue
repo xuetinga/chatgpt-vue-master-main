@@ -6,7 +6,7 @@
             <el-main>
 
                 <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
-                    <el-aside width="200px">
+                    <el-aside width="200px" class="aside-container">
                         <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
                             <el-button type="primary" icon="el-icon-plus" @click="newChat">新条款</el-button>
                         </el-header>

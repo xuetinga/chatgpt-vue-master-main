@@ -6,7 +6,7 @@
             <el-main>
 
                 <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
-                    <el-aside width="200px">
+                    <el-aside width="200px" class="aside-container">
                         <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
                             <el-button type="primary" icon="el-icon-plus" @click="newChat">新对话</el-button>
                         </el-header>
@@ -499,7 +499,7 @@ export default {
                     // ,
                 }
                 console.log("params", params)
-                chatkbStreamgpt(params, this.handleChunk, this.handleReferences);
+                chatStreamgpt(params, this.handleChunk, this.handleReferences);
 
             }
             else {
