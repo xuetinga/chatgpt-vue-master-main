@@ -49,7 +49,7 @@ export const chatgpt = params => {
     method: 'post',
     // url: `http://121.43.126.21:8001/chat/knowledge_base_chat`,
 
-    url: `http://121.43.126.21:8001/chat/${params.dialogue_id}/knowledge_base_chat?query=${params.query}&config=${params.config}`,
+    url: `http://121.43.126.21:8001/chat/${params.dialogue_id}/chat?query=${params.query}&config=${params.config}`,
     data: params,
 
   }).then(res => {

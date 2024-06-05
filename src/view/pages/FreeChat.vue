@@ -13,8 +13,9 @@
                         <!-- Sidebar content here -->
                         <el-menu @select="handleSelect"
                             style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
-                                class="menu-item-history" @click="historyChat(question, index)">
+                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index"
+                                :index="index.toString()" class="menu-item-history"
+                                @click="historyChat(question, index)">
                                 <span slot="title" @mouseover="showDeleteButton(index)"
                                     @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
                                     {{ getUserContent(question.history) }}
@@ -33,7 +34,8 @@
                             <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                        <div class="card"
+                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
                                             <i class="el-icon-user"> {{ message.content }}</i>
                                         </div>
                                     </div>
@@ -41,8 +43,9 @@
                                         <div class="card" style="width: 800px;">
 
                                             <span v-if="index === chatMessages.length - 1">
-                                                <vue-markdown :source="message.content" :breaks="true" :typographer="true"
-                                                    :linkify="true" :highlight="false"></vue-markdown>
+                                                <vue-markdown :source="message.content" :breaks="true"
+                                                    :typographer="true" :linkify="true"
+                                                    :highlight="false"></vue-markdown>
 
                                             </span>
                                             <span v-else>
@@ -53,7 +56,8 @@
                                         </div>
                                         <div class="floating-actions" v-show="floatactiveIndex == index">
 
-                                            <el-tooltip class="item" effect="dark" content="朗读" placement="bottom-start">
+                                            <el-tooltip class="item" effect="dark" content="朗读"
+                                                placement="bottom-start">
                                                 <i class="el-icon-video-play" @click="readAloud"></i>
                                             </el-tooltip>
                                             <el-tooltip class="item" effect="dark" content="复制" placement="bottom">
@@ -67,7 +71,8 @@
                                                 <i class="el-icon-bottom" @click="dislikeMessage"></i>
 
                                             </el-tooltip>
-                                            <el-tooltip class="item" effect="dark" content="重新生成" placement="bottom-end">
+                                            <el-tooltip class="item" effect="dark" content="重新生成"
+                                                placement="bottom-end">
                                                 <i class="el-icon-refresh-left" @click="regenerateMessage"></i>
 
                                             </el-tooltip>
@@ -139,7 +144,7 @@
                                 <div class="input-button">
                                     <div v-for="(file, index) in fileList" :key="index" class="file-tag">
                                         <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
-                                            file.name }}</span>
+            file.name }}</span>
                                         <i class="el-icon-close" @click="removeFile(index)"></i>
                                     </div>
                                     <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
@@ -490,6 +495,7 @@ export default {
                     "knowledge": "default",
                     "LLM_config": "default"
                 }
+
                 let params = {
                     dialogue_id: this.chat_id,
                     query: this.newMessage,
@@ -498,8 +504,30 @@ export default {
                     // {role:"hh",content:"xx"}
                     // ,
                 }
-                console.log("params", params)
-                chatStreamgpt(params, this.handleChunk, this.handleReferences);
+                console.log("params", params,this.promptdefaultvalue)
+                if (this.modeldefaultvalue == "spark") {
+                    chatgpt(params).then((res) => {
+                        this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
+                        this.newhistory = {
+                            dialogue_id: this.chat_id, history: this.chatMessages
+                        }
+                        const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
+
+                        if (existingIndex === -1) {
+                            this.historyArrlist.unshift(this.newhistory);
+                        } else {
+                            console.log("Duplicate dialogue_id found, not adding.");
+                        }
+                        this.newMessage = '';
+                        this.chatStarted = true;
+
+
+                    });
+                }
+                else {
+                    chatStreamgpt(params, this.handleChunk, this.handleReferences);
+
+                }
 
             }
             else {
