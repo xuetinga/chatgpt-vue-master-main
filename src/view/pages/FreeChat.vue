@@ -37,6 +37,15 @@
                                         <div class="card"
                                             style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
                                             <i class="el-icon-user"> {{ message.content }}</i>
+                                            <div v-if="dialogImageUrl !== ''">
+
+                                                <el-image style="width: 200px; height: 200px" :src="dialogImageUrl"
+                                                    :fit="fit"></el-image>
+                                            </div>
+                                            <div v-if="dialogFileUrl !== ''">
+                                                <img width="100%" :src="dialogImageUrl" alt="Image">
+
+                                            </div>
                                         </div>
                                     </div>
                                     <div v-else-if="message.role === 'assistant'" class="answer-message">
@@ -142,13 +151,18 @@
 
                                 </div>
                                 <div class="input-button">
+
                                     <div v-for="(file, index) in fileList" :key="index" class="file-tag">
                                         <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
             file.name }}</span>
                                         <i class="el-icon-close" @click="removeFile(index)"></i>
                                     </div>
+                                    <el-upload class="upload-icon" action :http-request="uploadImg" ref="upload"
+                                        :show-file-list="false" accept="image/*">
+                                        <i class="el-icon-picture-outline-round" style="margin-right: 5px;"></i>
+                                    </el-upload>
                                     <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
-                                        :before-upload="beforeUpload" :show-file-list="false">
+                                        :show-file-list="false">
                                         <i class="el-icon-paperclip" style="margin-right: 5px;"></i>
                                     </el-upload>
                                     <i class="el-icon-s-promotion" @click="startChat" style="margin-right: 5px;">
@@ -166,7 +180,7 @@
 </template>
 
 <script>
-import { chatkbStreamgpt, chatStreamgpt, getChatMsg, gethistory, getChat, getstatic, chatgpt, getChatchat } from "@/api/getData";
+import { chatFileStreamgpt, chatImgStreamgpt, upload_img, upload_doc, chatkbStreamgpt, chatStreamgpt, getChatMsg, gethistory, getChat, getstatic, chatgpt, getChatchat } from "@/api/getData";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
@@ -271,7 +285,7 @@ export default {
             //上传后的文件列表
             fileList: [],
             // 允许的文件类型
-            fileType: ["pdf", "doc", "docx", "xls", "xlsx", "txt", "png", "jpg", "bmp", "jpeg"],
+            // fileType: ["pdf", "doc", "docx", "xls", "xlsx", "txt", "png", "jpg", "bmp", "jpeg"],
             // 运行上传文件大小，单位 M
             fileSize: 50,
             // 附件数量限制
@@ -280,7 +294,10 @@ export default {
             headers: { "Content-Type": "multipart/form-data" },
             kbs: [],
             models: [],
-            prompts: []
+            prompts: [],
+            fileType: "",
+            dialogImageUrl: "",
+            dialogFileUrl: ""
 
         };
     },
@@ -380,28 +397,54 @@ export default {
         regenerateMessage() {
             // 重新生成功能的实现
         },
-        //上传文件之前
-        beforeUpload(file) {
-            if (file.type != "" || file.type != null || file.type != undefined) {
-                //截取文件的后缀，判断文件类型
-                const FileExt = file.name.replace(/.+\./, "").toLowerCase();
-                //计算文件的大小
-                const isLt5M = file.size / 1024 / 1024 < 50; //这里做文件大小限制
-                //如果大于50M
-                if (!isLt5M) {
-                    this.$showMessage('上传文件大小不能超过 50MB!');
-                    return false;
-                }
-                //如果文件类型不在允许上传的范围内
-                if (this.fileType.includes(FileExt)) {
-                    return true;
-                }
-                else {
-                    this.$message.error("上传文件格式不正确!");
-                    return false;
-                }
-            }
-        },
+        // beforeUploadImg(file) {
+        //     if (file && file.type && file.name && file.size) {
+        //         //截取文件的后缀，判断文件类型
+        //         const FileExt = file.name.split('.').pop().toLowerCase();
+        //         //计算文件的大小
+        //         const isLt50M = file.size / 1024 / 1024 < 50; //这里做文件大小限制
+        //         //如果大于50M
+        //         if (!isLt50M) {
+        //             this.$showMessage('上传文件大小不能超过 50MB!');
+        //             return false;
+        //         }
+        //         //允许上传的图片格式
+        //         const allowedImageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+        //         //如果文件类型不在允许上传的范围内
+        //         if (allowedImageTypes.includes(FileExt)) {
+        //             return true;
+        //         } else {
+        //             this.$message.error("上传文件格式不正确, 仅支持 jpg, jpeg, png, gif, bmp 格式!");
+        //             return false;
+        //         }
+        //     } else {
+        //         this.$message.error("文件信息不完整!");
+        //         return false;
+        //     }
+        // },
+
+        // //上传文件之前
+        // beforeUpload(file) {
+        //     if (file.type != "" || file.type != null || file.type != undefined) {
+        //         //截取文件的后缀，判断文件类型
+        //         const FileExt = file.name.replace(/.+\./, "").toLowerCase();
+        //         //计算文件的大小
+        //         const isLt5M = file.size / 1024 / 1024 < 50; //这里做文件大小限制
+        //         //如果大于50M
+        //         if (!isLt5M) {
+        //             this.$showMessage('上传文件大小不能超过 50MB!');
+        //             return false;
+        //         }
+        //         //如果文件类型不在允许上传的范围内
+        //         if (this.fileType.includes(FileExt)) {
+        //             return true;
+        //         }
+        //         else {
+        //             this.$message.error("上传文件格式不正确!");
+        //             return false;
+        //         }
+        //     }
+        // },
         //上传了的文件给移除的事件，由于我没有用到默认的展示，所以没有用到
         handleRemove() {
         },
@@ -420,32 +463,39 @@ export default {
                 message: '超出最大上传文件数量的限制！'
             }); return
         },
+        uploadImg(item) {
+            // this.$showMessage('文件上传中........')
+            //上传文件的需要formdata类型;所以要转
+            var FormDatas = new FormData()
+            FormDatas.append('file', item.file);
+
+            let params = {
+                file: FormDatas
+            }
+            this.dialogImageUrl = URL.createObjectURL(item.file);
+            console.log("this.dialogImageUrl", item)
+
+            this.fileList.push(item.file);
+            upload_img(params).then(res => {
+                console.log("upload_imgres", res.data.content)
+                this.fileType = "img"
+            })
+        },
         //上传文件的事件
         uploadFile(item) {
             // this.$showMessage('文件上传中........')
             //上传文件的需要formdata类型;所以要转
-            console.log("FormDatas", item)
-
             var FormDatas = new FormData()
             FormDatas.append('file', item.file);
-            console.log("FormDatas", FormDatas.get("file"))
+            let config = { "embedding_model": "bce", "index": "flat_ip", "text_splitter": "default", "chunk_size": 200, "overlap": 50, "chunk_split_method": "default" }
             let params = {
-                file: FormDatas.get("file"),
+                config: JSON.stringify(config),
+                file: item.file
             }
             this.fileList.push(item.file);
-
-            chatupload(params).then(res => {
+            upload_doc(params).then(res => {
                 console.log("res", res.data.content)
-                // if (res.data.id != '' || res.data.id != null) {
-                //     this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
-                //     let i = this.fileList.indexOf(item.file)
-                //     this.fileList[i].id = res.data.id;//id也添加进去，最后整个大表单提交的时候需要的
-                //     if (this.fileList.length > 0) {//如果上传了附件就把校验规则给干掉
-                //         this.fileflag = false;
-                //         this.$set(this.rules.url, 0, '')
-                //     }
-                //     //this.handleSuccess();
-                // }
+
             })
         },
         //上传成功后的回调
@@ -460,7 +510,8 @@ export default {
         },
         historyChat(question) {
             console.log("this.question", question)
-
+            this.dialogImageUrl = ""
+            this.dialogFileUrl = ""
             this.chatStarted = true;
             question.showDeleteButton = true
             this.newhistory = question
@@ -510,29 +561,40 @@ export default {
                     // ,
                 }
                 console.log("params", params, this.promptdefaultvalue)
-                if (this.modeldefaultvalue == "spark") {
-                    chatgpt(params).then((res) => {
-                        this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
-                        this.newhistory = {
-                            dialogue_id: this.chat_id, history: this.chatMessages
-                        }
-                        const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
-
-                        if (existingIndex === -1) {
-                            this.historyArrlist.unshift(this.newhistory);
-                        } else {
-                            console.log("Duplicate dialogue_id found, not adding.");
-                        }
-                        this.newMessage = '';
-                        this.chatStarted = true;
-
-
-                    });
+                if (this.fileType !== "") {
+                    if (this.fileType == "img") {
+                        chatImgStreamgpt(params, this.handleChunk, this.handleReferences)
+                    }
+                    else {
+                        chatFileStreamgpt(params, this.handleChunk, this.handleReferences)
+                    }
                 }
                 else {
-                    chatStreamgpt(params, this.handleChunk, this.handleReferences);
+                    if (this.modeldefaultvalue == "spark") {
+                        chatgpt(params).then((res) => {
+                            this.chatMessages.push({ content: res.data.response, role: 'assistant', reference: res.data.reference });
+                            this.newhistory = {
+                                dialogue_id: this.chat_id, history: this.chatMessages
+                            }
+                            const existingIndex = this.historyArrlist.findIndex(item => item.dialogue_id === this.chat_id);
 
+                            if (existingIndex === -1) {
+                                this.historyArrlist.unshift(this.newhistory);
+                            } else {
+                                console.log("Duplicate dialogue_id found, not adding.");
+                            }
+                            this.newMessage = '';
+                            this.chatStarted = true;
+
+
+                        });
+                    }
+                    else {
+                        chatStreamgpt(params, this.handleChunk, this.handleReferences);
+
+                    }
                 }
+
 
             }
             else {
@@ -547,6 +609,7 @@ export default {
             if (first) {
                 this.chatMessages.push({ content: '', role: 'assistant', reference: [] });
             }
+
             const lastMessageIndex = this.chatMessages.length - 1;
             this.chatMessages[lastMessageIndex].content += content;
 
@@ -563,6 +626,7 @@ export default {
             }
             this.newMessage = '';
             this.chatStarted = true;
+            this.fileList=[]
         },
         handleReferences(reference) {
             console.log("reference", JSON.parse(reference).reference)
@@ -575,6 +639,8 @@ export default {
 
         },
         newChat() {
+            this.dialogImageUrl = ""
+            this.dialogFileUrl = ""
             if (this.chatMessages.length == 0) {
                 //说明没有新建
                 getChat().then((res) => {
@@ -661,6 +727,18 @@ export default {
             // }).catch((err) => {
             //     console.log('err', err)
             // })
+        },
+        removeFile(index) {
+            this.fileList = []
+        },
+        isImage(content) {
+            return /\.(jpg|jpeg|png|gif|bmp)$/i.test(content);
+        },
+        isFile(content) {
+            return /^https?:\/\//i.test(content) && !this.isImage(content);
+        },
+        getFileName(content) {
+            return content.split('/').pop();
         }
     }
 }

@@ -473,3 +473,123 @@ export const clause_doc_stream_check = async (params, handleChunk, handleReferen
     }
   }
 };
+export const chatFileStreamgpt = async (params, handleChunk, handleReferences) => {
+  const response = await fetch(`http://121.43.126.21:8001/chat/${params.dialogue_id}/stream_doc_chat?query=${params.query}&config=${params.config}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+    },
+    body: JSON.stringify(params)
+  });
+
+  const readableStream = response.body;
+  if (readableStream) {
+    const reader = readableStream.getReader();
+    let first = true;
+    let isReferences = false;
+    let references = '';
+    
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+      const chunkValue = new TextDecoder().decode(value);
+      const lines = chunkValue.split('\n').filter(line => line.startsWith('data: '));
+      lines.forEach(line => {
+        const content = line.slice(6).trim(); // Remove 'data: ' prefix and trim whitespace
+        if (isReferences) {
+          references = content;
+        } else if (content.startsWith('{"response"')) {
+          isReferences = true;
+          references = content;
+        } 
+        else if (content.startsWith('"markdown"')) {
+          handleChunk(first, "");
+        } 
+        else {
+          handleChunk(first, content);
+        }
+        first = false;
+      });
+    }
+    
+    reader.releaseLock();
+    
+    if (isReferences && references) {
+      handleReferences(references);
+    }
+  }
+};
+// 获取聊天信息
+export const upload_doc = params => {
+  return axios({
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://121.43.126.21:8001/upload/doc/config=${params.config}`,
+    data: params.file,
+
+  }).then(res => {
+    return res
+  })
+}
+export const chatImgStreamgpt = async (params, handleChunk, handleReferences) => {
+  const response = await fetch(`http://121.43.126.21:8001/chat/${params.dialogue_id}/stream_img_chat?query=${params.query}&config=${params.config}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+    },
+    body: JSON.stringify(params)
+  });
+
+  const readableStream = response.body;
+  if (readableStream) {
+    const reader = readableStream.getReader();
+    let first = true;
+    let isReferences = false;
+    let references = '';
+    
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        break;
+      }
+      const chunkValue = new TextDecoder().decode(value);
+      const lines = chunkValue.split('\n').filter(line => line.startsWith('data: '));
+      lines.forEach(line => {
+        const content = line.slice(6).trim(); // Remove 'data: ' prefix and trim whitespace
+        if (isReferences) {
+          references = content;
+        } else if (content.startsWith('{"response"')) {
+          
+          isReferences = true;
+          references = content;
+        } else {
+          handleChunk(first, content);
+        }
+        first = false;
+      });
+    }
+    
+    reader.releaseLock();
+    
+    if (isReferences && references) {
+      handleReferences(references);
+    }
+  }
+};
+export const upload_img = params => {
+  return axios({
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://121.43.126.21:8001/upload/img`,
+    data: params.file,
+
+  }).then(res => {
+    return res
+  })
+}
