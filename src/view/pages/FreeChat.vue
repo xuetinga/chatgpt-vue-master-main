@@ -43,8 +43,7 @@
                                                     :fit="fit"></el-image>
                                             </div>
                                             <div v-if="dialogFileUrl !== ''">
-                                                <img width="100%" :src="dialogImageUrl" alt="Image">
-
+                                                <a > {{dialogFileUrl}}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -151,7 +150,7 @@
 
                                 </div>
                                 <div class="input-button">
-
+                                
                                     <div v-for="(file, index) in fileList" :key="index" class="file-tag">
                                         <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
             file.name }}</span>
@@ -487,15 +486,24 @@ export default {
             //上传文件的需要formdata类型;所以要转
             var FormDatas = new FormData()
             FormDatas.append('file', item.file);
-            let config = { "embedding_model": "bce", "index": "flat_ip", "text_splitter": "default", "chunk_size": 200, "overlap": 50, "chunk_split_method": "default" }
+           
+            this.dialogFileUrl = item.file.name;
+            let config = {
+                embedding_model: "bce",
+                index: "flat_ip",
+                text_splitter: "default",
+                chunk_size: 200,
+                overlap: 50,
+                chunk_split_method: "default"
+            }
             let params = {
                 config: JSON.stringify(config),
-                file: item.file
+                file: FormDatas
             }
             this.fileList.push(item.file);
             upload_doc(params).then(res => {
                 console.log("res", res.data.content)
-
+                this.fileType = "file"
             })
         },
         //上传成功后的回调
@@ -566,7 +574,22 @@ export default {
                         chatImgStreamgpt(params, this.handleChunk, this.handleReferences)
                     }
                     else {
-                        chatFileStreamgpt(params, this.handleChunk, this.handleReferences)
+                        let config1 = {
+                            "model": "default",
+                            "prompt": "default",
+                            "knowledge": "new",
+                            "LLM_config": "default"
+                        }
+
+                        let params1 = {
+                            dialogue_id: this.chat_id,
+                            query: this.newMessage,
+                            config: JSON.stringify(config1)
+                            // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
+                            // {role:"hh",content:"xx"}
+                            // ,
+                        }
+                        chatFileStreamgpt(params1, this.handleChunk, this.handleReferences)
                     }
                 }
                 else {
@@ -626,7 +649,7 @@ export default {
             }
             this.newMessage = '';
             this.chatStarted = true;
-            this.fileList=[]
+            this.fileList = []
         },
         handleReferences(reference) {
             console.log("reference", JSON.parse(reference).reference)

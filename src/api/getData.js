@@ -501,13 +501,10 @@ export const chatFileStreamgpt = async (params, handleChunk, handleReferences) =
         if (isReferences) {
           references = content;
         } else if (content.startsWith('{"response"')) {
+          
           isReferences = true;
           references = content;
-        } 
-        else if (content.startsWith('"markdown"')) {
-          handleChunk(first, "");
-        } 
-        else {
+        } else {
           handleChunk(first, content);
         }
         first = false;
@@ -528,7 +525,7 @@ export const upload_doc = params => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: `http://121.43.126.21:8001/upload/doc/config=${params.config}`,
+    url: `http://121.43.126.21:8001/upload/doc?config=${params.config}`,
     data: params.file,
 
   }).then(res => {
