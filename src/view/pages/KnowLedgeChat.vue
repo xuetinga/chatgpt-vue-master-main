@@ -2,7 +2,7 @@
     <el-container class="background-container">
         <el-header class="header-container" style="height: 40px;">
             <img src="../../imgs/logo1.png" class="logo" />
-            <span class="title">Yoca</span>
+            <span class="title">Yoka copilot</span>
         </el-header>
         <el-main>
             <el-container class="main-container">
@@ -673,9 +673,9 @@ export default {
 }
 
 .title {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Courier New', Courier, monospace;
     /* Change to the font family you need */
-    font-size: 18px;
+    font-size: 20px;
     /* Adjust size as needed */
     font-weight: bold;
     color: #333;

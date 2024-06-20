@@ -2,7 +2,7 @@
     <el-container class="background-container">
         <el-header class="header-container" style="height: 40px;">
             <img src="../../imgs/logo1.png" class="logo" />
-            <span class="title">Yoca</span>
+            <span class="title">Yoka copilot</span>
         </el-header>
         <el-main>
             <el-container class="main-container">

@@ -3,7 +3,7 @@
 
     <!-- <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav> -->
 
-    <el-container style=" justify-content: center;align-items: center; ">
+    <el-container  class="parent-container">
       <el-header style="text-align: center; line-height: 40px;margin-top:120px ; font-family: 'Courier New', Courier, monospace; font-size: 100px; font-weight: 700;">
         Yoka copilot
       </el-header>
