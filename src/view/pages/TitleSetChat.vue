@@ -1,8 +1,10 @@
 <template>
-  <el-container class="main-bg">
-    <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
-
-    <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
+  <el-container  class="background-container">
+    <el-header class="header-container" style="height: 40px;">
+            <img src="../../imgs/logo1.png" class="logo" />
+            <span class="title">Yoca</span>
+        </el-header>
+    <el-container class="main-container">
 
       <el-main>
         <el-header>

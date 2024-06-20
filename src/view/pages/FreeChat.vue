@@ -1,18 +1,18 @@
 <template>
     <el-container class="main-bg">
-        <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
-
-        <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
+        <el-container class="background-container">
+            <el-header class="header-container" style="height: 40px;">
+                <img src="../../imgs/logo1.png" class="logo" />
+                <span class="title">Yoca</span>
+            </el-header>
             <el-main>
-
-                <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
-                    <el-aside width="200px" class="aside-container">
-                        <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
+                <el-container class="main-container">
+                    <el-aside width="220px" class="aside-container">
+                        <el-header class="aside-header">
                             <el-button type="primary" icon="el-icon-plus" @click="newChat">新对话</el-button>
                         </el-header>
-                        <!-- Sidebar content here -->
-                        <el-menu @select="handleSelect"
-                            style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
+                        <el-menu @select="handleSelect" class="custom-scrollbar"
+                            style="background-color: #f2fbff; justify-content: center;  height:70vh; margin-bottom:20px; overflow-x: hidden; ">
                             <el-menu-item v-for="(question, index) in historyArrlist" :key="index"
                                 :index="index.toString()" class="menu-item-history"
                                 @click="historyChat(question, index)">
@@ -26,16 +26,13 @@
                             </el-menu-item>
                         </el-menu>
                     </el-aside>
-
-                    <el-container style="background-color: whitesmoke; border-radius: 5px;">
-
-                        <el-main style="justify-content: center;">
-                            <!-- 聊天页面 -->
+                    <el-container>
+                        <el-main class="main-content">
                             <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
                                         <div class="card"
-                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
+                                        style=" background-color: #fff; float: left; color:#000">
                                             <i class="el-icon-user"> {{ message.content }}</i>
                                             <div v-if="dialogImageUrl !== ''">
 
@@ -43,7 +40,7 @@
                                                     :fit="fit"></el-image>
                                             </div>
                                             <div v-if="dialogFileUrl !== ''">
-                                                <a > {{dialogFileUrl}}</a>
+                                                <a> {{ dialogFileUrl }}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -91,16 +88,10 @@
 
 
                             <div v-else>
-                                <el-row type="flex" class="main-message">
-                                    <el-col :span="20">
-                                        <div class="message-content">
-                                            Yoka: 助力安全生产的强大知识管家
-                                        </div>
-                                    </el-col>
-                                </el-row>
+                            
                                 <el-row type="flex" class="response-options">
                                     <el-col :span="8" v-for="(card, index) in cards1" :key="index">
-                                        <el-card @click.native="sendMessage(card.message)" style="height: 300px;">
+                                        <el-card @click.native="sendMessage(card.message)" style="height: 250px; margin-left: 20px">
                                             <div slot="header" class="clearfix">
                                                 <span>{{ card.header }}</span>
                                             </div>
@@ -111,10 +102,7 @@
                                     </el-col>
                                 </el-row>
                             </div>
-
                         </el-main>
-
-
                         <el-footer style="align-items: flex-start; display: flex">
                             <!-- Input area -->
 
@@ -150,10 +138,10 @@
 
                                 </div>
                                 <div class="input-button">
-                                
+
                                     <div v-for="(file, index) in fileList" :key="index" class="file-tag">
                                         <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
-            file.name }}</span>
+                                file.name }}</span>
                                         <i class="el-icon-close" @click="removeFile(index)"></i>
                                     </div>
                                     <el-upload class="upload-icon" action :http-request="uploadImg" ref="upload"
@@ -173,8 +161,10 @@
                         </el-footer>
                     </el-container>
                 </el-container>
+
             </el-main>
         </el-container>
+
     </el-container>
 </template>
 
@@ -486,7 +476,7 @@ export default {
             //上传文件的需要formdata类型;所以要转
             var FormDatas = new FormData()
             FormDatas.append('file', item.file);
-           
+
             this.dialogFileUrl = item.file.name;
             let config = {
                 embedding_model: "bce",

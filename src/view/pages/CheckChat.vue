@@ -1,135 +1,124 @@
 <template>
-    <el-container class="main-bg">
-        <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
-
-        <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
-            <el-main>
-
-                <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
-                    <el-aside width="200px" class="aside-container">
-                        <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
-                            <el-button type="primary" icon="el-icon-plus" @click="newChat">新条款</el-button>
-                        </el-header>
-                        <!-- Sidebar content here -->
-                        <el-menu @select="handleSelect"
-                            style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index"
-                                :index="index.toString()" class="menu-item-history"
-                                @click="historyChat(question, index)">
-                                <span slot="title" @mouseover="showDeleteButton(index)"
-                                    @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
-                                    {{ getUserContent(question.history) }}
-                                    <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
-                                        @click.stop="deleteItem(index)"
-                                        style="position: absolute; right: 5px; top: 55%; transform: translateY(-51%);"></el-button>
-                                </span>
-                            </el-menu-item>
-                        </el-menu>
-                    </el-aside>
-
-                    <el-container style="background-color: whitesmoke; border-radius: 5px;">
-
-                        <el-main style="justify-content: center;">
-                            <!-- 聊天页面 -->
-                            <div v-if="chatStarted" class="chat-container" ref="chatContainer">
-                                <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
-                                    <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card"
-                                            style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
-                                            <i class="el-icon-user"> {{ message.content }}</i>
-                                        </div>
+    <el-container class="background-container">
+        <el-header class="header-container" style="height: 40px;">
+            <img src="../../imgs/logo1.png" class="logo" />
+            <span class="title">Yoca</span>
+        </el-header>
+        <el-main>
+            <el-container class="main-container">
+                <el-aside width="200px" class="aside-container">
+                    <el-header class="aside-header">
+                        <el-button type="primary" icon="el-icon-plus" @click="newChat">新条款</el-button>
+                    </el-header>
+                    <!-- Sidebar content here -->
+                    <el-menu @select="handleSelect"
+                    class="custom-scrollbar"
+                        style="background-color: #f2fbff; justify-content: center;  height:70vh; margin-bottom:20px; overflow-x: hidden; ">
+                        <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
+                            class="menu-item-history" @click="historyChat(question, index)">
+                            <span slot="title" @mouseover="showDeleteButton(index)"
+                                @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
+                                {{ getUserContent(question.history) }}
+                                <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
+                                    @click.stop="deleteItem(index)"
+                                    style="position: absolute; right: 5px; top: 55%; transform: translateY(-51%);"></el-button>
+                            </span>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
+                <el-container>
+                    <el-main class="main-content">
+                        <div v-if="chatStarted" class="chat-container" ref="chatContainer">
+                            <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
+                                <div v-if="message.role === 'user'" class="answer-message">
+                                    <div class="card"  style=" background-color: #fff; float: left; color:#000">
+                                        <i class="el-icon-user"> {{ message.content }}</i>
                                     </div>
-                                    <div v-else-if="message.role === 'assistant'" class="answer-message">
-                                        <div class="card" style="width: 800px;">
+                                </div>
+                                <div v-else-if="message.role === 'assistant'" class="answer-message">
+                                    <div class="card" style="width: 800px;">
 
-                                            <span v-if="index === chatMessages.length - 1">
-                                                <vue-markdown :source="message.content" :breaks="true"
-                                                    :typographer="true" :linkify="true"
-                                                    :highlight="false"></vue-markdown>
-                                            </span>
-                                            <span v-else>
-                                                {{ message.content }}
-                                            </span>
-                                            <div v-if="message.reference.length > 0">
-                                                <el-divider></el-divider>
-                                                <i class="el-icon-paperclip"
-                                                    style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
+                                        <span v-if="index === chatMessages.length - 1">
+                                            <vue-markdown :source="message.content" :breaks="true" :typographer="true"
+                                                :linkify="true" :highlight="false"></vue-markdown>
+                                        </span>
+                                        <span v-else>
+                                            {{ message.content }}
+                                        </span>
+                                        <div v-if="message.reference.length > 0">
+                                            <el-divider></el-divider>
+                                            <i class="el-icon-paperclip"
+                                                style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
 
-                                                <div v-for="(item, index1) in message.reference" :key="index1"
-                                                    class="reference-item">
-                                                    <div class="reference-content"
-                                                        @mouseenter="showFullReference(index, index1)"
-                                                        @mouseleave="hideFullReference(index, index1)">
-                                                        <template v-if="message.isHovered[index1]">
-                                                            {{ item[0] }} {{ item[2] }}
-                                                        </template>
-                                                        <template v-else>
-                                                            {{ item[1] }}
-                                                        </template>
-                                                    </div>
+                                            <div v-for="(item, index1) in message.reference" :key="index1"
+                                                class="reference-item">
+                                                <div class="reference-content"
+                                                    @mouseenter="showFullReference(index, index1)"
+                                                    @mouseleave="hideFullReference(index, index1)">
+                                                    <template v-if="message.isHovered[index1]">
+                                                        {{ item[0] }} {{ item[2] }}
+                                                    </template>
+                                                    <template v-else>
+                                                        {{ item[1] }}
+                                                    </template>
                                                 </div>
                                             </div>
-
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div v-else>
-                                <el-row type="flex" class="main-message">
-                                    <el-col :span="20">
-                                        <div class="message-content">
-                                            Yoka: 助力安全生产的强大知识管家
+                        <div v-else>
+                           
+                            <el-row type="flex" class="response-options">
+                                <el-col :span="8" v-for="(card, index) in cards1" :key="index">
+                                    <el-card @click.native="sendMessage(card.message)">
+                                        <div slot="header" class="clearfix">
+                                            <span>{{ card.header }}</span>
                                         </div>
-                                    </el-col>
-                                </el-row>
-                                <el-row type="flex" class="response-options">
-                                    <el-col :span="8" v-for="(card, index) in cards1" :key="index">
-                                        <el-card @click.native="sendMessage(card.message)">
-                                            <div slot="header" class="clearfix">
-                                                <span>{{ card.header }}</span>
-                                            </div>
-                                            <div class="text item">
-                                                {{ card.content }}
-                                            </div>
-                                        </el-card>
-                                    </el-col>
-                                </el-row>
-                            </div>
+                                        <div class="text item">
+                                            {{ card.content }}
+                                        </div>
+                                    </el-card>
+                                </el-col>
+                            </el-row>
+                        </div>
 
-                        </el-main>
+                    </el-main>
+                    <el-footer style="align-items: flex-start; display: flex">
 
+                        <div class="input-wrapper">
 
-                        <el-footer style="align-items: flex-start; display: flex">
-
-                            <div class="input-wrapper">
-
-                                <div class="input-field-wrapper">
-                                    <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
-                                        @input="sendMessage">
-                                    </el-input>
-
-                                </div>
-                                <div class="input-button">
-                                    <div v-for="(file, index) in fileList" :key="index" class="file-tag">
-                                        <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
-            file.name }}</span>
-                                        <i class="el-icon-close" @click="removeFile(index)"></i>
-                                    </div>
-                                    <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
-                                        :before-upload="beforeUpload" :show-file-list="false">
-                                        <i class="el-icon-paperclip" style="margin-right: 5px;"></i>
-                                    </el-upload>
-                                    <i class="el-icon-s-promotion" @click="startChat" style="margin-right: 5px;">
-                                    </i>
-                                </div>
+                            <div class="input-field-wrapper">
+                                <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
+                                    @input="sendMessage">
+                                </el-input>
 
                             </div>
-                        </el-footer>
-                    </el-container>
+                            <div class="input-button">
+                                <div v-for="(file, index) in fileList" :key="index" class="file-tag">
+                                    <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
+                            file.name }}</span>
+                                    <i class="el-icon-close" @click="removeFile(index)"></i>
+                                </div>
+                                <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
+                                    :before-upload="beforeUpload" :show-file-list="false">
+                                    <i class="el-icon-paperclip" style="margin-right: 5px;"></i>
+                                </el-upload>
+                                <i class="el-icon-s-promotion" @click="startChat" style="margin-right: 5px;">
+                                </i>
+                            </div>
+
+                        </div>
+                    </el-footer>
                 </el-container>
-            </el-main>
-        </el-container>
+
+            </el-container>
+        </el-main>
+
+
     </el-container>
 </template>
 
@@ -461,7 +450,7 @@ export default {
             }
             this.newMessage = '';
             this.chatStarted = true;
-            this.fileList=[]
+            this.fileList = []
         },
         //上传成功后的回调
         handleSuccess() {
@@ -485,12 +474,12 @@ export default {
             console.log("this.chat_id", this.chat_id)
 
             if (this.newMessage.trim() !== '' || this.newMessage.trim().length > 0 || this.fileList.length > 0) {
-                if(this.fileList.length > 0){
+                if (this.fileList.length > 0) {
                     // this.newMessage = ""
-                    this.chatMessages.push({ content: "让我来分析这个文档      "+this.fileList[0].name, role: 'user' });
-                    
+                    this.chatMessages.push({ content: "让我来分析这个文档      " + this.fileList[0].name, role: 'user' });
+
                 }
-                else{
+                else {
                     this.chatMessages.push({ content: this.newMessage, role: 'user' });
                 }
                 if (this.chat_id == "") {
