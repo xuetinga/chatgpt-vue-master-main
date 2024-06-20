@@ -1,86 +1,77 @@
 <template>
-    <el-container style="height: 100vh;">
+    <el-container class="background-container">
+        <el-header class="header-container" style="height: 40px;">
+            <img src="../../imgs/logo1.png" class="logo" />
+            <span class="title">Yoca</span>
+        </el-header>
+        <el-main>
+            <el-container class="main-container">
+                <el-aside width="220px" class="aside-container">
+                    <el-header class="aside-header">
+                        <el-button type="primary" icon="el-icon-plus" @click="newChat">新对话</el-button>
+                    </el-header>
+                    <el-menu @select="handleSelect"
+                        class="custom-scrollbar"
+                        style="background-color: #f2fbff; justify-content: center;  height:70vh; margin-bottom:20px; overflow-x: hidden; ">
+                        <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
+                            class="menu-item-history" @click="historyChat(question, index)">
+                            <span slot="title" @mouseover="showDeleteButton(index)"
+                                @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
+                                {{ getUserContent(question.history) }}
+                                <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
+                                    @click.stop="deleteItem(index)"
+                                    style="position: absolute; right: 5px; top: 55%; transform: translateY(-51%);"></el-button>
+                            </span>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
 
-        <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
-
-        <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
-            <el-main>
-                <el-container style="background-color: antiquewhite;height: 90vh;border-radius: 5px;">
-                    <el-aside width="200px" class="aside-container">
-                        <el-header style="text-align: center; line-height: 40px; margin-top:10px; ">
-                            <el-button type="primary" icon="el-icon-plus" @click="newChat">新聊天</el-button>
-                        </el-header>
-                        <!-- Sidebar content here -->
-                        <el-menu @select="handleSelect"
-                            style="background-color: antiquewhite; border-radius: 5px; height: 200px; justify-content: center;">
-                            <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
-                                class="menu-item-history" @click="historyChat(question, index)">
-                                <span slot="title" @mouseover="showDeleteButton(index)"
-                                    @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
-                                    {{ getUserContent(question.history) }}
-                                    <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
-                                        @click.stop="deleteItem(index)"
-                                        style="position: absolute; right: 5px; top: 55%; transform: translateY(-51%);"></el-button>
-                                </span>
-                            </el-menu-item>
-                        </el-menu>
-                    </el-aside>
-
-                    <el-container style="background-color: whitesmoke; border-radius: 5px; overflow: hidden;">
-
-                        <el-main style="justify-content: center;overflow: hidden; ">
-                            <!-- 聊天页面 -->
-                            <div v-if="chatStarted" class="chat-container" ref="chatContainer">
-                                <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
-                                    <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card" style=" background-color: rgba(244, 152, 24, 0.5); float: right;">
-                                            <i class="el-icon-user"> {{ message.content }}</i>
-                                        </div>
+                <el-container>
+                    <el-main class="main-content">
+                        <div v-if="chatStarted" class="chat-container" ref="chatContainer">
+                            <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
+                                <div v-if="message.role === 'user'" class="answer-message">
+                                    <div class="card" style=" background-color: #fff; float: left; color:#000">
+                                        <i class="el-icon-user"> {{ message.content }}</i>
                                     </div>
-                                    <div v-else-if="message.role === 'assistant'" class="answer-message">
-                                        <div class="card" style="width: 800px;">
-
-                                            <span v-if="index === chatMessages.length - 1">
-                                                <vue-markdown :source="message.content" :breaks="true" :typographer="true"
-                                                    :linkify="true" :highlight="false"></vue-markdown>
-                                            </span>
-                                            <span v-else>
-                                                {{ message.content }}
-                                            </span>
-                                            <div v-if="message.reference.length > 0">
-                                                <el-divider></el-divider>
-                                                <i class="el-icon-paperclip"
-                                                    style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
-                                                <div v-for="(item, index1) in message.reference" :key="index1"
-                                                    class="reference-item">
-                                                    <div class="reference-content"
-                                                        @mouseenter="showFullReference(index, index1)"
-                                                        @mouseleave="hideFullReference(index, index1)">
-                                                        <template v-if="message.isHovered[index1]">
-                                                            {{ item[0] }} {{ item[2] }}
-                                                        </template>
-                                                        <template v-else>
-                                                            {{ item[1] }}
-                                                        </template>
-                                                    </div>
+                                </div>
+                                <div v-else-if="message.role === 'assistant'" class="answer-message">
+                                    <div class="card">
+                                        <span v-if="index === chatMessages.length - 1">
+                                            <vue-markdown :source="message.content" :breaks="true" :typographer="true"
+                                                :linkify="true" :highlight="false"></vue-markdown>
+                                        </span>
+                                        <span v-else>
+                                            {{ message.content }}
+                                        </span>
+                                        <div v-if="message.reference.length > 0">
+                                            <el-divider></el-divider>
+                                            <i class="el-icon-paperclip"
+                                                style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
+                                            <div v-for="(item, index1) in message.reference" :key="index1"
+                                                class="reference-item">
+                                                <div class="reference-content"
+                                                    @mouseenter="showFullReference(index, index1)"
+                                                    @mouseleave="hideFullReference(index, index1)">
+                                                    <template v-if="message.isHovered[index1]">
+                                                        {{ item[0] }} {{ item[2] }}
+                                                    </template>
+                                                    <template v-else>
+                                                        {{ item[1] }}
+                                                    </template>
                                                 </div>
                                             </div>
-
-
                                         </div>
+
+
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div v-else>
-                                <el-row type="flex" class="main-message">
-                                    <el-col :span="20">
-                                        <div class="message-content">
-                                            Yoka: 助力安全生产的强大知识管家
-                                        </div>
-                                    </el-col>
-                                </el-row>
-                                <!-- <el-row type="flex" class="response-options">
+                        <div v-else>
+
+                            <!-- <el-row type="flex" class="response-options">
                                     <el-col :span="8" v-for="(card, index) in cards1" :key="index">
                                         <el-card @click.native="sendMessage(card.message)">
                                             <div slot="header" class="clearfix">
@@ -96,50 +87,48 @@
                                         </el-card>
                                     </el-col>
                                 </el-row> -->
-                            </div>
+                        </div>
+                    </el-main>
 
-                        </el-main>
-
-
-                        <el-footer style="align-items: flex-start; display: flex">
-                            <!-- Input area -->
+                    <el-footer style="align-items: flex-start; display: flex;margin-bottom: 5px;">
+                        <!-- Input area -->
 
 
-                            <div class="input-wrapper">
-                                <!-- <el-select v-model="promptdefaultvalue" placeholder="默认" class="input-select1">
+                        <div class="input-wrapper">
+                            <!-- <el-select v-model="promptdefaultvalue" placeholder="默认" class="input-select1">
                                     <el-option v-for="item in models" :key="item.value" :label="item.label"
                                         :value="item.value" style="text-align: center;">
                                         <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
                                     </el-option>
                                 </el-select> -->
-                                <el-dropdown class="input-select1">
-                                    <span class="el-dropdown-link">
-                                        {{ promptdefaultvalue }}<i class="el-icon-arrow-down el-icon--right"></i>
-                                    </span>
-                                    <el-dropdown-menu slot="dropdown">
-                                        <el-dropdown-item v-for="item in models" :key="item.label"
-                                            @click.native="handleSelectDrop(item)">
-                                            {{ item.value }}
-                                        </el-dropdown-item>
-                                    </el-dropdown-menu>
-                                </el-dropdown>
-                                <div class="input-field-wrapper">
-                                    <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
-                                        @input="sendMessage">
-                                    </el-input>
-
-                                </div>
-                                <div class="input-button">
-                                    <i class="el-icon-s-promotion" @click="startChat" style="margin-right: 5px;">
-                                    </i>
-                                </div>
+                            <el-dropdown class="input-select1">
+                                <span class="el-dropdown-link">
+                                    {{ promptdefaultvalue }}<i class="el-icon-arrow-down el-icon--right"></i>
+                                </span>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item v-for="item in models" :key="item.label"
+                                        @click.native="handleSelectDrop(item)">
+                                        {{ item.value }}
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
+                            <div class="input-field-wrapper">
+                                <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
+                                    @input="sendMessage">
+                                </el-input>
 
                             </div>
-                        </el-footer>
-                    </el-container>
+                            <div class="input-button">
+                                <i class="el-icon-s-promotion" @click="startChat" style="margin-right: 5px;">
+                                </i>
+                            </div>
+
+                        </div>
+                    </el-footer>
                 </el-container>
-            </el-main>
-        </el-container>
+            </el-container>
+        </el-main>
+
     </el-container>
 </template>
 
@@ -259,11 +248,11 @@ export default {
         })
     },
     watch: {
-        
+
         chatMessages: {
             handler(newMessages) {
                 this.scrollToBottom();
-                console.log("newMessages",newMessages)
+                console.log("newMessages", newMessages)
                 newMessages.forEach(message => {
                     // 确保 message 对象具有 reference 属性并进行初始化
                     if (!message.reference) {
@@ -280,7 +269,7 @@ export default {
     },
     methods: {
         showFullReference(messageIndex, referenceIndex) {
-            console.log("this.chatMessages[messageIndex]",this.chatMessages[messageIndex])
+            console.log("this.chatMessages[messageIndex]", this.chatMessages[messageIndex])
 
             this.$set(this.chatMessages[messageIndex].isHovered, referenceIndex, true);
         },
@@ -653,149 +642,132 @@ export default {
 </script>
 
 <style>
-/* Style for delete button */
-.uploaditem {
+.background-container {
+    background-image: url(../../imgs/bg.png);
+    background-size: cover;
+    /* Ensure the image covers the entire container */
+    background-position: center;
+    /* Center the image */
+    background-repeat: no-repeat;
+    /* Prevent the image from repeating */
+    height: 100vh;
+    /* Full viewport height */
+    width: 100%;
+    /* Full width */
+}
+
+.header-container {
     display: flex;
-    flex-direction: column-reverse;
-    /* 将子元素沿垂直方向倒序排列，文件列表在上方 */
-}
-
-.el-button {
-    font-size: 14px;
-    /* Adjust font size as needed */
-    color: #ff0000;
-    /* Red color for the delete button */
-}
-
-.main-message {
-    margin-bottom: 30px;
-    /* Adjust as needed */
-    padding: 20px;
-    text-align: center;
-    border-radius: 5px;
-    background-color: rgb(255, 255, 255);
+    align-items: center;
+    padding: 10px 20px;
+    margin-left: 50px;
+    height: 40px;
     justify-content: center;
-    background-image: url(../../imgs/bg1.png);
 
-
+        /* border-bottom: 1px solid #e0e0e0; */
 }
 
-.response-options {
-    text-align: center;
-    padding-left: 20;
-    margin-bottom: 20px;
+.logo {
+    width: 25px;
+    height: 25px;
 }
 
-.el-card {
-    cursor: pointer;
-    margin: 10px 10px;
-}
-
-.message-content {
-    font-size: 20px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 25px;
-    font-weight: 700;
-
-}
-
-.user-message {
-    text-align: left;
-}
-
-.bot-message {
-    text-align: left;
-}
-
-.el-menu .el-menu-item {
-    width: 90%;
-}
-
-
-
-.fixed-button {}
-
-.chat-message {
-    justify-content: space-between;
-    margin-bottom: 20px;
-    /* 调整消息之间的间距 */
-}
-
-.question-message {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    /* 将提问消息放置在右边 */
-    margin-right: 20px;
-    /* 调整提问消息与边缘的距离 */
-}
-
-.answer-message {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    /* 将回答消息放置在左边 */
-    margin-left: 20px;
-    /* 调整回答消息与边缘的距离 */
-}
-
-.card {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    background-color: rgba(244, 152, 24, 0.1);
-}
-
-.card-content {
+.title {
+    font-family: 'Arial', sans-serif;
+    /* Change to the font family you need */
+    font-size: 18px;
+    /* Adjust size as needed */
+    font-weight: bold;
+    color: #333;
+    /* Adjust color as needed */
     margin-left: 10px;
-    /* 调整回答消息内容与图标之间的距离 */
 }
 
-.reference-item {
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-    color: rgb(23, 23, 23);
-    font-size: 15px;
+.main-container {
+    height: 85vh;
+    display: flex;
+    background-color: #f2fbff;
+    margin-left: 50px;
+    margin-right: 50px;
+    border-radius: 25px;
 }
 
-.reference-item a {
-    display: block;
-    margin-bottom: 5px;
-}
-
-.reference-content {
-    display: block;
-}
-
-/* .reference-item:hover .reference-content {
-    display: block;
-} */
-
-.upload-container {
+.aside-container {
+    padding: 20px;
     display: flex;
     flex-direction: column;
+
+    border-radius: 25px;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-.file-list-container {
-    margin-top: 0px;
-    /* 如果需要将文件列表紧贴着按钮，可以调整此处的负值 */
-    /* background-color: #ccc;
-    width: 100px; */
+.aside-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.menu-item-active {
-    background-color: #f5f7fa;
-    /* 设置高亮背景颜色 */
-    color: #409EFF;
-    /* 设置高亮字体颜色 */
+.aside-menu {
+    margin-top: 20px;
+}
+
+.history-list {
+    flex-grow: 1;
+    margin-top: 20px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 10px;
+    border-bottom: 1px solid #dcdcdc;
+}
+
+
+
+
+
+.feedback {
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    color: #333;
+}
+
+.main-content {
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #e0e0e0;
+    margin-right: 0px;
+    background-image: url(../../imgs/bgsmall.png);
+    background-size: cover;
+    /* Ensure the image covers the entire container */
+    background-position: center;
+    /* Center the image */
+    background-repeat: no-repeat;
+    margin-bottom: 10px;
+    height: 50vh;
+    border-radius: 25px;
+}
+
+.footer-container {
+    text-align: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border-top: 1px solid #e0e0e0;
+}
+
+.menu-item-history:hover {
+    border-radius: 10px;
+    /* 圆角 */
 }
 
 .chat-container {
     max-height: 600px;
     /* 根据需要设置 */
     overflow-y: auto;
+    margin-left: 20px;
+    margin-right: 20px;
     /* width: 100%; */
     /* overflow: hidden; */
 }
@@ -825,55 +797,51 @@ export default {
     /* 鼠标悬停时的颜色 */
 }
 
-
-.aside-container::-webkit-scrollbar {
-    width: 6px;
+.chat-message {
+    justify-content: space-between;
+    margin-bottom: 20px;
+    /* 调整消息之间的间距 */
 }
 
-.aside-container::-webkit-scrollbar-track {
-    background: #ddd;
-    border-radius: 10px;
+.question-message {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    /* 将提问消息放置在右边 */
+    margin-right: 20px;
+    /* 调整提问消息与边缘的距离 */
 }
 
-.aside-container::-webkit-scrollbar-thumb {
-    background: #abaaaa;
-    border-radius: 10px;
-}
-
-.aside-container::-webkit-scrollbar-thumb:hover {
-    background: #e4e2e2;
-}
-
-.menu-item-history {
-    white-space: nowrap;
+.answer-message {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    /* 将回答消息放置在左边 */
+    margin-left: 20px;
     overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: 5px;
-    border-radius: 10px;
-
-
+    /* 调整回答消息与边缘的距离 */
 }
 
-.menu-item-history:hover {
-    border-radius: 10px;
-    /* 圆角 */
-}
-
-.upload-wrapper {
-    margin-right: 10px;
-    /* 调整上传按钮和输入框之间的间距 */
-    flex-grow: 1;
-    /* 占据剩余空间 */
+.card {
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #1385f6;
+    color: #fff;
+    display: inline-block;
+    font-size: 15px;
+    font-size: 16px;
+    word-wrap: break-word;
 }
 
 .input-wrapper {
     display: flex;
     align-items: center;
-    background-color: #f1f1f1;
+    background-color: #fff;
     border-radius: 20px;
     width: 100%;
-    height: 40px;
+    height: 60px;
     justify-content: space-between;
+    margin-bottom: 10px
 }
 
 .input-button {
@@ -885,35 +853,46 @@ export default {
     margin-right: 10px;
 }
 
-.upload-icon,
-.send-btn {
-    /* background: transparent;
-    border: none; */
-
-}
-
-.icon-btn {
-    /* background: transparent;
-    border: none; */
-    /* color: #c0c4cc; */
-    /* 这个颜色可以根据你的设计调整 */
-    /* padding: 0 12px; */
-}
-
-.input-field-wrapper {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    position: relative;
-}
-
-.input-field .el-input__inner {
-    border: none;
-    background: transparent;
-    box-shadow: none;
-    /* flex-grow: 1; */
-}
-
 .input-select1 {
     margin-left: 20px;
-}</style>
+}
+
+
+.reference-item {
+    padding: 5px 0;
+    /* Add padding between references */
+}
+
+.reference-content {
+    display: block;
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Show ellipsis for overflow text */
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 2px; /* Width of the vertical scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the scrollbar track */
+  border-radius: 10px; /* Round corners of the track */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Round corners of the thumb */
+  border: 2px solid #f1f1f1; /* Space around the thumb */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color of the scrollbar thumb when hovered */
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin; /* For Firefox: make scrollbar thin */
+  scrollbar-color: #888 #f1f1f1; /* For Firefox: thumb and track color */
+}
+
+</style>

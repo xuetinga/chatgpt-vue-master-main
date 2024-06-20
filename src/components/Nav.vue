@@ -1,5 +1,5 @@
 <template>
-
+<!-- 
   <el-aside width="150px" height=100vh; style=" position: relative; overflow: hidden; ">
     <div v-if="isCollapse"
       style="position: fixed; top:10px; border:0px;text-align: center;z-index: 1000;margin-left:70px; width: 10px; height: 10px;">
@@ -57,7 +57,7 @@
         </el-menu-item>
       </el-menu>
     </div>
-  </el-aside>
+  </el-aside> -->
 </template>
 
 <script>

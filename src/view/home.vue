@@ -1,9 +1,9 @@
 <template>
-  <el-container style="height: 100vh;">
+  <el-container  class="main-bg">
 
-    <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
+    <!-- <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav> -->
 
-    <el-container style=" justify-content: center;align-items: center;">
+    <el-container style=" justify-content: center;align-items: center; ">
       <el-header style="text-align: center; line-height: 40px;margin-top:120px ; font-family: 'Courier New', Courier, monospace; font-size: 100px; font-weight: 700;">
         Yoka copilot
       </el-header>
@@ -125,7 +125,10 @@ export default {
   /* Styling for subtitle, if necessary */
 }
 
-
+.main-bg{
+  height: 100vh; 
+  background: linear-gradient(to right, #eef4ff, #f2fbff);
+}
 
 </style>
 <script>

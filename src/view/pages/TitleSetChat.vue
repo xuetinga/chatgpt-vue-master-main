@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: 100vh;">
+  <el-container class="main-bg">
     <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav>
 
     <el-container :style="{ 'margin-left': isCollapse ? '-40px' : '0px' }">
