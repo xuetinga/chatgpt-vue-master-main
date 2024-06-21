@@ -1,15 +1,15 @@
 <template>
     <el-container class="main-bg">
         <el-container class="background-container">
-            <el-header class="header-container" style="height: 40px;">
+            <el-header class="header-container" style="height: 60px;">
                 <img src="../../imgs/logo1.png" class="logo" />
                 <span class="title">Yoka copilot</span>
             </el-header>
-            <el-main>
+            <el-main  style="padding: 0px;">
                 <el-container class="main-container">
                     <el-aside width="220px" class="aside-container">
                         <el-header class="aside-header">
-                            <el-button type="primary" icon="el-icon-plus" @click="newChat">新对话</el-button>
+                            <el-button type="primary" icon="el-icon-plus" @click="newChat" round>新对话</el-button>
                         </el-header>
                         <el-menu @select="handleSelect" class="custom-scrollbar"
                             style="background-color: #f2fbff; justify-content: center;  height:70vh; margin-bottom:20px; overflow-x: hidden; ">
@@ -31,11 +31,9 @@
                             <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                                 <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                     <div v-if="message.role === 'user'" class="answer-message">
-                                        <div class="card"
-                                        style=" background-color: #fff; float: left; color:#000">
-                                            <i class="el-icon-user"> {{ message.content }}</i>
+                                        <div class="card">
+                                            <i class="el-icon-user" style="line-height: 1.2;"> {{ message.content }}</i>
                                             <div v-if="dialogImageUrl !== ''">
-
                                                 <el-image style="width: 200px; height: 200px" :src="dialogImageUrl"
                                                     :fit="fit"></el-image>
                                             </div>
@@ -45,7 +43,7 @@
                                         </div>
                                     </div>
                                     <div v-else-if="message.role === 'assistant'" class="answer-message">
-                                        <div class="card" style="width: 800px;">
+                                        <div class="card"  style=" background-color: #fff; float: left; color:#000">
 
                                             <span v-if="index === chatMessages.length - 1">
                                                 <vue-markdown :source="message.content" :breaks="true"
@@ -103,11 +101,7 @@
                                 </el-row>
                             </div>
                         </el-main>
-                        <el-footer style="align-items: flex-start; display: flex">
-                            <!-- Input area -->
-
-
-
+                        <el-footer style="align-items: flex-start; display: flex;padding: 0px;">
                             <div class="input-wrapper">
                                 <el-dropdown class="input-select1">
                                     <span class="el-dropdown-link">
@@ -774,11 +768,6 @@ export default {
 
 
 
-.answer-message1 {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-}
 
 .upload-icon,
 .send-btn {

@@ -1,14 +1,14 @@
 <template>
     <el-container class="background-container">
-        <el-header class="header-container" style="height: 40px;">
+        <el-header class="header-container" style="height: 60px;">
             <img src="../../imgs/logo1.png" class="logo" />
             <span class="title">Yoka copilot</span>
         </el-header>
-        <el-main>
+        <el-main style="padding: 0px;">
             <el-container class="main-container">
                 <el-aside width="220px" class="aside-container">
                     <el-header class="aside-header">
-                        <el-button type="primary" icon="el-icon-plus" @click="newChat">新对话</el-button>
+                        <el-button type="primary" icon="el-icon-plus" @click="newChat" round>新对话</el-button>
                     </el-header>
                     <el-menu @select="handleSelect"
                         class="custom-scrollbar"
@@ -31,12 +31,12 @@
                         <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                             <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                 <div v-if="message.role === 'user'" class="answer-message">
-                                    <div class="card" style=" background-color: #fff; float: left; color:#000">
-                                        <i class="el-icon-user"> {{ message.content }}</i>
+                                    <div class="card" >
+                                        <i class="el-icon-user" style="line-height: 1.5;"> {{ message.content }}</i>
                                     </div>
                                 </div>
                                 <div v-else-if="message.role === 'assistant'" class="answer-message">
-                                    <div class="card">
+                                    <div class="card" style=" background-color: #fff; float: left; color:#000; ">
                                         <span v-if="index === chatMessages.length - 1">
                                             <vue-markdown :source="message.content" :breaks="true" :typographer="true"
                                                 :linkify="true" :highlight="false"></vue-markdown>
@@ -90,7 +90,7 @@
                         </div>
                     </el-main>
 
-                    <el-footer style="align-items: flex-start; display: flex;margin-bottom: 5px;">
+                    <el-footer style="align-items: flex-start; display: flex;margin-bottom: 5px; padding: 0px;">
                         <!-- Input area -->
 
 
@@ -653,6 +653,7 @@ export default {
     height: 100vh;
     /* Full viewport height */
     width: 100%;
+    padding: 2px;
     /* Full width */
 }
 
@@ -819,25 +820,27 @@ export default {
     /* 将回答消息放置在左边 */
     margin-left: 20px;
     overflow: hidden;
+    border-radius: 15px;
     /* 调整回答消息与边缘的距离 */
 }
 
 .card {
-    border-radius: 5px;
+    border-radius: 15px;
     padding: 10px;
     background-color: #1385f6;
     color: #fff;
     display: inline-block;
     font-size: 15px;
-    font-size: 16px;
     word-wrap: break-word;
+    padding: 10px;
+    line-height: 1.2;
 }
 
 .input-wrapper {
     display: flex;
     align-items: center;
     background-color: #fff;
-    border-radius: 20px;
+    border-radius: 25px;
     width: 100%;
     height: 60px;
     justify-content: space-between;

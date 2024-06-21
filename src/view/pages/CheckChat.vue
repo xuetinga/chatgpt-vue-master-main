@@ -1,14 +1,14 @@
 <template>
     <el-container class="background-container">
-        <el-header class="header-container" style="height: 40px;">
+        <el-header class="header-container" style="height: 60px;">
             <img src="../../imgs/logo1.png" class="logo" />
             <span class="title">Yoka copilot</span>
         </el-header>
-        <el-main>
+        <el-main style="padding: 0px;">
             <el-container class="main-container">
                 <el-aside width="200px" class="aside-container">
                     <el-header class="aside-header">
-                        <el-button type="primary" icon="el-icon-plus" @click="newChat">新条款</el-button>
+                        <el-button type="primary" icon="el-icon-plus" @click="newChat" round>新条款</el-button>
                     </el-header>
                     <!-- Sidebar content here -->
                     <el-menu @select="handleSelect"
@@ -31,12 +31,12 @@
                         <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                             <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                 <div v-if="message.role === 'user'" class="answer-message">
-                                    <div class="card"  style=" background-color: #fff; float: left; color:#000">
+                                    <div class="card"  >
                                         <i class="el-icon-user"> {{ message.content }}</i>
                                     </div>
                                 </div>
                                 <div v-else-if="message.role === 'assistant'" class="answer-message">
-                                    <div class="card" style="width: 800px;">
+                                    <div class="card" style=" background-color: #fff; float: left; color:#000">
 
                                         <span v-if="index === chatMessages.length - 1">
                                             <vue-markdown :source="message.content" :breaks="true" :typographer="true"
@@ -87,7 +87,7 @@
                         </div>
 
                     </el-main>
-                    <el-footer style="align-items: flex-start; display: flex">
+                    <el-footer style="align-items: flex-start; display: flex;padding: 0px;">
 
                         <div class="input-wrapper">
 

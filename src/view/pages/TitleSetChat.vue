@@ -14,7 +14,7 @@
             :on-remove="handleRemove" :file-list="fileList" :on-exceed="handleExceed" :before-upload="beforeUpload"
             :show-file-list="true" :style="{ marginTop: fileList.length === 1 ? '-10px' : '0' }">
             <!-- action="/api/file/fileUpload" -->
-            <el-button size="small" type="primary" icon="el-icon-plus">上传条款</el-button>
+            <el-button size="small" type="primary" icon="el-icon-plus" round>上传条款</el-button>
           </el-upload>
         </el-header>
         <el-table ref="table" :data="currentPageData" @filter-change="_filterChange" border>

@@ -1,15 +1,19 @@
 <template>
-  <el-container  class="main-bg">
+  <el-container class="main-bg">
 
     <!-- <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav> -->
 
-    <el-container  class="parent-container">
-      <el-header style="text-align: center; line-height: 40px;margin-top:120px ; font-family: 'Courier New', Courier, monospace; font-size: 100px; font-weight: 700;">
-        Yoka copilot
-      </el-header>
-      <el-main style=" justify-content: center; width: 100%; margin-top: 70px; ">
-        <el-row :gutter="20" style="margin-top: 40px; " justify="center">
-          <el-col :span="12">
+    <el-container class="parent-container"
+      style="display: flex; flex-direction: column; align-items: center; height: 100vh; justify-content: center;">
+
+      <el-main style="display: flex; flex-direction: column; justify-content: center; width: 100%;">
+        <el-header
+          style="text-align: center; line-height: 40px; font-family: 'Courier New', Courier, monospace; font-size: 100px; font-weight: 700;">
+          Yoka copilot
+        </el-header>
+        <el-row :gutter="16" style="margin-top: 40px;  display: flex;
+    justify-content: center;" justify="center">
+          <el-col :span="8">
             <el-card @click.native="goToKnowledgeQA">
               <el-row class="title-row">
                 <el-col :span="22">
@@ -23,7 +27,7 @@
             </el-card>
           </el-col>
           <!-- 居中 -->
-          <el-col :span="12">
+          <el-col :span="8">
             <el-card @click.native="goToFreeChat">
               <el-row class="title-row">
                 <el-col :span="22">
@@ -37,8 +41,9 @@
             </el-card>
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" style="margin-top: 30px;">
-          <el-col :span="12">
+        <el-row :gutter="16" justify="center" style="margin-top: 30px;  display: flex;
+    justify-content: center;">
+          <el-col :span="8">
             <el-card @click.native="goToCheckChat">
               <el-row class="title-row">
                 <el-col :span="22">
@@ -51,7 +56,7 @@
               </el-row>
             </el-card>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-card @click.native="goToTitleSetChat">
               <el-row class="title-row">
                 <el-col :span="22">
@@ -125,11 +130,10 @@ export default {
   /* Styling for subtitle, if necessary */
 }
 
-.main-bg{
-  height: 100vh; 
+.main-bg {
+  height: 100vh;
   background: linear-gradient(to right, #eef4ff, #f2fbff);
 }
-
 </style>
 <script>
 window.addEventListener('resize', function() {
