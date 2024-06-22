@@ -231,42 +231,107 @@ export default {
 
       ],
       suggestions: [
-        { question: '介绍两个常见的APT组织', answer: 'APT（高级持续性威胁）组织是一类具有高度组织化、专业化的网络攻击组织，它们通常由国家支持或具有明确的政治、经济目的。以下是两个国际上较为知名的APT组织：1. **Lazarus Group**- **起源**：据信起源于朝鲜。- **活动**：Lazarus Group 被认为是多起重大网络攻击事件的背后黑手，包括2014年对索尼影视娱乐的攻击和2016年对孟加拉国央行的攻击。该组织的主要目标似乎是为了获取资金以支持朝鲜政府，同时也进行间谍活动。- **特点**：该组织擅长使用定制化的恶意软件，并且攻击手法多样，包括鱼叉式钓鱼攻击和社会工程学攻击。2. **APT29（也称为Cozy Bear或The Dukes）**- **起源**：普遍认为与俄罗斯政府有关。- **活动**：APT29 被认为是多次针对西方政府、外交机构、智库和能源部门的网络间谍活动的幕后组织。该组织在2016年美国总统选举期间的活动尤为引人注目，被指控干预选举。- **特点**：APT29 以其高度隐蔽和持续性的攻击策略而闻名，使用多种定制工具和技术来渗透目标网络并长期潜伏。这些组织的活动通常涉及复杂的网络攻击技术，包括零日漏洞利用、高级恶意软件和持久性后门，目的是长期监控和窃取敏感信息。由于这些组织的活动通常与国家安全相关，因此它们的详细信息往往不易公开，且随着时间的推移可能会有新的发现和更新。', showAnswer: false },
-        { question: '对于CVE-2022-25148，请问我的暴露面有哪些', answer: '基于您提供的信息，我将为您介绍CVE-2022-25148的基本信息，分析其对您资产的潜在影响，并提供防护建议。CVE-2022-25148基本信 1. 描述：WordPress插件WP Statistics存在SQL注入漏洞，影响版本13.1.5及以下。2. 发布日期：2022年2月24日3. CVSS评分：5.0（中等严重性）4. 漏洞类型：SQL注入5. 影响范围：未经身份验证的攻击者可以注入任意SQL查询以获取敏感信息。对您资产的潜在影响分析：1. 受影响资产：- pc234（重要性：5，安装了WP Statistics）2. 影响程度：- 信息泄露风险：攻击者可能获取敏感数据。- 数据库安全：可能导致未经授权的数据库访问。- 网站完整性：虽然漏洞本身不直接影响完整性，但获取的信息可能被用于进一步攻击。3. 风险评估：- 由于pc234的重要性较高（5/10），且直接受到此漏洞影响，建议优先处理。- 其他资产未直接受到影响，但仍需警惕潜在的连锁反应。防护和修复措施：1. 更新插件：- 立即将pc234上的WP Statistics插件更新到最新版本。- 启用自动更新功能，确保及时获取安全补丁。2. 加强访问控制：- 限制对WordPress管理界面的访问，使用强密码和双因素认证。- 实施IP白名单，只允许可信IP访问管理界面。3. 数据库安全：- 定期备份数据库，以防数据丢失或被篡改。- 使用最小权限原则配置数据库用户权限。4. 网络隔离：- 考虑将运行WordPress的服务器与其他重要系统隔离。5. 安全监控：- 实施入侵检测系统（IDS）或Web应用防火墙（WAF），监控和阻止可疑活动。- 定期审查日志，检查是否有未经授权的访问尝试 6. 安全培训：- 为管理WordPress的员工提供安全意识培训，特别是关于SQL注入和插件管理的内容。7. 定期安全评估：- 进行定期漏洞扫描和渗透测试，及时发现和修复潜在问题。通过实施这些措施，您可以显著降低CVE-2022-25148对您资产的风险，并提高整体网络安全性。建议优先处理pc234的更新，并将其他建议措施纳入长期安全策略。', showAnswer: false },
+        { question: '介绍两个常见的APT组织', answer: `APT（高级持续性威胁）组织是一类具有高度组织化、专业化的网络攻击组织，它们通常由国家支持或具有明确的政治、经济目的。以下是两个国际上较为知名的APT组织：
+
+1. **Lazarus Group**
+   - **起源**：据信起源于朝鲜。
+   - **活动**：Lazarus Group 被认为是多起重大网络攻击事件的背后黑手，包括2014年对索尼影视娱乐的攻击和2016年对孟加拉国央行的攻击。该组织的主要目标似乎是为了获取资金以支持朝鲜政府，同时也进行间谍活动。
+   - **特点**：该组织擅长使用定制化的恶意软件，并且攻击手法多样，包括鱼叉式钓鱼攻击和社会工程学攻击。
+
+2. **APT29（也称为Cozy Bear或The Dukes）**
+   - **起源**：普遍认为与俄罗斯政府有关。
+   - **活动**：APT29 被认为是多次针对西方政府、外交机构、智库和能源部门的网络间谍活动的幕后组织。该组织在2016年美国总统选举期间的活动尤为引人注目，被指控干预选举。
+   - **特点**：APT29 以其高度隐蔽和持续性的攻击策略而闻名，使用多种定制工具和技术来渗透目标网络并长期潜伏。
+
+这些组织的活动通常涉及复杂的网络攻击技术，包括零日漏洞利用、高级恶意软件和持久性后门，目的是长期监控和窃取敏感信息。由于这些组织的活动通常与国家安全相关，因此它们的详细信息往往不易公开，且随着时间的推移可能会有新的发现和更新。`, showAnswer: false },
+        { question: '对于CVE-2022-25148，请问我的暴露面有哪些', 
+        answer:`基于您提供的信息，我将为您介绍CVE-2022-25148的基本信息，分析其对您资产的潜在影响，并提供防护建议。
+
+CVE-2022-25148基本信息：
+1. 描述：WordPress插件WP Statistics存在SQL注入漏洞，影响版本13.1.5及以下。
+2. 发布日期：2022年2月24日
+3. CVSS评分：5.0（中等严重性）
+4. 漏洞类型：SQL注入
+5. 影响范围：未经身份验证的攻击者可以注入任意SQL查询以获取敏感信息。
+
+对您资产的潜在影响分析：
+1. 受影响资产：
+   - pc234（重要性：5，安装了WP Statistics）
+
+2. 影响程度：
+   - 信息泄露风险：攻击者可能获取敏感数据。
+   - 数据库安全：可能导致未经授权的数据库访问。
+   - 网站完整性：虽然漏洞本身不直接影响完整性，但获取的信息可能被用于进一步攻击。
+
+3. 风险评估：
+   - 由于pc234的重要性较高（5/10），且直接受到此漏洞影响，建议优先处理。
+   - 其他资产未直接受到影响，但仍需警惕潜在的连锁反应。
+
+防护和修复措施：
+1. 更新插件：
+   - 立即将pc234上的WP Statistics插件更新到最新版本。
+   - 启用自动更新功能，确保及时获取安全补丁。
+
+2. 加强访问控制：
+   - 限制对WordPress管理界面的访问，使用强密码和双因素认证。
+   - 实施IP白名单，只允许可信IP访问管理界面。
+
+3. 数据库安全：
+   - 定期备份数据库，以防数据丢失或被篡改。
+   - 使用最小权限原则配置数据库用户权限。
+
+4. 网络隔离：
+   - 考虑将运行WordPress的服务器与其他重要系统隔离。
+
+5. 安全监控：
+   - 实施入侵检测系统（IDS）或Web应用防火墙（WAF），监控和阻止可疑活动。
+   - 定期审查日志，检查是否有未经授权的访问尝试。
+
+6. 安全培训：
+   - 为管理WordPress的员工提供安全意识培训，特别是关于SQL注入和插件管理的内容。
+
+7. 定期安全评估：
+   - 进行定期漏洞扫描和渗透测试，及时发现和修复潜在问题。
+
+通过实施这些措施，您可以显著降低CVE-2022-25148对您资产的风险，并提高整体网络安全性。建议优先处理pc234的更新，并将其他建议措施纳入长期安全策略。`
+        , showAnswer: false },
         {
-          question: '帮我提取出如下威胁情报中的IoC，将结果返回为json', answer: `{
-  "IoCs": {
-    "Phishing_Email": {
-      "Sender_Address": "financial_report@secure-bank-update[.]com",
-      "Email_Subject": "Urgent: Q2 Financial Report Update"
-    },
-    "Malicious_PDF_File": {
-      "File_Name": "Q2_Financial_Report_2024.pdf",
-      "SHA256": "7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9"
-    },
-    "C2_Server": {
-      "IP_Address": "198.51.100.23",
-      "Domain_Name": "secure-update-server[.]net"
-    },
-    "Malicious_Payload": {
-      "File_Name": "svchost.exe",
-      "MD5": "0123456789abcdef0123456789abcdef"
-    },
-    "Network_Activity": {
-      "User_Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-      "Abnormal_DNS_Query": "api.data-exfil[.]org"
-    }
+          question: '帮我提取出如下威胁情报中的IoC，将结果返回为json', 
+          answer: `{
+            &nbsp;&nbsp;&nbsp;&nbsp;"IoCs": {
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phishing_Email: {
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Sender_Address": "financial_report@secure-bank-update[.]com",
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Email_Subject": "Urgent: Q2 Financial Report Update"
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Malicious_PDF_File": {
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"File_Name": "Q2_Financial_Report_2024.pdf",
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"SHA256": "7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9"
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"C2_Server": {
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"IP_Address": "198.51.100.23",
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Domain_Name": "secure-update-server[.]net"
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Malicious_Payload": {
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"File_Name": "svchost.exe",
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"MD5": "0123456789abcdef0123456789abcdef"
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Network_Activity": {
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"User_Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Abnormal_DNS_Query": "api.data-exfil[.]org"
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
   },
-  "Recommendations": [
-    "Add the above IoCs to the monitoring list of security devices",
-    "Check network logs for suspicious activities related to these IoCs",
-    "Increase employee vigilance against phishing emails, especially those involving financial reports",
-    "Ensure all systems and software are updated to the latest versions, particularly PDF readers"
+  &nbsp;&nbsp;&nbsp;&nbsp;"Recommendations": [
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Add the above IoCs to the monitoring list of security devices",
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Check network logs for suspicious activities related to these IoCs",
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Increase employee vigilance against phishing emails, especially those involving financial reports",
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"Ensure all systems and software are updated to the latest versions, particularly PDF readers"
   ]
-}`, showAnswer: false
+}`,
+ showAnswer: false
         },
         {
-          question: '将如下json中的内容转述为流畅的攻击小结', answer: `2017年，美国最大的信用报告机构之一Equifax遭遇了一次严重的数据泄露事件。这次攻击由一个未知的黑客组织发起，其主要动机是数据窃取和金融利益。
+          question: '将如下json中的内容转述为流畅的攻击小结', 
+          answer: `2017年，美国最大的信用报告机构之一Equifax遭遇了一次严重的数据泄露事件。这次攻击由一个未知的黑客组织发起，其主要动机是数据窃取和金融利益。
 
 攻击者利用了Apache Struts2框架中的一个远程代码执行漏洞（CVE-2017-5638）作为攻击入口。这个漏洞允许攻击者在Equifax的外部Web应用程序上执行恶意代码。攻击者可能使用了自定义的漏洞利用工具，通过远程代码执行、权限提升和数据窃取等技术，成功突破了Equifax的防线。
 
