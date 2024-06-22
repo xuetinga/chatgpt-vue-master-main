@@ -4,78 +4,17 @@
     <!-- <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav> -->
 
     <el-container class="parent-container"
-      style="display: flex; flex-direction: column; align-items: center; height: 100vh; justify-content: center;">
+      style="display: flex; flex-direction: column; align-items: center; height: 100vh; justify-content: center;  background: linear-gradient(to right, #ff7e5f, #f07a7a, #e26767, #ec5151, #f23636); color: #fff;">
 
       <el-main style="display: flex; flex-direction: column; justify-content: center; width: 100%;">
         <el-header
-          style="text-align: center; line-height: 40px; font-family: 'Courier New', Courier, monospace; font-size: 100px; font-weight: 700;">
-          Yoka copilot
-
+          style="text-align: center; line-height: 80px; font-family: 'Courier New', Courier, monospace; font-size: 80px; font-weight: 700;">
+          Yoka<br>copilot
+          <i class="el-icon-s-promotion" @click="handleIconClick"></i>
         </el-header>
-        <el-row :gutter="16" style="margin-top: 40px;  display: flex;
-    justify-content: center;" justify="center">
-          <el-col :span="8">
-            <el-card @click.native="goToKnowledgeQA">
-              <el-row class="title-row">
-                <el-col :span="22">
-                  <i class="el-icon-s-promotion"></i>
-                  <span class="main-title">知识库问答</span>
-                </el-col>
-                <el-col :span="22">
-                  <span class="sub-title">助力安全生产法律条款问答</span>
-                </el-col>
-              </el-row>
-            </el-card>
-          </el-col>
-          <!-- 居中 -->
-          <el-col :span="8">
-            <el-card @click.native="goToFreeChat">
-              <el-row class="title-row">
-                <el-col :span="22">
-                  <i class="el-icon-s-promotion"></i>
-                  <span class="main-title">自由对话</span>
-                </el-col>
-                <el-col :span="22">
-                  <span class="sub-title">LLM原生对话</span>
-                </el-col>
-              </el-row>
-            </el-card>
-          </el-col>
-        </el-row>
-        <el-row :gutter="16" justify="center" style="margin-top: 30px;  display: flex;
-    justify-content: center;">
-          <el-col :span="8">
-            <el-card @click.native="goToCheckChat">
-              <el-row class="title-row">
-                <el-col :span="22">
-                  <i class="el-icon-s-promotion"></i>
-                  <span class="main-title">条款检查</span>
-                </el-col>
-                <el-col :span="22">
-                  <span class="sub-title">新旧条款校对与分析</span>
-                </el-col>
-              </el-row>
-            </el-card>
-          </el-col>
-          <el-col :span="8">
-            <el-card @click.native="goToTitleSetChat">
-              <el-row class="title-row">
-                <el-col :span="22">
-                  <i class="el-icon-s-promotion"></i>
-                  <span class="main-title">题目生成</span>
-                </el-col>
-                <el-col :span="22">
-                  <span class="sub-title">基于法规条款的单选题生成</span>
-                </el-col>
-              </el-row>
-            </el-card>
-          </el-col>
-        </el-row>
-      </el-main>
-      <el-footer>
-        <i class="el-icon-s-promotion" @click="handleIconClick"></i>
 
-      </el-footer>
+      </el-main>
+
     </el-container>
   </el-container>
 </template>
