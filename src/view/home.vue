@@ -4,7 +4,7 @@
     <!-- <Nav :isCollapse="isCollapse" @update:isCollapse="updateIsCollapse" :isSelect="selected"></Nav> -->
 
     <el-container class="parent-container"
-      style="display: flex; flex-direction: column; align-items: center; height: 100vh; justify-content: center;  background: linear-gradient(to right, #ff7e5f, #f07a7a, #e26767, #ec5151, #f23636); color: #fff;">
+      style="display: flex; flex-direction: column; align-items: center; height: 80vh; justify-content: center;  background: linear-gradient(to right, #ff7e5f, #f07a7a, #e26767, #ec5151, #f23636); color: #fff;">
 
       <el-main style="display: flex; flex-direction: column; justify-content: center; width: 100%;">
         <el-header
