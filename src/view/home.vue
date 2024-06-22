@@ -10,6 +10,7 @@
         <el-header
           style="text-align: center; line-height: 40px; font-family: 'Courier New', Courier, monospace; font-size: 100px; font-weight: 700;">
           Yoka copilot
+
         </el-header>
         <el-row :gutter="16" style="margin-top: 40px;  display: flex;
     justify-content: center;" justify="center">
@@ -71,7 +72,10 @@
           </el-col>
         </el-row>
       </el-main>
+      <el-footer>
+        <i class="el-icon-s-promotion" @click="handleIconClick"></i>
 
+      </el-footer>
     </el-container>
   </el-container>
 </template>
@@ -228,6 +232,9 @@ import StreamText from '@/components/StreamText.vue';
         console.log('Submitting form data along with the fileList:',);
 
       },
+      handleIconClick(){
+        window.location.href = '#/MobileChat';
+      }
 
     }
   }
