@@ -1,7 +1,7 @@
 <template>
   <el-container class="message-container" >
-    <el-header class="message-header" style="position: fixed">
-      Yoka
+    <el-header class="message-header" >
+      Safety Copilot
     </el-header>
     <el-main class="message-main" style="background-color: rgb(233, 233, 233);">
       <div class="message-content">
@@ -10,7 +10,7 @@
             <div v-if="message.role === 'assistant'"
               style="display: flex; flex-direction: row; justify-content: flex-start; float: left;">
               <div style="">
-                <el-avatar style="background-color: #F56C6C;"> Yoka </el-avatar>
+                <el-avatar style="background-color: #F56C6C;"> SC </el-avatar>
               </div>
               <div style="margin-left: 10px; margin-top: 5px;">
                 <div style="color: rgb(160, 160, 160);">
@@ -42,7 +42,7 @@
             <div v-if="message.role === 'user'"
               style="display: flex; flex-direction: row; justify-content: flex-start; float: left;">
               <div >
-                <el-avatar style="background-color: #F56C6C;"> Yoka </el-avatar>
+                <el-avatar style="background-color: #F56C6C;"> SC </el-avatar>
               </div>
               <div style="margin-left: 10px; margin-top: 5px;">
                 <div style="color: rgb(160, 160, 160);">
@@ -85,7 +85,7 @@
         </div>
       </div>
     </el-main>
-    <el-footer style="align-items: flex-start; display: flex;padding: 0px; background-color: rgb(233, 233, 233); position: fixed;">
+    <el-footer style="align-items: flex-start; display: flex;padding: 0px; background-color: rgb(233, 233, 233);" >
       <div class="input-wrapper1" >
         <div class="input-field-wrapper1">
           <el-input v-model="newMessage" class="input-field" placeholder="请输入内容" @keydown.enter="startChat">
