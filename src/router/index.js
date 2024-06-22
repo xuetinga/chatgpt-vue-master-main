@@ -19,8 +19,8 @@ export default new VueRouter({
   routes: [
     {
       path: "/",
-      redirect: "/ChatHome",
-      component: Home,
+      redirect: "/MobileChat",
+      component: MobileChat,
       children: [
         {
           path: "/ChatHome",
