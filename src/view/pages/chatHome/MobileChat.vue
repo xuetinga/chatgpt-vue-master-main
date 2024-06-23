@@ -5,7 +5,7 @@
     </el-header>
     <el-main class="message-main" style="background-color: rgb(233, 233, 233);">
       <div class="message-content">
-        <div v-if="chatStarted && !isClickTip" class="chat-container1" ref="chatContainer">
+        <div v-if="chatStarted " class="chat-container1" ref="chatContainer">
           <div v-for="(message, index) in chatMessages" :key="index" class="chat-message"
           style="display: flex; flex-direction: row; justify-content: flex-start;"
           >
@@ -16,7 +16,7 @@
               </div>
               <div style="margin-left: 10px; margin-top: 5px;">
                 <div style="color: rgb(160, 160, 160);">
-                  yoyo
+                  safety
                 </div>
              
                 <div class="card" style="background-color: #fff;color: black;">
@@ -48,7 +48,7 @@
               </div>
               <div style="margin-left: 10px; margin-top: 5px;">
                 <div style="color: rgb(160, 160, 160);">
-                  yoyo
+                  safety copilot
                 </div>
                 <div v-if="index == 0" class="card" style="background-color: #fff;color: black;">
                   {{ message.content }}
@@ -227,7 +227,7 @@ export default {
       newAnser: '',
       suggestionsorigin: [
         {
-          content: "您好，我是yoyo，很高兴为您服务，请告诉我您的问题。",
+          content: "您好，我是safety copilot，很高兴为您服务，请告诉我您的问题。",
           role: "user"
         },
 
@@ -601,24 +601,24 @@ Equifax的防御措施明显不足，尤其是未能及时修补已知的漏洞�
     ,
     startChat() {
       console.log("this.chat_id", this.chat_id)
-      if (this.isClickTip == true) {
-        //点了建议
-        this.suggestionsorigin.push(
-          {
-            content: this.newMessage,
-            role: "assistant"
-          }
-        )
-        this.newMessage = ""
-        setTimeout(() => {
-          this.suggestionsorigin.push({
-            content: this.newAnswer,
-            role: 'user'
-          });
-        }, 500); // 2秒的延迟
-        this.isClickTip = false
-      }
-      else {
+      // if (this.isClickTip == true) {
+      //   //点了建议
+      //   this.suggestionsorigin.push(
+      //     {
+      //       content: this.newMessage,
+      //       role: "assistant"
+      //     }
+      //   )
+      //   this.newMessage = ""
+      //   setTimeout(() => {
+      //     this.suggestionsorigin.push({
+      //       content: this.newAnswer,
+      //       role: 'user'
+      //     });
+      //   }, 500); // 2秒的延迟
+      //   this.isClickTip = false
+      // }
+      // else {
         if (this.newMessage.trim() !== '' || this.newMessage.trim().length > 0) {
           this.chatMessages.push({ content: this.newMessage, role: 'user' });
           if (this.chat_id == "") {
@@ -697,7 +697,7 @@ Equifax的防御措施明显不足，尤其是未能及时修补已知的漏洞�
             }
           });
         }
-      }
+      // }
 
     },
     handleChunk(first, content) {
