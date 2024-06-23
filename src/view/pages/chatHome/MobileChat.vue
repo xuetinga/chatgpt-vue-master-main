@@ -6,7 +6,9 @@
     <el-main class="message-main" style="background-color: rgb(233, 233, 233);">
       <div class="message-content">
         <div v-if="chatStarted && !isClickTip" class="chat-container1" ref="chatContainer">
-          <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
+          <div v-for="(message, index) in chatMessages" :key="index" class="chat-message"
+          style="display: flex; flex-direction: row; justify-content: flex-start;"
+          >
             <div v-if="message.role === 'assistant'"
               style="display: flex; flex-direction: row; justify-content: flex-start; float: left;">
               <div style="">
@@ -26,7 +28,7 @@
             <div v-else-if="message.role === 'user'"
               style="float: right; display: flex; flex-direction: row; justify-content: flex-end; margin-left: auto;">
 
-              <div class="card" style=" background-color: #F56C6C; float: left; color:#000">
+              <div class="card" style=" background-color: #F56C6C; float: left; color:#fff">
 
                 {{ message.content }}
 
