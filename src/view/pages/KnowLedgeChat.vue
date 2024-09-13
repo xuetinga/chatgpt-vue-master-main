@@ -54,10 +54,10 @@
                                                     @mouseenter="showFullReference(index, index1)"
                                                     @mouseleave="hideFullReference(index, index1)">
                                                     <template v-if="message.isHovered[index1]">
-                                                        {{ item[0].content }} 
+                                                        {{ item[1].content }}
                                                     </template>
                                                     <template v-else>
-                                                        {{ item[1] }}
+                                                        {{item[1].standard_id}} {{item[1].standard}}
                                                     </template>
                                                 </div>
                                             </div>
