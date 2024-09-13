@@ -57,7 +57,7 @@
                                                         {{ item[1].content }}
                                                     </template>
                                                     <template v-else>
-                                                        {{item[1].standard_id}} {{item[1].standard}}
+                                                        {{item[1].standard}} {{item[1].standard_id}} {{item[1].standard_no}}
                                                     </template>
                                                 </div>
                                             </div>
