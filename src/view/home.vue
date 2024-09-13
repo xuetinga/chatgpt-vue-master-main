@@ -71,10 +71,10 @@
           </el-col>
         </el-row>
       </el-main>
-      <el-footer>
+      <!-- <el-footer>
           <i class="el-icon-s-promotion" @click="goToMobileChat"></i>
         
-      </el-footer>
+      </el-footer> -->
 
     </el-container>
   </el-container>

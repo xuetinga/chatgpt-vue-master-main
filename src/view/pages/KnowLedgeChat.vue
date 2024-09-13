@@ -2,7 +2,7 @@
     <el-container class="background-container">
         <el-header class="header-container" style="height: 60px;">
             <img src="../../imgs/logo1.png" class="logo" />
-            <span class="title">Port AI</span>
+            
         </el-header>
         <el-main style="padding: 0px;">
             <el-container class="main-container">
@@ -669,8 +669,8 @@ export default {
 }
 
 .logo {
-    width: 75px;
-    height: 25px;
+    width: 125px;
+    height: 50px;
 }
 
 .title {
