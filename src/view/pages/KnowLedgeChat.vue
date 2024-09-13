@@ -54,7 +54,7 @@
                                                     @mouseenter="showFullReference(index, index1)"
                                                     @mouseleave="hideFullReference(index, index1)">
                                                     <template v-if="message.isHovered[index1]">
-                                                        {{ item[0] }} {{ item[2] }}
+                                                        {{ item[0].content }} 
                                                     </template>
                                                     <template v-else>
                                                         {{ item[1] }}
@@ -270,7 +270,6 @@ export default {
     methods: {
         showFullReference(messageIndex, referenceIndex) {
             console.log("this.chatMessages[messageIndex]", this.chatMessages[messageIndex])
-
             this.$set(this.chatMessages[messageIndex].isHovered, referenceIndex, true);
         },
         hideFullReference(messageIndex, referenceIndex) {
