@@ -9,7 +9,7 @@
       <el-main style="display: flex; flex-direction: column; justify-content: center; width: 100%;">
         <el-header
           style="text-align: center; line-height: 40px; font-family: 'Courier New', Courier, monospace; font-size: 100px; font-weight: 700;">
-          Yoka copilot
+          Port AI
         </el-header>
         <el-row :gutter="16" style="margin-top: 40px;  display: flex;
     justify-content: center;" justify="center">
@@ -71,6 +71,10 @@
           </el-col>
         </el-row>
       </el-main>
+      <el-footer>
+          <i class="el-icon-s-promotion" @click="goToMobileChat"></i>
+        
+      </el-footer>
 
     </el-container>
   </el-container>
@@ -227,6 +231,9 @@ import StreamText from '@/components/StreamText.vue';
       submitForm(){
         console.log('Submitting form data along with the fileList:',);
 
+      },
+      goToMobileChat(){
+        window.location.href = '#/MobileChat';
       },
 
     }

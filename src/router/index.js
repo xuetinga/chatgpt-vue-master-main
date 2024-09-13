@@ -93,5 +93,11 @@ export default new VueRouter({
         name: "HelpChat",
         component: HelpChat,
     },
+    , {
+      path: "/MobileChat",
+      name: "MobileChat",
+      component: MobileChat,
+  },
+
   ],
 });
