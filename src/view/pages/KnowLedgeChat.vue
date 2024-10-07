@@ -114,7 +114,10 @@
                             </el-dropdown>
                             <div class="input-field-wrapper">
                                 <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
-                                    @input="sendMessage">
+                                    @input="sendMessage"
+                                    @keyup.enter.native="startChat"
+                            
+                                    >
                                 </el-input>
 
                             </div>
@@ -133,7 +136,7 @@
 </template>
 
 <script>
-import { chatkbStreamgpt, getkbhistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue, chatStreamgpt, getkbChat, getclauseChat } from "@/api/getData";
+import { chatkbStreamgpt, getkbhistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue, chatStreamgpt, getkbChat, getclauseChat,login } from "@/api/getData";
 import Index from "./chatHome/index.vue";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
@@ -222,6 +225,9 @@ export default {
     },
     created() {
         console.log("created", this.$root.configs)
+        login().then((res)=>{
+            console.log("login", res)
+        })
         getkbhistory().then((res) => {
             console.log("gethistoryres", res)
             this.historyArrlist = res.data
@@ -248,7 +254,7 @@ export default {
         })
     },
     watch: {
-
+        
         chatMessages: {
             handler(newMessages) {
                 this.scrollToBottom();
@@ -489,6 +495,9 @@ export default {
         newChat() {
             if (this.chatMessages.length == 0) {
                 //说明没有新建
+                login().then((res)=>{
+                    console.log("res",res)
+                })
                 getkbChat().then((res) => {
                     //
                     console.log("getkbChat", res)

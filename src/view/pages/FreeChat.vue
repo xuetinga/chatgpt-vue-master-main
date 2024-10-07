@@ -127,7 +127,7 @@
                                 </el-dropdown>
                                 <div class="input-field-wrapper">
                                     <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
-                                        @keydown.enter="startChat">
+                                    @keyup.enter.native="startChat" >
                                     </el-input>
 
                                 </div>

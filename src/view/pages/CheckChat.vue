@@ -93,6 +93,7 @@
 
                             <div class="input-field-wrapper">
                                 <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
+                                @keyup.enter.native="startChat"
                                     @input="sendMessage">
                                 </el-input>
 
