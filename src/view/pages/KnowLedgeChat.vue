@@ -2,7 +2,7 @@
     <el-container class="background-container">
         <el-header class="header-container" style="height: 60px;">
             <img src="../../imgs/logo1.png" class="logo" />
-            
+
         </el-header>
         <el-main style="padding: 0px;">
             <el-container class="main-container">
@@ -10,14 +10,14 @@
                     <el-header class="aside-header">
                         <el-button type="primary" icon="el-icon-plus" @click="newChat" round>新对话</el-button>
                     </el-header>
-                    <el-menu @select="handleSelect"
-                        class="custom-scrollbar"
+                    <el-menu @select="handleSelect" class="custom-scrollbar"
                         style="background-color: #f2fbff; justify-content: center;  height:70vh; margin-bottom:20px; overflow-x: hidden; ">
                         <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
-                            class="menu-item-history" @click="historyChat(question, index)">
+                            class="menu-item-history" @click="listConversion(index)">
                             <span slot="title" @mouseover="showDeleteButton(index)"
                                 @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
-                                {{ getUserContent(question.history) }}
+                                <!-- {{ getUserContent(question.history) }} -->
+                                {{ question.name }}
                                 <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
                                     @click.stop="deleteItem(index)"
                                     style="position: absolute; right: 5px; top: 55%; transform: translateY(-51%);"></el-button>
@@ -31,7 +31,7 @@
                         <div v-if="chatStarted" class="chat-container" ref="chatContainer">
                             <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
                                 <div v-if="message.role === 'user'" class="answer-message">
-                                    <div class="card" >
+                                    <div class="card">
                                         <i class="el-icon-user" style="line-height: 1.5;"> {{ message.content }}</i>
                                     </div>
                                 </div>
@@ -57,7 +57,8 @@
                                                         {{ item[1].content }}
                                                     </template>
                                                     <template v-else>
-                                                        {{item[1].standard}} {{item[1].standard_id}} {{item[1].standard_no}}
+                                                        {{ item[1].standard }} {{ item[1].standard_id }}
+                                                        {{ item[1].standard_no }}
                                                     </template>
                                                 </div>
                                             </div>
@@ -101,23 +102,10 @@
                                         <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
                                     </el-option>
                                 </el-select> -->
-                            <el-dropdown class="input-select1">
-                                <span class="el-dropdown-link">
-                                    {{ promptdefaultvalue }}<i class="el-icon-arrow-down el-icon--right"></i>
-                                </span>
-                                <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item v-for="item in models" :key="item.label"
-                                        @click.native="handleSelectDrop(item)">
-                                        {{ item.value }}
-                                    </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </el-dropdown>
+                          
                             <div class="input-field-wrapper">
                                 <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
-                                    @input="sendMessage"
-                                    @keyup.enter.native="startChat"
-                            
-                                    >
+                                    @input="sendMessage" @keyup.enter.native="startChat">
                                 </el-input>
 
                             </div>
@@ -136,7 +124,7 @@
 </template>
 
 <script>
-import { chatkbStreamgpt, getkbhistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue, chatStreamgpt, getkbChat, getclauseChat,login } from "@/api/getData";
+import { chatkbStreamgpt, getkbhistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue, chatStreamgpt, getkbChat, getclauseChat, login,list_conversion } from "@/api/getData";
 import Index from "./chatHome/index.vue";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
@@ -225,9 +213,24 @@ export default {
     },
     created() {
         console.log("created", this.$root.configs)
-        login().then((res)=>{
-            console.log("login", res)
+        var token = ""
+        login().then((res) => {
+            console.log("login", res.data.data.access_token)
+            token = res.data.data.access_token
+            var params = {
+                access_token: token
+            }
+            console.log('params', params)
+            getChat(params).then((res) => {
+                console.log("getChat", res)
+                this.chat_id = res.id
+                this.chatStarted = true;
+                this.historyArrlist = res.data
+            }).catch((err) => {
+                console.log("err")
+            })
         })
+
         getkbhistory().then((res) => {
             console.log("gethistoryres", res)
             this.historyArrlist = res.data
@@ -254,7 +257,7 @@ export default {
         })
     },
     watch: {
-        
+
         chatMessages: {
             handler(newMessages) {
                 this.scrollToBottom();
@@ -309,11 +312,25 @@ export default {
         hideDeleteButton(index) {
             this.$set(this.historyArrlist[index], 'showDeleteButton', false);
         },
+        listConversion(index) {
+            console.log("list_conversion", this.historyArrlist[index])
+
+            let params = {
+                id: this.historyArrlist[index].id,
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME"
+            }
+            list_conversion(params).then((res) => {
+                  console.log("list_conversion",res)
+                }).catch((err) => {
+
+            })
+        },
         deleteItem(index) {
             console.log("deleteItem", this.historyArrlist[index])
 
             let params = {
-                dialogue_id: this.historyArrlist[index].dialogue_id,
+                dialog_id: this.historyArrlist[index].id,
+                token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
             }
             this.$confirm('此操作将永久删除该对话, 是否继续?', '提示', {
                 confirmButtonText: '确定',
@@ -427,9 +444,10 @@ export default {
                     "LLM_config": "default"
                 }
                 let params = {
-                    dialogue_id: this.chat_id,
+                    dialog_id:"83ba01b5-8222-11ef-b333-2cf05d3470d1",
                     query: this.newMessage,
-                    config: JSON.stringify(config)
+                    token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
+                    // config: JSON.stringify(config)
                     // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                     // {role:"hh",content:"xx"}
                     // ,
@@ -495,19 +513,37 @@ export default {
         newChat() {
             if (this.chatMessages.length == 0) {
                 //说明没有新建
-                login().then((res)=>{
-                    console.log("res",res)
-                })
-                getkbChat().then((res) => {
+
+                //                 {
+                // "token":
+                // "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjc5MDU3Mj
+                // R9._NjHtNye7dq7J4Flg_Zw5i08H0PO-sSkWlcEgixXr84",
+                // "kb_ids": [
+                // "cae9d17d-8092-11ef-a840-2cf05d3470d1"
+                // ],
+                // "dialog_type": 1,
+                // "name": "对话1"
+                // }
+                var params = {
+                    token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
+                    kb_ids: ["cae9d17d-8092-11ef-a840-2cf05d3470d1"],
+                    dialog_type: 1,
+                    name: "对话1"
+                }
+                getkbChat(params).then((res) => {
                     //
                     console.log("getkbChat", res)
 
-                    this.chat_id = res.dialogue_id
+                    this.chat_id = res.data.kb_ids[0]
                     this.chatStarted = true;
-                    this.chatMessages = res.history
+                    this.chatMessages = [{
+                        role: "user",
+                        content: "hhh"
+                    }]
                 }).catch((err) => {
                     console.log("err")
                 })
+
             }
             else {
                 //保存在历史
@@ -555,14 +591,16 @@ export default {
 
         },
         historyChat(question, index) {
-            console.log("this.question", question)
-            this.chatStarted = true;
-            this.historyArrlist.forEach((item, i) => {
-                item.showDeleteButton = i === index;
-            });
-            this.newhistory = question
-            this.chatMessages = question.history
-            this.chat_id = question.dialogue_id
+            // console.log("this.question", question)
+            // this.chatStarted = true;
+            // this.historyArrlist.forEach((item, i) => {
+            //     item.showDeleteButton = i === index;
+            // });
+            // this.newhistory = question
+            // this.chatMessages = question.history
+            // this.chat_id = question.dialogue_id
+
+
         },
 
 
@@ -673,7 +711,7 @@ export default {
     height: 40px;
     justify-content: center;
 
-        /* border-bottom: 1px solid #e0e0e0; */
+    /* border-bottom: 1px solid #e0e0e0; */
 }
 
 .logo {
@@ -882,28 +920,37 @@ export default {
     text-overflow: ellipsis;
     /* Show ellipsis for overflow text */
 }
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 2px; /* Width of the vertical scrollbar */
+    width: 2px;
+    /* Width of the vertical scrollbar */
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Color of the scrollbar track */
-  border-radius: 10px; /* Round corners of the track */
+    background: #f1f1f1;
+    /* Color of the scrollbar track */
+    border-radius: 10px;
+    /* Round corners of the track */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #888; /* Color of the scrollbar thumb */
-  border-radius: 10px; /* Round corners of the thumb */
-  border: 2px solid #f1f1f1; /* Space around the thumb */
+    background: #888;
+    /* Color of the scrollbar thumb */
+    border-radius: 10px;
+    /* Round corners of the thumb */
+    border: 2px solid #f1f1f1;
+    /* Space around the thumb */
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color of the scrollbar thumb when hovered */
+    background: #555;
+    /* Color of the scrollbar thumb when hovered */
 }
 
 .custom-scrollbar {
-  scrollbar-width: thin; /* For Firefox: make scrollbar thin */
-  scrollbar-color: #888 #f1f1f1; /* For Firefox: thumb and track color */
+    scrollbar-width: thin;
+    /* For Firefox: make scrollbar thin */
+    scrollbar-color: #888 #f1f1f1;
+    /* For Firefox: thumb and track color */
 }
-
 </style>

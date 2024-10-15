@@ -27,9 +27,12 @@ export const getclauseChat = params => {
 }
 export const getChat = params => {
   return axios({
-    method: 'post',
-    url: `http://121.43.126.21:8001/chat/new_chat`,
-    data: params
+    method: 'get',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://121.43.126.21:8001/dialog/list_dialog?token=${params.access_token}`,
+  
   }).then(res => res.data)
 }
 // 获取单个聊天信息
@@ -96,19 +99,7 @@ export const getkbhistory = params => {
     return res
   })
 }
-// 获取history
-export const getclausehistory = params => {
-  return axios({
-    method: 'get',
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
-    url: `http://121.43.126.21:8001/history/clause_chat_history`,
-    data: params,
-  }).then(res => {
-    return res
-  })
-}
+
 // 获取exam
 export const getexam = params => {
   return axios({
@@ -155,15 +146,112 @@ export const delete_dialogue = params => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    url: `http://121.43.126.21:8001/chat/delete_chat/${params.dialogue_id}`,
+    url: `http://121.43.126.21:8001/dialog/delete_dialog`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+// 获取对话下所有会话
+export const list_conversion = params => {
+  return axios({
+    method: 'get',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://121.43.126.21:8001/dialog/list_conversion?token=${params.token}&dialog_id=${params.id}`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+// 获取history
+// export const getclausehistory = params => {
+//   return axios({
+//     method: 'get',
+//     headers: {
+//       'Content-Type': 'multipart/form-data'
+//     },
+//     url: `http://121.43.126.21:8001/clause/list_standard_clause`,
+//     data: params,
+//   }).then(res => {
+//     return res
+//   })
+// }
+export const list_standard_clause = params => {
+  return axios({
+    method: 'get',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    url: `http://121.43.126.21:8001/clause/list_standard_clause?token=${params.token}`,
     data: params,
   }).then(res => {
     return res
   })
 }
 
+export const compare_clause = params => {
+  return axios({
+    method: 'post',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    url: `http://121.43.126.21:8001/clause/compare_clause`,
+    data: params,
+  }).then(res => {
+    return res
+  })
+}
+
+
+export const upload_new_clause = async (file, handleChunk) => {
+    const formData = new FormData();
+    formData.append('file', file.file);
+    formData.append('token', file.token);
+    // val params ={
+
+    // }
+    // 发送文件上传请求并逐条处理返回的数据流
+    const response = await axios.post('http://121.43.126.21:8001/clause/upload_new_clause', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      responseType: 'stream' // 使用流式响应
+    });
+  
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+  
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+  
+      buffer += decoder.decode(value, { stream: true });
+  
+      let boundaryIndex;
+      while ((boundaryIndex = buffer.indexOf('"content":')) !== -1) {
+        const start = boundaryIndex + 10;
+        const end = buffer.indexOf('}', start);
+        if (end === -1) break;
+  
+        const chunk = buffer.substring(start, end).trim();
+        buffer = buffer.substring(end + 1);
+  
+        const contentMatch = chunk.match(/"(.*?)"/);
+        if (contentMatch) {
+          const content = contentMatch[1];
+          handleChunk(content);
+        }
+      }
+    }
+  
+    reader.releaseLock();
+  };
+
 export const chatkbStreamgpt = async (params, handleChunk, handleReferences) => {
-  const response = await fetch(`http://121.43.126.21:8001/chat/${params.dialogue_id}/knowledge_base_stream_chat?query=${params.query}&config=${params.config}`, {
+  const response = await fetch(`http://121.43.126.21:8001/chat/knowledge`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
@@ -600,6 +688,6 @@ export const login = params => {
     }
       
   }).then(res => {
-    console.log("loginres",res.data)
+    return res
   })
 }

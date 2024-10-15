@@ -1,8 +1,8 @@
 <template>
     <el-container class="background-container">
         <el-header class="header-container" style="height: 60px;">
-            <img src="../../imgs/logo1.png" class="logo" width="80px"/>
-            
+            <img src="../../imgs/logo1.png" class="logo" width="80px" />
+
         </el-header>
         <el-main style="padding: 0px;">
             <el-container class="main-container">
@@ -11,8 +11,7 @@
                         <el-button type="primary" icon="el-icon-plus" @click="newChat" round>新条款</el-button>
                     </el-header>
                     <!-- Sidebar content here -->
-                    <el-menu @select="handleSelect"
-                    class="custom-scrollbar"
+                    <el-menu @select="handleSelect" class="custom-scrollbar"
                         style="background-color: #f2fbff; justify-content: center;  height:70vh; margin-bottom:20px; overflow-x: hidden; ">
                         <el-menu-item v-for="(question, index) in historyArrlist" :key="index" :index="index.toString()"
                             class="menu-item-history" @click="historyChat(question, index)">
@@ -28,92 +27,25 @@
                 </el-aside>
                 <el-container>
                     <el-main class="main-content">
-                        <div v-if="chatStarted" class="chat-container" ref="chatContainer">
-                            <div v-for="(message, index) in chatMessages" :key="index" class="chat-message">
-                                <div v-if="message.role === 'user'" class="answer-message">
-                                    <div class="card"  >
-                                        <i class="el-icon-user"> {{ message.content }}</i>
-                                    </div>
-                                </div>
-                                <div v-else-if="message.role === 'assistant'" class="answer-message">
-                                    <div class="card" style=" background-color: #fff; float: left; color:#000">
-
-                                        <span v-if="index === chatMessages.length - 1">
-                                            <vue-markdown :source="message.content" :breaks="true" :typographer="true"
-                                                :linkify="true" :highlight="false"></vue-markdown>
-                                        </span>
-                                        <span v-else>
-                                            {{ message.content }}
-                                        </span>
-                                        <div v-if="message.reference.length > 0">
-                                            <el-divider></el-divider>
-                                            <i class="el-icon-paperclip"
-                                                style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
-
-                                            <div v-for="(item, index1) in message.reference" :key="index1"
-                                                class="reference-item">
-                                                <div class="reference-content"
-                                                    @mouseenter="showFullReference(index, index1)"
-                                                    @mouseleave="hideFullReference(index, index1)">
-                                                    <template v-if="message.isHovered[index1]">
-                                                        {{ item[0] }} {{ item[2] }}
-                                                    </template>
-                                                    <template v-else>
-                                                        {{ item[1] }}
-                                                    </template>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div v-else>
+                        <div  ref="chatContainer" style="display: flex; justify-content: flex-start">
+                            <el-select  placeholder="请选择标准条款">
                            
-                            <el-row type="flex" class="response-options">
-                                <el-col :span="8" v-for="(card, index) in cards1" :key="index">
-                                    <el-card @click.native="sendMessage(card.message)">
-                                        <div slot="header" class="clearfix">
-                                            <span>{{ card.header }}</span>
-                                        </div>
-                                        <div class="text item">
-                                            {{ card.content }}
-                                        </div>
-                                    </el-card>
-                                </el-col>
-                            </el-row>
-                        </div>
+                        </el-select>
+                        <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
+                                        :show-file-list="false">
+                                        <i class="el-icon-paperclip" style="margin-right: 5px;"></i>
+                                    </el-upload>
 
+
+                        <!-- <el-upload class="upload-demo" drag :http-request="uploadFile" 
+                            multiple>
+                            <i class="el-icon-upload"></i>
+                            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        </el-upload> -->
+                        </div>
+                      
                     </el-main>
-                    <el-footer style="align-items: flex-start; display: flex;padding: 0px;">
 
-                        <div class="input-wrapper">
-
-                            <div class="input-field-wrapper">
-                                <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
-                                @keyup.enter.native="startChat"
-                                    @input="sendMessage">
-                                </el-input>
-
-                            </div>
-                            <div class="input-button">
-                                <div v-for="(file, index) in fileList" :key="index" class="file-tag">
-                                    <span style=" overflow: hidden; text-overflow: ellipsis;font-size: 10px;">{{
-                            file.name }}</span>
-                                    <i class="el-icon-close" @click="removeFile(index)"></i>
-                                </div>
-                                <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
-                                    :before-upload="beforeUpload" :show-file-list="false">
-                                    <i class="el-icon-paperclip" style="margin-right: 5px;"></i>
-                                </el-upload>
-                                <i class="el-icon-s-promotion" @click="startChat" style="margin-right: 5px;">
-                                </i>
-                            </div>
-
-                        </div>
-                    </el-footer>
                 </el-container>
 
             </el-container>
@@ -125,7 +57,7 @@
 
 <script>
 import axios from 'axios';
-import { clause_doc_stream_check, delete_dialogue, chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
+import {compare_clause,upload_new_clause,list_standard_clause, clause_doc_stream_check, delete_dialogue, chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
@@ -142,12 +74,32 @@ export default {
     },
     created() {
         console.log("created", this.$root.configs)
-        getclausehistory().then((res) => {
-            console.log("gethistoryres", res.data)
-            this.historyArrlist = res.data
-        }).catch((err) => {
-            console.log("errr", err)
+        let compareparams = {
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
+                stand_id:"ec916c06-8706-11ef-aa4f-00163e1e6539",
+                new_id:"fb54174a-8708-11ef-9378-00163e1e6539"
+        }
+        console.log("compareparams",compareparams)
+        compare_clause(compareparams).then((res)=>{
+                console.log("res",res)
+            })
+        let params = {
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME"
+        }
+            console.log("params",params)
+        list_standard_clause(params).then((res) => {
+                  console.log("list_conversion",res)
+                  
+                }).catch((err) => {
+
         })
+     
+        // getclausehistory().then((res) => {
+        //     console.log("gethistoryres", res.data)
+        //     this.historyArrlist = res.data
+        // }).catch((err) => {
+        //     console.log("errr", err)
+        // })
         getstatic().then((res) => {
             console.log("getstatic111", res.data)
 
@@ -405,30 +357,24 @@ export default {
             return;
         },
 
+        //上传文件的事件
         uploadFile(item) {
             // this.$showMessage('文件上传中........')
             //上传文件的需要formdata类型;所以要转
-            console.log("FormDatas", item)
-
             var FormDatas = new FormData()
             FormDatas.append('file', item.file);
 
+            this.dialogFileUrl = item.file.name;
 
+            let params = {
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
+                file:  item.file
+            }
             this.fileList.push(item.file);
-
-            // .then(res => {
-            // console.log("res", res.data.content)
-            // if (res.data.id != '' || res.data.id != null) {
-            //     this.fileList.push(item.file);//成功过后手动将文件添加到展示列表里
-            //     let i = this.fileList.indexOf(item.file)
-            //     this.fileList[i].id = res.data.id;//id也添加进去，最后整个大表单提交的时候需要的
-            //     if (this.fileList.length > 0) {//如果上传了附件就把校验规则给干掉
-            //         this.fileflag = false;
-            //         this.$set(this.rules.url, 0, '')
-            //     }
-            //     //this.handleSuccess();
-            // }
-            // })
+            upload_new_clause(params).then(res => {
+                console.log("res", res.data.content)
+                this.fileType = "file"
+            })
         },
         handleChunk1(first, content) {
             if (first) {
