@@ -26,26 +26,41 @@
                     </el-menu>
                 </el-aside>
                 <el-container>
-                    <el-main class="main-content">
-                        <div  ref="chatContainer" style="display: flex; justify-content: flex-start">
-                            <el-select  placeholder="请选择标准条款">
-                           
-                        </el-select>
-                        <el-upload class="upload-icon" action :http-request="uploadFile" ref="upload"
-                                        :show-file-list="false">
-                                        <i class="el-icon-paperclip" style="margin-right: 5px;"></i>
-                                    </el-upload>
-
-
-                        <!-- <el-upload class="upload-demo" drag :http-request="uploadFile" 
-                            multiple>
-                            <i class="el-icon-upload"></i>
-                            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                        </el-upload> -->
+                    <el-main>
+                        <div ref="chatContainer" style="display: flex; justify-content: flex-start">
+                            <el-select placeholder="请选择标准条款">
+                            </el-select>
+                            <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
+                                :show-file-list="false">
+                                <i class="el-icon-upload"></i>
+                                <div class="el-upload__text">点击上传</div>
+                            </el-upload>
                         </div>
-                      
-                    </el-main>
+                        <el-main>
+                        <el-table :data="clauseTableData" style="width: 100%">
+                            <!-- 条款编号列 -->
+                            <el-table-column prop="clause_number" label="条款编号" width="300">
+                            </el-table-column>
 
+                            <!-- 条款名称列 -->
+                            <el-table-column prop="clause_name" label="条款名称" width="250">
+                            </el-table-column>
+
+                            <!-- 原文列 -->
+                            <el-table-column prop="original_text" label="条款原文">
+                            </el-table-column>
+
+                            <!-- 审核结果列 -->
+                            <el-table-column prop="review_result" label="审核结果" width="120">
+                            </el-table-column>
+
+                            <!-- 审核建议列 -->
+                            <el-table-column prop="advice" label="审核建议" width="150">
+                            </el-table-column>
+                        </el-table>
+                    </el-main>
+                    </el-main>
+                 
                 </el-container>
 
             </el-container>
@@ -57,7 +72,7 @@
 
 <script>
 import axios from 'axios';
-import {compare_clause,upload_new_clause,list_standard_clause, clause_doc_stream_check, delete_dialogue, chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
+import { compare_clause, upload_new_clause, list_standard_clause, clause_doc_stream_check, delete_dialogue, chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
@@ -75,25 +90,24 @@ export default {
     created() {
         console.log("created", this.$root.configs)
         let compareparams = {
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
-                stand_id:"ec916c06-8706-11ef-aa4f-00163e1e6539",
-                new_id:"fb54174a-8708-11ef-9378-00163e1e6539"
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
+            stand_id: "ec916c06-8706-11ef-aa4f-00163e1e6539",
+            new_id: "ee29e442-8a2d-11ef-9596-00163e1e6539"
         }
-        console.log("compareparams",compareparams)
-        compare_clause(compareparams).then((res)=>{
-                console.log("res",res)
-            })
+        console.log("compareparams", compareparams)
+        compare_clause(compareparams).then((res) => {
+            console.log("res", res)
+        })
         let params = {
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME"
+            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g"
         }
-            console.log("params",params)
+        console.log("params", params)
         list_standard_clause(params).then((res) => {
-                  console.log("list_conversion",res)
-                  
-                }).catch((err) => {
+            console.log("list_conversion", res)
+        }).catch((err) => {
 
         })
-     
+
         // getclausehistory().then((res) => {
         //     console.log("gethistoryres", res.data)
         //     this.historyArrlist = res.data
@@ -121,6 +135,35 @@ export default {
     },
     data() {
         return {
+            clauseTableData: [
+                {
+                    id: '4b370157-896b-11ef-ac83-2cf05d3470d1',
+                    institution: '安全培训需求调查',
+                    clause_name: '安全生产教育培训制度',
+                    clause_number: '《国务院安委会关于进一步加强安全培训工作的决定》（安委[2012]10号）第二十条',
+                    original_text:
+                        '加强安全培训过程管理和质量评估。建立安全培训需求调研、培训策划、培训计划备案、教学管理、培训效果评估等制度，加强安全培训全过程管理。',
+                    review_result: '符合',
+                    advice: '无',
+                },
+                {
+                    id: '4b3c3208-896b-11ef-8ebe-2cf05d3470d1',
+                    institution: '年度安全培训计划制定',
+                    clause_name: '安全生产教育培训制度',
+                    clause_number: '《生产经营单位安全培训规定》（原国家安全生产监督管理总局令第80号）第二十一条第一款',
+                    original_text: '生产经营单位应当将安全培训工作纳入本单位年度工作计划。保证本单位安全培训工作所需资金。',
+                    review_result: '符合',
+                    advice: '无',
+                },
+                {
+                    id: '4bef97cb-896b-11ef-93a7-2cf05d3470d1',
+                    institution: '安全培训教育经费',
+                    clause_name: '安全生产教育培训制度',
+                    clause_number: '《生产经营单位安全培训规定》（原国家安全生产监督管理总局令第80号） 第二十一条',
+                    original_text: '生产经营单位应当将安全培训工作纳入本单位年度工作计划。保证本单位安全培训工作所需资金。',
+                    review_result: '符合',
+                    advice: '无',
+                }],
             selected: "3",
             newMessage: "",
             promptall: [{
@@ -216,6 +259,7 @@ export default {
             //请求头
             headers: { "Content-Type": "multipart/form-data" },
             isHovered: [],
+            hasUploadDone: false
         };
     },
     watch: {
@@ -365,14 +409,16 @@ export default {
             FormDatas.append('file', item.file);
 
             this.dialogFileUrl = item.file.name;
-
             let params = {
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
-                file:  item.file
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
+                file: item.file
             }
             this.fileList.push(item.file);
             upload_new_clause(params).then(res => {
                 console.log("res", res.data.content)
+                if (res.data != null) {
+                    hasUploadDone = true
+                }
                 this.fileType = "file"
             })
         },

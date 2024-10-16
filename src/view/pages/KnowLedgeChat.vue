@@ -317,7 +317,7 @@ export default {
 
             let params = {
                 id: this.historyArrlist[index].id,
-                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME"
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g"
             }
             list_conversion(params).then((res) => {
                   console.log("list_conversion",res)
@@ -330,7 +330,7 @@ export default {
 
             let params = {
                 dialog_id: this.historyArrlist[index].id,
-                token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
+                token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
             }
             this.$confirm('此操作将永久删除该对话, 是否继续?', '提示', {
                 confirmButtonText: '确定',
@@ -446,7 +446,7 @@ export default {
                 let params = {
                     dialog_id:"83ba01b5-8222-11ef-b333-2cf05d3470d1",
                     query: this.newMessage,
-                    token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
+                    token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
                     // config: JSON.stringify(config)
                     // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                     // {role:"hh",content:"xx"}
@@ -525,7 +525,7 @@ export default {
                 // "name": "对话1"
                 // }
                 var params = {
-                    token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4NjUzODJ9.e_6CkZmJD5PlMwKYnBz4dhTv1Fm9VjfZb81Ddg_QmME",
+                    token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
                     kb_ids: ["cae9d17d-8092-11ef-a840-2cf05d3470d1"],
                     dialog_type: 1,
                     name: "对话1"
