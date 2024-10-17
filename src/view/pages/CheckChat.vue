@@ -36,31 +36,41 @@
                                 <div class="el-upload__text">点击上传</div>
                             </el-upload>
                         </div>
-                        <el-main>
-                        <el-table :data="clauseTableData" style="width: 100%">
-                            <!-- 条款编号列 -->
-                            <el-table-column prop="clause_number" label="条款编号" width="300">
-                            </el-table-column>
+                        <el-main v-if="hasUploadDone">
+                            <el-table :data="clauseTableData" style="width: 100%">
+                                <!-- 条款编号列 -->
+                                <el-table-column prop="index" label="序号" width="50">
+                                </el-table-column>
+                                <el-table-column prop="institution" label="制度要素" width="100">
+                                </el-table-column>
 
-                            <!-- 条款名称列 -->
-                            <el-table-column prop="clause_name" label="条款名称" width="250">
-                            </el-table-column>
+                                <!-- 条款名称列 -->
+                                <el-table-column prop="clause_number" label="法规条款" width="150">
+                                </el-table-column>
 
-                            <!-- 原文列 -->
-                            <el-table-column prop="original_text" label="条款原文">
-                            </el-table-column>
+                                <!-- 原文列 -->
+                                <el-table-column prop="original_text" label="法规原文">
+                                </el-table-column>
+                                <el-table-column prop="content" label="企业制度">
+                                    <template slot-scope="scope">
+                                        <el-tooltip class="item" effect="dark" :content="scope.row.content"
+                                        popper-class="custom-tooltip"
+                                            placement="top">
+                                            <div class="ellipsis">{{ scope.row.content }}</div>
+                                        </el-tooltip>
+                                    </template>
+                                </el-table-column>
+                                <!-- 审核结果列 -->
+                                <el-table-column prop="review_result" label="检查结果" width="50">
+                                </el-table-column>
 
-                            <!-- 审核结果列 -->
-                            <el-table-column prop="review_result" label="审核结果" width="120">
-                            </el-table-column>
-
-                            <!-- 审核建议列 -->
-                            <el-table-column prop="advice" label="审核建议" width="150">
-                            </el-table-column>
-                        </el-table>
+                                <!-- 审核建议列 -->
+                                <el-table-column prop="advice" label="修改建议" width="50">
+                                </el-table-column>
+                            </el-table>
+                        </el-main>
                     </el-main>
-                    </el-main>
-                 
+
                 </el-container>
 
             </el-container>
@@ -137,30 +147,47 @@ export default {
         return {
             clauseTableData: [
                 {
+                    index: 1,
                     id: '4b370157-896b-11ef-ac83-2cf05d3470d1',
                     institution: '安全培训需求调查',
                     clause_name: '安全生产教育培训制度',
                     clause_number: '《国务院安委会关于进一步加强安全培训工作的决定》（安委[2012]10号）第二十条',
                     original_text:
                         '加强安全培训过程管理和质量评估。建立安全培训需求调研、培训策划、培训计划备案、教学管理、培训效果评估等制度，加强安全培训全过程管理。',
+                    related_chunks:
+                    {
+                        file_id: "259dfc41-896c-11ef-91da-2cf05d3470d1",
+                        file_name: "03 测试制度1-安全培训教育制度.docx",
+                    },
+                    content: "培训计划和培训资金 安全部负责开展安全培训需求调研工作，各职能部门根据本部门的需要，在年初提交培训需求给安全部，由安全部统一汇总。 安全部汇总安全培训需求，确定安全培训所需费用，根据培训需求和国家相关规定，制定公司年度安全培训计划，提交总经理批准。 总经理批准后，安全部按照年度培训计划组织开展安全培训。 任何部门不得挪用安全培训资金。",
                     review_result: '符合',
                     advice: '无',
                 },
                 {
+                    index: 2,
                     id: '4b3c3208-896b-11ef-8ebe-2cf05d3470d1',
                     institution: '年度安全培训计划制定',
                     clause_name: '安全生产教育培训制度',
                     clause_number: '《生产经营单位安全培训规定》（原国家安全生产监督管理总局令第80号）第二十一条第一款',
+                    related_chunks: {
+                        file_id: "259dfc41-896c-11ef-91da-2cf05d3470d1",
+                        file_name: "03 测试制度1-安全培训教育制度.docx",
+                    },
+                    content: "培训计划和培训资金 安全部负责开展安全培训需求调研工作，各职能部门根据本部门的需要，在年初提交培训需求给安全部，由安全部统一汇总。 安全部汇总安全培训需求，确定安全培训所需费用，根据培训需求和国家相关规定，制定公司年度安全培训计划，提交总经理批准。 总经理批准后，安全部按照年度培训计划组织开展安全培训。 任何部门不得挪用安全培训资金。",
                     original_text: '生产经营单位应当将安全培训工作纳入本单位年度工作计划。保证本单位安全培训工作所需资金。',
                     review_result: '符合',
                     advice: '无',
                 },
                 {
+                    index: 3,
                     id: '4bef97cb-896b-11ef-93a7-2cf05d3470d1',
                     institution: '安全培训教育经费',
                     clause_name: '安全生产教育培训制度',
                     clause_number: '《生产经营单位安全培训规定》（原国家安全生产监督管理总局令第80号） 第二十一条',
                     original_text: '生产经营单位应当将安全培训工作纳入本单位年度工作计划。保证本单位安全培训工作所需资金。',
+                    related_chunks:
+                        { file_id: "259dfc41-896c-11ef-91da-2cf05d3470d1", file_name: "03 测试制度1-安全培训教育制度.docx" },
+                    content: "培训计划和培训资金 安全部负责开展安全培训需求调研工作，各职能部门根据本部门的需要，在年初提交培训需求给安全部，由安全部统一汇总。 安全部汇总安全培训需求，确定安全培训所需费用，根据培训需求和国家相关规定，制定公司年度安全培训计划，提交总经理批准。总经理批准后，安全部按照年度培训计划组织开展安全培训。 任何部门不得挪用安全培训资金。",
                     review_result: '符合',
                     advice: '无',
                 }],
@@ -259,7 +286,7 @@ export default {
             //请求头
             headers: { "Content-Type": "multipart/form-data" },
             isHovered: [],
-            hasUploadDone: false
+            hasUploadDone: true
         };
     },
     watch: {
@@ -416,10 +443,9 @@ export default {
             this.fileList.push(item.file);
             upload_new_clause(params).then(res => {
                 console.log("res", res.data.content)
-                if (res.data != null) {
-                    hasUploadDone = true
-                }
-                this.fileType = "file"
+                this.hasUploadDone = true
+
+                // this.fileType = "file"
             })
         },
         handleChunk1(first, content) {
@@ -796,4 +822,20 @@ export default {
     border-radius: 10px;
     /* 圆角 */
 }
+.ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 300px; /* 确保不会超出父容器 */
+    padding: 5px; /* 内边距 */
+    border-radius: 4px; /* 圆角 */
+    transition: background-color 0.3s; /* 动画效果 */
+}
+
+
+.custom-tooltip {
+    max-width: 300px; /* 设置最大宽度 */
+    word-wrap: break-word; /* 自动换行 */
+}
+
 </style>

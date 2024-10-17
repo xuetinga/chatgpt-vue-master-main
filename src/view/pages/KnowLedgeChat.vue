@@ -42,7 +42,8 @@
                                                 :linkify="true" :highlight="false"></vue-markdown>
                                         </span>
                                         <span v-else>
-                                            {{ message.content }}
+                                            <vue-markdown :source="message.content" :breaks="true" :typographer="true"
+                                                :linkify="true" :highlight="false"></vue-markdown>
                                         </span>
                                         <div v-if="message.reference.length > 0">
                                             <el-divider></el-divider>
@@ -54,11 +55,11 @@
                                                     @mouseenter="showFullReference(index, index1)"
                                                     @mouseleave="hideFullReference(index, index1)">
                                                     <template v-if="message.isHovered[index1]">
-                                                        {{ item[1].content }}
+                                                        {{ item.content }}
                                                     </template>
-                                                    <template v-else>
-                                                        {{ item[1].standard }} {{ item[1].standard_id }}
-                                                        {{ item[1].standard_no }}
+                                                    <template v-else >
+                                                        {{ item.standard_name }} {{ item.standard_clause }}
+                                                        {{ item.standard_number }}
                                                     </template>
                                                 </div>
                                             </div>
@@ -102,7 +103,7 @@
                                         <span style="color: #8492a6; font-size: 13px">{{ item.value }}</span>
                                     </el-option>
                                 </el-select> -->
-                          
+
                             <div class="input-field-wrapper">
                                 <el-input v-model="newMessage" class="input-field" placeholder="请输入内容"
                                     @input="sendMessage" @keyup.enter.native="startChat">
@@ -124,7 +125,7 @@
 </template>
 
 <script>
-import { chatkbStreamgpt, getkbhistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue, chatStreamgpt, getkbChat, getclauseChat, login,list_conversion } from "@/api/getData";
+import { chatkbStreamgpt, getkbhistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, delete_dialogue, chatStreamgpt, getkbChat, getclauseChat, login, list_conversion } from "@/api/getData";
 import Index from "./chatHome/index.vue";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
@@ -320,8 +321,18 @@ export default {
                 token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g"
             }
             list_conversion(params).then((res) => {
-                  console.log("list_conversion",res)
-                }).catch((err) => {
+                console.log("list_conversion11111", res.data.data[0].reference )
+                
+                this.chatStarted = true;
+                this.historyArrlist.forEach((item, i) => {
+                    item.showDeleteButton = i === index;
+                });
+                this.newhistory = res.data.data[0]
+                this.chatMessages.push({ content: res.data.data[0].question, role: 'user' });
+                this.chatMessages.push({ content: res.data.data[0].answer, role: 'assistant',reference: res.data.data[0].reference });
+                this.chat_id = res.data.data[0].id
+
+            }).catch((err) => {
 
             })
         },
@@ -330,7 +341,7 @@ export default {
 
             let params = {
                 dialog_id: this.historyArrlist[index].id,
-                token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
+                token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
             }
             this.$confirm('此操作将永久删除该对话, 是否继续?', '提示', {
                 confirmButtonText: '确定',
@@ -444,9 +455,9 @@ export default {
                     "LLM_config": "default"
                 }
                 let params = {
-                    dialog_id:"83ba01b5-8222-11ef-b333-2cf05d3470d1",
+                    dialog_id: "83ba01b5-8222-11ef-b333-2cf05d3470d1",
                     query: this.newMessage,
-                    token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
+                    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
                     // config: JSON.stringify(config)
                     // history: JSON.stringify([{role:"hh",content:"xx"},{role:"hh",content:"xx"}])
                     // {role:"hh",content:"xx"}
@@ -525,7 +536,7 @@ export default {
                 // "name": "对话1"
                 // }
                 var params = {
-                    token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
+                    token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g",
                     kb_ids: ["cae9d17d-8092-11ef-a840-2cf05d3470d1"],
                     dialog_type: 1,
                     name: "对话1"
