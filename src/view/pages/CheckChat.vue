@@ -17,7 +17,7 @@
                             class="menu-item-history" @click="historyChat(question, index)">
                             <span slot="title" @mouseover="showDeleteButton(index)"
                                 @mouseleave="hideDeleteButton(index)" class="menu-item-wrapper">
-                                {{ getUserContent(question.history) }}
+                                {{ question.name }}
                                 <el-button v-show="question.showDeleteButton" type="text" icon="el-icon-close"
                                     @click.stop="deleteItem(index)"
                                     style="position: absolute; right: 5px; top: 55%; transform: translateY(-51%);"></el-button>
@@ -28,7 +28,10 @@
                 <el-container>
                     <el-main>
                         <div ref="chatContainer" style="display: flex; justify-content: flex-start">
-                            <el-select placeholder="请选择标准条款">
+                            <el-select placeholder="请选择标准条款" v-model="value">
+                                <el-option v-for="item in options" :key="item.value" :label="item.label"
+                                    :value="item.value">
+                                </el-option>
                             </el-select>
                             <el-upload class="upload-demo" action :http-request="uploadFile" ref="upload"
                                 :show-file-list="false">
@@ -54,8 +57,7 @@
                                 <el-table-column prop="content" label="企业制度">
                                     <template slot-scope="scope">
                                         <el-tooltip class="item" effect="dark" :content="scope.row.content"
-                                        popper-class="custom-tooltip"
-                                            placement="top">
+                                            popper-class="custom-tooltip" placement="top">
                                             <div class="ellipsis">{{ scope.row.content }}</div>
                                         </el-tooltip>
                                     </template>
@@ -82,7 +84,7 @@
 
 <script>
 import axios from 'axios';
-import { compare_clause, upload_new_clause, list_standard_clause, clause_doc_stream_check, delete_dialogue, chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
+import { list_compare_history, compare_clause, upload_new_clause, list_standard_clause, clause_doc_stream_check, delete_dialogue, chatclauseStreamgpt, getclausehistory, getChatMsg, chatgpt, chatupload, gethistory, setclause_check, getstatic, getChat, getChatchat, getclauseChat } from "@/api/getData";
 import Emoji from "@/components/Emoji.vue";
 import Nav from "@/components/Nav.vue";
 import commonMethodsMixin from '../../util/publicfun.js';
@@ -117,6 +119,10 @@ export default {
         }).catch((err) => {
 
         })
+        list_compare_history(params).then((res) => {
+            console.log("list_compare_history", res.data.data)
+            this.historyArrlist = res.data.data
+        })
 
         // getclausehistory().then((res) => {
         //     console.log("gethistoryres", res.data)
@@ -145,6 +151,17 @@ export default {
     },
     data() {
         return {
+            options: [{
+                value: '选项1',
+                label: '安全培训需求调查'
+            }, {
+                value: '选项2',
+                label: '年度安全培训计划制定'
+            }, {
+                value: '选项3',
+                label: '安全生产教育培训制度'
+            }],
+            value: '',
             clauseTableData: [
                 {
                     index: 1,
@@ -384,13 +401,14 @@ export default {
             // 处理选中项逻辑
         },
         getUserContent(history) {
-            if (history.length > 0) {
-                const userEntry = history.find(entry => entry.role === 'assistant');
-                return userEntry ? userEntry.content : '';
-            }
-            else {
-                return ""
-            }
+            return history.name
+            // if (history != null) {
+            //     const userEntry = history.find(entry => entry.role !== 'assistant');
+            //     return userEntry ? userEntry.name : '';
+            // }
+            // else {
+            //     return ""
+            // }
 
         },
         updateIsCollapse(value) {
@@ -822,20 +840,26 @@ export default {
     border-radius: 10px;
     /* 圆角 */
 }
+
 .ellipsis {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-width: 300px; /* 确保不会超出父容器 */
-    padding: 5px; /* 内边距 */
-    border-radius: 4px; /* 圆角 */
-    transition: background-color 0.3s; /* 动画效果 */
+    max-width: 300px;
+    /* 确保不会超出父容器 */
+    padding: 5px;
+    /* 内边距 */
+    border-radius: 4px;
+    /* 圆角 */
+    transition: background-color 0.3s;
+    /* 动画效果 */
 }
 
 
 .custom-tooltip {
-    max-width: 300px; /* 设置最大宽度 */
-    word-wrap: break-word; /* 自动换行 */
+    max-width: 300px;
+    /* 设置最大宽度 */
+    word-wrap: break-word;
+    /* 自动换行 */
 }
-
 </style>

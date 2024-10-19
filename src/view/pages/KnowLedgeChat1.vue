@@ -41,17 +41,8 @@
                                     </div>
                                     <div v-else-if="message.role === 'assistant'" class="answer-message">
                                         <div class="card" style="width: 800px;">
-
-                                            <span v-if="index === chatMessages.length - 1">
-                                                <vue-markdown :source="message.content" :breaks="true"
-                                                    :typographer="true" :linkify="true"
-                                                    :highlight="false"></vue-markdown>
-                                            </span>
-                                            <span v-else>
-                                                {{ message.content }}
-                                            </span>
                                             <div v-if="message.reference.length > 0">
-                                                <el-divider></el-divider>
+                                        
                                                 <i class="el-icon-paperclip"
                                                     style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
                                                 <div v-for="(item, index1) in message.reference" :key="index1"
@@ -67,9 +58,17 @@
                                                         </template>
                                                     </div>
                                                 </div>
+                                                <el-divider></el-divider>
                                             </div>
-
-
+                                            <span v-if="index === chatMessages.length - 1">
+                                                <vue-markdown :source="message.content" :breaks="true"
+                                                    :typographer="true" :linkify="true"
+                                                    :highlight="false"></vue-markdown>
+                                            </span>
+                                            <span v-else>
+                                                {{ message.content }}
+                                            </span>
+                                         
                                         </div>
                                     </div>
                                 </div>

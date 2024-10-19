@@ -37,23 +37,17 @@
                                 </div>
                                 <div v-else-if="message.role === 'assistant'" class="answer-message">
                                     <div class="card" style=" background-color: #fff; float: left; color:#000; ">
-                                        <span v-if="index === chatMessages.length - 1">
-                                            <vue-markdown :source="message.content" :breaks="true" :typographer="true"
-                                                :linkify="true" :highlight="false"></vue-markdown>
-                                        </span>
-                                        <span v-else>
-                                            <vue-markdown :source="message.content" :breaks="true" :typographer="true"
-                                                :linkify="true" :highlight="false"></vue-markdown>
-                                        </span>
                                         <div v-if="message.reference.length > 0">
-                                            <el-divider></el-divider>
+
                                             <i class="el-icon-paperclip"
                                                 style="margin-top: 10px;margin-bottom: 10px;">Reference</i>
+
                                             <div v-for="(item, index1) in message.reference" :key="index1"
                                                 class="reference-item">
                                                 <div class="reference-content"
                                                     @mouseenter="showFullReference(index, index1)"
-                                                    @mouseleave="hideFullReference(index, index1)">
+                                                    @mouseleave="hideFullReference(index, index1)"
+                                                    :style="{ height: isHovered ? 'auto' : '100px' ,width:'500px'}">
                                                     <template v-if="message.isHovered[index1]">
                                                         {{ item.content }}
                                                     </template>
@@ -62,8 +56,19 @@
                                                         {{ item.standard_number }}
                                                     </template>
                                                 </div>
+
                                             </div>
+                                            <el-divider></el-divider>
                                         </div>
+                                        <span v-if="index === chatMessages.length - 1">
+                                            <vue-markdown :source="message.content" :breaks="true" :typographer="true"
+                                                :linkify="true" :highlight="false"></vue-markdown>
+                                        </span>
+                                        <span v-else>
+                                            <vue-markdown :source="message.content" :breaks="true" :typographer="true"
+                                                :linkify="true" :highlight="false"></vue-markdown>
+                                        </span>
+
 
 
                                     </div>
@@ -321,15 +326,15 @@ export default {
                 token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoidGVzdDEiLCJleHAiOjE3Mjg4Nzc1MDl9.10pwn0YnmSqIe7Ixsfozf1wDbk7RF4dn4KKc1NQWe7g"
             }
             list_conversion(params).then((res) => {
-                console.log("list_conversion11111", res.data.data[0].reference )
-                
+                console.log("list_conversion11111", res.data.data[0].reference)
+
                 this.chatStarted = true;
                 this.historyArrlist.forEach((item, i) => {
                     item.showDeleteButton = i === index;
                 });
                 this.newhistory = res.data.data[0]
                 this.chatMessages.push({ content: res.data.data[0].question, role: 'user' });
-                this.chatMessages.push({ content: res.data.data[0].answer, role: 'assistant',reference: res.data.data[0].reference });
+                this.chatMessages.push({ content: res.data.data[0].answer, role: 'assistant', reference: res.data.data[0].reference });
                 this.chat_id = res.data.data[0].id
 
             }).catch((err) => {
