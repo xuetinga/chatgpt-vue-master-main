@@ -47,15 +47,37 @@
                                                 <div class="reference-content"
                                                     @mouseenter="showFullReference(index, index1)"
                                                     @mouseleave="hideFullReference(index, index1)"
-                                                    :style="{ height: isHovered ? 'auto' : '100px' ,width:'500px'}">
+                                                    :style="{ height: isHovered ? 'auto' : '100px', width: '500px' }">
                                                     <template v-if="message.isHovered[index1]">
                                                         {{ item.content }}
                                                     </template>
-                                                    <template v-else >
-                                                        {{ item.standard_name }} {{ item.standard_clause }}
-                                                        {{ item.standard_number }}
+
+                                                    <template v-else>
+                                                        <!-- 显示图片 -->
+                                                        <template v-if="item.image">
+                                                            <img :src="item.image" alt="图片描述" />
+                                                        </template>
+
+                                                        <!-- 显示表格 -->
+                                                        <template v-else-if="item.file_id">
+                                                            <div>
+                                                                <el-table :data="tableData" style="width: 100%">
+                                                                    <el-table-column prop="level" label="等级"
+                                                                        width="150"></el-table-column>
+                                                                    <el-table-column prop="capacityRange"
+                                                                        label="石油库储罐计算总容量TV(m³)"
+                                                                        width="300"></el-table-column>
+                                                                </el-table>
+                                                            </div>
+                                                        </template>
+
+                                                        <!-- 只显示文字 -->
+                                                        <template v-else>
+                                                            {{ item.standard_name }} {{ item.standard_clause }} {{item.standard_number }}
+                                                        </template>
                                                     </template>
                                                 </div>
+
 
                                             </div>
                                             <el-divider></el-divider>
